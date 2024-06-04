@@ -5,8 +5,11 @@ namespace App\Service\Settings;
 use App\AdaptationTalk;
 use App\DTO\Settings\StoreUserDTO;
 use App\Enums\ErrorCode;
+use App\Events\EmailNotificationEvent;
 use App\Events\TimeTrack\CreateTimeTrackHistoryEvent;
+use App\Exceptions\Tariff\UsersLimitExceededException;
 use App\Exports\UserExport;
+use App\Facade\Tariff\CurrentTariff;
 use App\Filters\Users\UserFilter;
 use App\Filters\Users\UserFilterBuilder;
 use App\Helpers\FileHelper;
@@ -32,6 +35,7 @@ use Exception;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Throwable;
 
 /**
  * Класс для работы с Service.
@@ -83,7 +87,7 @@ class UserService
                 'end_date' => Carbon::now()->endOfMonth()->format('Y-m-d'),
             ];
 
-        } catch (\Throwable $exception) {
+        } catch (Throwable $exception) {
             throw new Exception($exception->getMessage());
         }
     }
@@ -95,31 +99,14 @@ class UserService
         StoreUserDTO $dto
     ): User
     {
+        CurrentTariff::ensureHasFreeSlot();
 
         $user = $this->userRepository->getUserByEmail($dto->email);
 
-        if ($user) {
-            new CustomException('Пользователь с указанным email или данными уже существует в системе', ErrorCode::BAD_REQUEST, []);
-        }
-
-        $tariffPlan = TariffSubscription::getValidTariffPayment();
-
-        $userLimit = Tariff::$defaultUserLimit;
-
-        if ($tariffPlan) {
-            $userLimit = $tariffPlan->total_user_limit;
-        }
-
-        $usersCount = User::query()->count();
-
-        if ($usersCount >= $userLimit && tenant('id') !== 'bp') {
-            new CustomException('users limited by tariff', 401, [
-                'usersLimited' => true,
-            ]);
-        }
-
-        if ($user != null && $user->deleted_at != null) {
+        if ($user?->wasFired()) {
             $this->userRepository->restoreUser($user);
+        } elseif ($user?->isActiveEmployee()) {
+            new CustomException('Пользователь с указанным email или данными уже существует в системе', ErrorCode::BAD_REQUEST, []);
         }
 
         $user = $this->userRepository->updateOrCreateNewEmployee($dto);
@@ -269,7 +256,6 @@ class UserService
     /**
      * @param $users
      * @param $groups
-     * @return BinaryFileResponsed
      */
     private function export($users, $groups): BinaryFileResponse
     {

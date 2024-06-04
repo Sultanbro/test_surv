@@ -45,7 +45,7 @@ const isAdmin = userInfo.is_admin
       :item="{
         title: 'Пользователи',
         to: 'admino-user-data',
-        icon: { icon: 'mdi-account-search-outline' },
+        icon: { icon: 'fa-users' },
       }"
     />
     <VerticalNavLink
@@ -90,7 +90,7 @@ const isAdmin = userInfo.is_admin
       :item="{
         title: 'payers-users',
         to: 'admino-payers-users',
-        icon: { icon: 'fa-users' },
+        icon: { icon: 'fa-money' },
       }"
     />
     <!-- 👉 Pages -->

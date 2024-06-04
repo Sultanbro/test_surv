@@ -273,7 +273,7 @@
 								@click="editMode(item)"
 							>
 								<div v-if="item[day]">
-									{{ item[day] }}{{ activity.unit }}
+									{{ item[day] }}
 								</div>
 							</td>
 							<td
@@ -283,7 +283,7 @@
 								@click="editMode(item)"
 							>
 								<div v-if="item[day]">
-									{{ item[day] }}{{ activity.unit }}
+									{{ item[day] }}
 								</div>
 							</td>
 							<td
@@ -294,7 +294,7 @@
 								@click="editMode(item)"
 							>
 								<div v-if="item[day]">
-									{{ item[day] }}{{ activity.unit }}
+									{{ item[day] }}
 								</div>
 							</td>
 						</template>

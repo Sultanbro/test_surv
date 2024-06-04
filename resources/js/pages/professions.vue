@@ -84,7 +84,6 @@
 				</b-col>
 			</b-row>
 			<b-row
-				v-if="isBP"
 				class="align-items-center mt-4"
 			>
 				<b-col

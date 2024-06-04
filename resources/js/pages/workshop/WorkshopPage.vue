@@ -6,16 +6,18 @@
 		<div class="workshop__wrapper">
 			<h2>Оплатить картой</h2>
 			<button>
-				<a href="https://wl.walletone.com/checkout/refill/CreditCard/347953359/NewCard">
+				<a
+					href="https://proeducation.kz/e44NQ/"
+				>
 					<img
 						class="workshopform__img"
 						src="https://cdn-icons-png.flaticon.com/512/5352/5352016.png"
 						alt=""
 					>
-					Картой банка не из Росиии
+					Картой любого банка
 				</a>
 			</button>
-			<button>
+			<!-- <button>
 				<a href="https://proeducation.kz/e44NQ/">
 					<img
 						class="workshopform__img"
@@ -24,7 +26,7 @@
 					>
 					Картой Российского банка
 				</a>
-			</button>
+			</button> -->
 			<p>Оплачивая картой вы соглашаетесь с условями <strong>оферты</strong></p>
 
 			<h2>Купить в рассрочку или в кредит</h2>
@@ -120,6 +122,7 @@ export default {
 		font-size: 35px;
 	}
 	&__wrapper {
+    min-width: 40%;
 		margin-top: 3%;
 		h2 {
 			margin-top: 3%;
@@ -130,7 +133,7 @@ export default {
 			margin-top: 10%;
 		}
 		button {
-			margin-top: 4%;
+			margin-top: 2%;
 			width: 100%;
 			font-weight: bold;
 			padding: 2%;
@@ -143,8 +146,8 @@ export default {
 				border-radius: 50%;
 			}
 			.workshopform__kaspi-img {
-				width: 56px;
-				height: 42px;
+				width: 50px;
+				height: 34px;
 			}
 			&:hover {
 				background-color: #e8ae02;

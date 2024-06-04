@@ -1,32 +1,34 @@
 <template>
   <draggable
     class="faq-list"
-    :class="{'edit': faqEdit}"
+    :class="{ edit: faqEdit }"
     tag="ul"
     handle=".move-icon"
     :list="questions"
     :group="{ name: 'g1' }"
-    item-key="name"
+    item-key="id"
     :data-id="parentId || 0"
-    @start="$emit('move', $event)"
-    @end="$emit('order', $event)"
+    @start="handleDragStart"
+    @end="handleDragEnd"
   >
     <template #item="{ element }">
       <li
         class="faq-item"
-        :class="{'edit': faqEdit}"
+        :class="{ edit: faqEdit }"
         :data-id="element.id"
       >
-        <div class="faq-item-content" :class="{'edit': faqEdit}">
+        <div
+          class="faq-item-content"
+          :class="{ edit: faqEdit }"
+        >
           <v-icon
             v-if="faqEdit"
             icon="mdi-menu"
             class="move-icon"
-            @mousedown=""
           />
           <p
             class="faq-link"
-            :class="{'active': activeQuest === element.id}"
+            :class="{ active: activeQuest === element.id }"
             @click="toggleCollapse(element)"
           >
             <span>{{ element.title }}</span>
@@ -44,7 +46,7 @@
           />
         </div>
         <FaqList
-          v-if="level < 3 && (faqEdit || isOpen(element) && element.children.length > 0)"
+          v-if="level < 3 && (faqEdit || (isOpen(element) && element.children.length > 0))"
           :activeQuestion="activeQuestion"
           :questions="element.children"
           :faqEdit="faqEdit"
@@ -64,83 +66,99 @@
   >
     <v-card>
       <v-card-text>
-       Вы уверены, что хотите удалить вопрос? Если в нем есть воженные вопросы, они так же будут удалены!
+        Вы уверены, что хотите удалить вопрос? Если в нем есть вложенные вопросы, они так же будут удалены!
       </v-card-text>
       <v-card-actions class="justify-end">
-        <v-btn color="red-darken-1" @click="deleteElement()">Удалить</v-btn>
-        <v-btn color="primary" @click="dialog = false">Отмена</v-btn>
+        <v-btn
+          color="red-darken-1"
+          @click="deleteElement()"
+          >Удалить</v-btn
+        >
+        <v-btn
+          color="primary"
+          @click="dialog = false"
+          >Отмена</v-btn
+        >
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 
 <script>
-  import draggable from 'vuedraggable'
+import draggable from 'vuedraggable'
 
-  export default {
-    name: 'FaqList',
-    emits: ['select'],
-    components: {
-      draggable
+export default {
+  name: 'FaqList',
+  emits: ['select'],
+  components: {
+    draggable
+  },
+  props: {
+    questions: {
+      type: Array,
+      default: () => []
     },
-    props: {
-      questions: {
-        type: Array,
-        default: () => []
-      },
-      faqEdit: {
-        type: Boolean,
-        default: false
-      },
-      active: {
-        type: Object,
-        default: null
-      },
-      level: {
-        type: Number,
-        default: 0
-      },
-      parentId: {
-        type: Number,
-        default: 0
-      }
+    faqEdit: {
+      type: Boolean,
+      default: false
     },
-    data() {
-      return {
-        dialog: false,
-        toDelete: null
-      }
+    active: {
+      type: Object,
+      default: null
     },
-    computed: {
-      activeQuest(){
-        return this.active ? this.active.id : null
-      },
+    level: {
+      type: Number,
+      default: 0
     },
-    methods: {
-      toggleCollapse(item) {
-        if (item.children?.length) {
-          item.isCollapsed = !item.isCollapsed;
-        }
-        this.onSelect(item);
-      },
-      onSelect(item) {
-        this.$emit('select', item)
-      },
-
-      openDialog(element) {
-        this.toDelete = element
-        this.dialog = true
-      },
-      deleteElement() {
-        this.$emit('delete', this.toDelete)
-        this.dialog = false
-      },
-
-      isOpen(item){
-        return item.id === this.active?.id || item.children.some(this.isOpen)
-      },
+    parentId: {
+      type: Number,
+      default: 0
     }
+  },
+  data() {
+    return {
+      dialog: false,
+      toDelete: null
+    }
+  },
+  computed: {
+    activeQuest(){
+      return this.active ? this.active.id : null
+    },
+  },
+  methods: {
+    handleDragEnd(event) {
+    const item = event.item;
+    const to = event.to;
+    const itemId = item.getAttribute('data-id') || '';
+    const toId = to.getAttribute('data-id') || '';
+
+    this.$emit('order', { itemId, toId });
+  },
+    toggleCollapse(item) {
+      if (item.children?.length) {
+        item.isCollapsed = !item.isCollapsed;
+      }
+      this.onSelect(item);
+    },
+    onSelect(item) {
+      this.$emit('select', item)
+    },
+
+    openDialog(element) {
+      this.toDelete = element
+      this.dialog = true
+    },
+    deleteElement() {
+      this.$emit('delete', this.toDelete)
+      this.dialog = false
+    },
+
+    isOpen(item){
+      return item.id === this.active?.id || item.children.some(this.isOpen)
+    },
   }
+}
 </script>
 
 <style lang="scss">

@@ -9,7 +9,7 @@
 			class="KBPageV2-nav"
 			@glossary-open="showGlossary = true"
 			@glossary-settings="isGlossaryAccessDialog = true"
-			@favorite="unFavorite"
+			@favorite="removeFavorite"
 			@back="back"
 			@book="onBook"
 			@search="onSearch"
@@ -26,12 +26,7 @@
 				:mode="mode"
 				:active-book="activeBook"
 				:breadcrumbs="breadcrumbs"
-				:can-edit="
-					!!(!activeBook && currentBook && currentBook.canEdit) ||
-						!!(parentBook && parentBook.canEdit) ||
-						!!(activeBook && activeBook.canEdit) ||
-						isAdmin
-				"
+				:can-edit="canEdit"
 				:edit-book="editBook"
 				class="KBPageV2-toolbar"
 				@mode="mode = $event"
@@ -397,13 +392,14 @@
 			v-if="isReadSelect"
 			:z="99999"
 			@close="isReadSelect = false"
-		>
+		> 
 			<AccessSelect
 				v-model="who_can_read"
 				:access-dictionaries="accessDictionaries"
 				search-position="beforeTabs"
-				submit-button=""
+				submit-button="Сохранить"
 				absolute
+				@submit="() => isReadSelect = false"
 			/>
 		</JobtronOverlay>
 
@@ -499,7 +495,6 @@
 				single
 			/>
 		</JobtronOverlay>
-
 		<JobtronOverlay
 			v-if="isGlossaryAccess"
 			:z="99999"
@@ -753,6 +748,12 @@ export default {
 	},
 
 	methods: {
+		canEdit() {
+			return !!(!this.activeBook && this.currentBook && this.currentBook.canEdit) ||
+        !!(this.parentBook && this.parentBook.canEdit) ||
+        !!(this.activeBook && this.activeBook.canEdit) ||
+        this.isAdmin;
+		},
 		...mapActions(['loadCompany']),
 		routerPush,
 
@@ -1058,7 +1059,7 @@ export default {
 			book.parent_id = parent.id;
 
 			if (!parent.children) parent.children = [];
-			parent.children.push(book);
+			parent.children.unshift(book);
 			this.booksMap[book.id] = book;
 
 			this.$nextTick(() => {
@@ -1120,19 +1121,21 @@ export default {
 
 			const loader = this.$loading.show();
 			try {
-				this.axios.post('/kb/page/update', {
+				await this.axios.post('/kb/page/update', {
 					id: this.bookForm.id,
 					title: this.bookForm.title,
 					text: this.bookForm.text,
 					pass_grade: this.bookForm.pass_grade,
 				});
 				this.editBook = false;
-				this.booksMap[this.bookForm.id].title = this.bookForm.title;
-				this.activeBook = this.bookForm;
-				this.activeBook.editor_id = this.user.id;
-				this.activeBook.editor = `${this.user.last_name} ${this.user.name}`;
-				this.activeBook.editor_avatar = `users_img/${this.user.img_url}`;
-				this.activeBook.edited_at = this.$moment().format('DD.MM.YYYY HH:mm');
+				this.$set(this.booksMap[this.bookForm.id], 'title', this.bookForm.title);
+				this.activeBook = {
+					...this.bookForm,
+					editor_id: this.user.id,
+					editor: `${this.user.last_name} ${this.user.name}`,
+					editor_avatar: `users_img/${this.user.img_url}`,
+					edited_at: this.$moment().format('DD.MM.YYYY HH:mm'),
+				};
 				this.$toast.info('Сохранено');
 			} catch (error) {
 				console.error(error);
@@ -1186,6 +1189,15 @@ export default {
 			if (!parent) return;
 			parent.children.push(book);
 		},
+		async removeFavorite(page, index) {
+			this.favorites.splice(index, 1);
+
+			page.isFavorite = !page.isFavorite;
+
+			await API.toggleKBPageFavorite(page.id, {
+				toggle: page.isFavorite,
+			});
+		},
 		async unFavorite(page) {
 			const favoritesBooks = await API.fetchKBFavorites();
 			const currentBook = favoritesBooks.items.find((book) => {
@@ -1200,15 +1212,25 @@ export default {
 						toggle: page.isFavorite,
 					});
 				} else if (page.isFavorite === undefined && currentBook) {
-					if (currentBook) {
-						await API.toggleKBPageFavorite(page.id, {
-							toggle: false,
-						});
-					}
+					this.favorites = this.favorites.filter((book) => {
+						return book.id !== currentBook.id;
+					});
+
+					await API.toggleKBPageFavorite(page.id, {
+						toggle: false,
+					});
 				} else {
 					await API.toggleKBPageFavorite(page.id, {
 						toggle: true,
 					});
+
+					const favoritesBooks = await API.fetchKBFavorites();
+
+					const addedBook = favoritesBooks.items.find((book) => {
+						return book.id === page.id;
+					});
+
+					this.favorites.push(addedBook);
 				}
 			} catch (error) {
 				console.error(error);

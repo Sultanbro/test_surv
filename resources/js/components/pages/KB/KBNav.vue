@@ -1,16 +1,6 @@
 <template>
 	<aside class="KBNav">
 		<div class="KBNav-wrapper">
-			<div class="KBNav-search">
-				<SearchIcon class="fa fa-search" />
-				<input
-					v-model="search.input"
-					type="text"
-					placeholder="Быстрый поиск"
-					class="form-input"
-				>
-			</div>
-
 			<div
 				v-if="!currentBook"
 				class="KBNav-glossary"
@@ -31,6 +21,17 @@
 				</button>
 			</div>
 
+			<div class="KBNav-search">
+				<SearchIcon class="fa fa-search" />
+				<input
+					v-model="search.input"
+					type="text"
+					placeholder="Быстрый поиск"
+					class="form-input"
+					@input="searchInput"
+				>
+			</div>
+
 			<!-- Back buttons -->
 			<div
 				v-if="archived.show || currentBook"
@@ -38,7 +39,7 @@
 			>
 				<div
 					v-if="archived.show"
-					class="btn btn-grey btn-block mb-3"
+					class="btn btn-grey btn-block mb-3 mt-4"
 					@click="archived.show = false"
 				>
 					<i class="fa fa-arrow-left" />
@@ -76,21 +77,15 @@
 				<template v-else-if="favorites.length">
 					<div class="KBNav-favorites">
 						<div
-							v-for="favorite in favorites"
+							v-for="(favorite, index) in favorites"
 							:key="favorite.id"
 							class="KBNav-favorite"
 						>
 							<p
 								v-if="favorite.isFavorite"
-								@click="$emit('favorite', favorite)"
+								@click="$emit('favorite', favorite, index)"
 							>
 								<FavoriteIcon />
-							</p>
-							<p
-								v-else
-								@click="$emit('favorite', favorite)"
-							>
-								<HeartOutlineIcon />
 							</p>
 							<p @click="$emit('search', favorite, '')">
 								{{ favorite.title }}
@@ -103,12 +98,14 @@
 			<KBNavItems
 				v-if="currentBook"
 				:key="'p' + listsKey"
+				:input="search.input"
 				class="KBNav-items"
-				:items="searchItems()"
+				:items="filteredItems"
 				:opened="true"
 				:mode="mode"
 				:parent="currentBook"
 				:active="activeBook ? activeBook.id : null"
+				@update-input="updateInput"
 				@show-page="$emit('page', $event)"
 				@add-page="$emit('add-page', $event)"
 				@page-order="$emit('page-order', $event)"
@@ -119,13 +116,15 @@
 			<KBNavItems
 				v-else-if="books.length"
 				:key="'b' + listsKey"
+				:input="search.input"
 				class="KBNav-items"
-				:items="searchItems()"
+				:items="filteredItems"
 				:opened="true"
 				:mode="mode"
 				:parent="null"
 				:active="null"
 				:sections-mode="true"
+				@update-input="updateInput"
 				@show-page="$emit('book', $event)"
 				@page-order="$emit('page-order', $event)"
 				@add-book="$emit('create', $event)"
@@ -263,7 +262,6 @@ import BackChapterIcon from '../../../../assets/icons/BackChapterIcon.vue';
 import AddIconSilver from '../../../../assets/icons/AddIconSilver.vue';
 import InfoIcon from '../../../../assets/icons/InfoIcon.vue';
 import FavoriteIcon from '../../../../assets/icons/FavoriteIcon.vue';
-import HeartOutlineIcon from '../../../../assets/icons/HeartOutlineIcon.vue'
 
 import KBNavItems from './KBNavItems.vue';
 
@@ -285,7 +283,6 @@ export default {
 		AddIconSilver,
 		InfoIcon,
 		FavoriteIcon,
-		HeartOutlineIcon,
 	},
 	props: {
 		mode: {
@@ -317,6 +314,7 @@ export default {
 				timepout: null,
 				loading: false,
 			},
+			allItems: [],
 			archived: {
 				show: false,
 				items: [],
@@ -331,6 +329,13 @@ export default {
 			this.getPages(map, this.pages);
 			return map;
 		},
+		filteredItems() {
+			if (!this.search.input.length) {
+				return this.allItems;
+			} else {
+				return this.search.items;
+			}
+		},
 	},
 	watch: {
 		pages() {
@@ -340,7 +345,15 @@ export default {
 			this.updateKeys();
 		},
 	},
-	mounted() {},
+	async mounted() {
+		try {
+			const { tree } = await API.fetchKBBooksV2();
+			this.allItems = tree;
+			this.search.items = this.allItems;
+		} catch (error) {
+			console.error(error);
+		}
+	},
 	methods: {
 		unFavorite(favorite) {
 			return (favorite.isFavorite = false);
@@ -363,7 +376,14 @@ export default {
 		// === SEARCH ===
 		searchInput() {
 			clearTimeout(this.search.timeout);
-			this.search.timeout = setTimeout(this.runSearch, 500);
+			this.search.timeout = setTimeout(() => {
+				this.runSearch().then(() => {
+					this.$forceUpdate();
+				});
+			}, 500);
+		},
+		updateInput(input) {
+			this.search.input = input;
 		},
 		searchCheck() {
 			if (this.search.input.length === 0) this.clearSearch();
@@ -378,7 +398,7 @@ export default {
 			};
 		},
 		async runSearch() {
-			if (this.search.input.length <= 2) return null;
+			if (this.search.input.length <= 2) return;
 			try {
 				const data = await API.searchKBBook({
 					text: this.search.input,
@@ -392,6 +412,7 @@ export default {
 					);
 					return item;
 				});
+				this.$forceUpdate();
 			} catch (error) {
 				console.error(error);
 				this.$toast.error('Поиск не удался');
@@ -501,6 +522,7 @@ $KBNav-padding: 15px;
 		background-color: #f7fafc;
 		padding: 5%;
 		border-radius: 8px;
+		margin-top: 6%;
 		width: 102%;
 		position: relative;
 		.fa-search {
@@ -527,7 +549,6 @@ $KBNav-padding: 15px;
 		}
 	}
 	&-glossary {
-		margin-top: 16px;
 		display: flex;
 		align-items: center;
 		gap: 4px;

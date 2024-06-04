@@ -268,7 +268,7 @@ export default {
 			if (!window.jChatWidget) {
 				window.addEventListener('onBitrixLiveChat', this.onInitChatWidget);
 				const url =
-					'https://cdn-ru.bitrix24.kz/b1734679/crm/site_button/loader_14_qetlt8.js';
+					'https://cdn-ru.bitrix24.kz/b1734679/crm/site_button/loader_12_koodzo.js';
 				const s = document.createElement('script');
 				s.async = true;
 				s.src = url + '?' + ((Date.now() / 60000) | 0);

@@ -52,11 +52,10 @@ class TrialSubscriptionController extends Controller
     public function exists(Request $request): JsonResponse
     {
         $tenant = $request->get('tenant_id') ?? tenant('id');
-
         return $this->response(
             message: 'Success',
             data: [
-                'has_trial' => TariffSubscription::hasTrial($tenant),
+                'has_trial' => TariffSubscription::hasValidTariffPayment() ?? TariffSubscription::hasTrial($tenant),
             ]
         );
     }

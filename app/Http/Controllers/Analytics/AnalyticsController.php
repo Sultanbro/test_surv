@@ -520,7 +520,6 @@ class AnalyticsController extends Controller
                 'value' => $dto->value,
             ]);
         }
-
         UserStatUpdatedEvent::dispatch($dto);
 //        // ne nado poka izmenit chasi
 

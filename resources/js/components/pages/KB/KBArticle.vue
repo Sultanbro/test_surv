@@ -2,7 +2,7 @@
 	<div class="KBArticle">
 		<div
 			class="KBArticle-favorite"
-			@click="$emit('favorite', activeBook)"
+			@click="toogleFavorite"
 		>
 			<!-- <i
 				class="fa-heart"
@@ -196,6 +196,10 @@ export default {
 		this.isFavoriteBook()
 	},
 	methods: {
+		toogleFavorite () {
+			this.isFavorite = !this.isFavorite
+			this.$emit('favorite', this.activeBook)
+		},
 		async isFavoriteBook() {
 			const favoritesBooks = await KBAPI.fetchKBFavorites();
 			const currentBook = favoritesBooks.items.find((book) => {

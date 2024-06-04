@@ -78,6 +78,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property string $currency
  * @property string $timezone
  * @property string $segment
+ * @property string $deleted_at
  * @property int $working_day_id
  * @property int $working_time_id
  * @property string $working_country
@@ -1775,7 +1776,10 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
             return WorkChartModel::WORK_DAYS_PER_MONTH_DEFAULT_REPLACEABLE;
         }
 
+        $days = explode('-', $this->workChart);
+//        if(!isset($days[1])) dd($workChartName);
         $days = explode('-', $workChartName);
+
         $workingDay = (int)$days[0];
         $dayOf = (int)$days[1];
         $total = $dayOf + $workingDay;
@@ -1795,12 +1799,8 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
             if ($remains < $workingDay && $dayInMonth != Carbon::parse($firstWorkDay)->subDay()->toDateString()) {
                 $workDayInMonth++;
             }
-            if ($this->id == 29161) {
-                dump("$remains < $workingDay && $dayInMonth $workDayInMonth");
-            }
         }
 
-        dd_if($this->id == 29161, $workDayInMonth);
         return $workDayInMonth;
     }
 
@@ -1890,5 +1890,15 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
     public function workEndTime(): Carbon
     {
         return $this->scheduleFast(true)['end'];
+    }
+
+    public function wasFired(): bool
+    {
+        return !!$this->deleted_at;
+    }
+
+    public function isActiveEmployee(): bool
+    {
+        return $this->deleted_at === null;
     }
 }

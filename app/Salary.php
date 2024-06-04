@@ -685,7 +685,7 @@ class Salary extends Model
 
                 $hourly_pays[$i] = round($hourly_pay, 2);
 
-//                dd_if(auth()->id() == 18 && $user->id == 31533, "$hourly_pay = $zarplata / $workdays / $working_hours;");
+//                dd_if(auth()->id() == 18 && $user->id == 32278, "$hourly_pay = $zarplata / $workdays / $working_hours;");
                 // add to array
 
                 $x = $tts->where('day', $i);
@@ -732,7 +732,8 @@ class Salary extends Model
 
                         $hours[$i] = round($working_hours / 2, 1);
                     }
-                } else {
+                }
+                else {
                     if ($a) {
                         $earnings[$i] = 0;
                         $hours[$i] = 0;
@@ -1074,7 +1075,7 @@ class Salary extends Model
                 if ($schedule['rest_time']) {
                     $lunchTime = floatval($schedule['rest_time'] / 60);
                 }
-                $worktime = $working_hours = max( round($schedule['end']->diffInHours($schedule['start']), 1) - $lunchTime, 0);
+                $worktime = $working_hours = max(round($schedule['end']->diffInHours($schedule['start']), 1) - $lunchTime, 0);
 
                 // Проверяем тип рабочего графика, так как есть у нас недельный и сменный тип
                 $workChartType = $schedule['work_charts_type'];
@@ -1124,7 +1125,6 @@ class Salary extends Model
                     $t = $trainee_days->where('day', $i)->first();
                     $r = $retraining_days->where('day', $i)->first();
                     $a = $absent_days->where('day', $i)->first();
-
 
 
                     if (empty($statTotalHour)) {

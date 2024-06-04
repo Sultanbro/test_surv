@@ -42,12 +42,19 @@
 				v-if="isEditMode && item.canEdit"
 				class="KBNavItem-actions"
 			>
-				<i
+				<div
+					v-if="(type === 'book' && $laravel.is_admin) || !sectionsMode"
+					title="Добавить страницу"
+					@click.stop="$emit('add-page', item)"
+				>
+					<AddСhapterIcon />
+				</div>
+				<!-- <i
 					v-if="!sectionsMode"
 					class="KBNavItem-action fa fa-plus"
 					title="Добавить страницу"
 					@click.stop="$emit('add-page', item)"
-				/>
+				/> -->
 				<div
 					v-if="type === 'book' && $laravel.is_admin"
 					title="Добавить базу знаний"

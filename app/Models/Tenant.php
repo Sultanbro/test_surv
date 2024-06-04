@@ -50,10 +50,20 @@ class Tenant extends BaseTenant implements TenantWithDatabase
     {
         return $this->belongsToMany(
             CentralUser::class,
-            'tenant_user',
+            'tenant_pivot',
             'tenant_id',
             'user_id'
         );
+    }
+
+    public function owner(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            CentralUser::class,
+            'tenant_pivot',
+            'tenant_id',
+            'user_id'
+        )->where('owner', 1);
     }
 
     /**

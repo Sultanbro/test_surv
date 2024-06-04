@@ -112,7 +112,7 @@ class CentralUser extends Model implements ICustomer
      */
     public function tenants(): BelongsToMany
     {
-        return $this->belongsToMany(Tenant::class, 'tenant_user', 'user_id', 'tenant_id');
+        return $this->belongsToMany(Tenant::class, 'tenant_pivot', 'user_id', 'tenant_id');
     }
 
     public function portals(): HasMany
@@ -159,5 +159,11 @@ class CentralUser extends Model implements ICustomer
             $this->email,
             $this->phone,
         );
+    }
+
+    public function domainUser(): User
+    {
+        /** @var User */
+        return User::query()->where('email', $this->email)->first();
     }
 }

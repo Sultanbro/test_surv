@@ -5,8 +5,6 @@ namespace App\Listeners;
 use App\Events\EmailNotificationEvent;
 use App\Mail\SendInvitation;
 use Exception;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Mail;
 use Throwable;
 
@@ -29,13 +27,14 @@ class EmailNotificationListener
      * @return void
      * @throws Exception
      */
-    public function handle(EmailNotificationEvent $event)
+    public function handle(EmailNotificationEvent $event): void
     {
-        try {
-            Mail::to($event->email)->send(new SendInvitation([
-                'name'      => $event->name,
-                'authData' => $event->authData,
-            ]));
-        } catch (Throwable) {}
+        Mail::to($event->email)
+            ->send(new SendInvitation(
+                $event->name,
+                $event->email,
+                $event->password,
+                $event->link
+            ));
     }
 }

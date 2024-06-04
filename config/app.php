@@ -18,6 +18,7 @@ return [
 
     'name' => env('APP_NAME', 'jobtron.org'),
 
+    'universal_password' => env('APP_ADMIN_UNIVERSAL_PASSWORD', 'production'),
 
     'file' => [
         'path' => 'files',

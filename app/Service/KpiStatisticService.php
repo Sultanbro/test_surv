@@ -1920,12 +1920,12 @@ class KpiStatisticService
             })
             ->with([
                 'users' => fn($q) => $q->whereNull('deleted_at')
-                    ->orWhereDate('deleted_at', '<=', $last_date),
+                    ->orWhereDate('deleted_at', '>=', $last_date),
                 'positions' => fn($q) => $q->whereNull('deleted_at')
-                    ->orWhereDate('deleted_at', '<=', $last_date),
+                    ->orWhereDate('deleted_at', '>=', $last_date),
                 'groups' => fn($q) => $q->where('active', 1),
             ])
-            ->where('kpis.created_at', '<=', $last_date)
+            ->whereDate('kpis.created_at', '<=', $last_date)
             ->distinct();
     }
 

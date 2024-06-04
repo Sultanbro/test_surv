@@ -1,7 +1,6 @@
 <template>
 	<div class="AnalyticStat z-12 relative">
 		<div
-			v-if="isMain && [5, 20641].includes(+$laravel.userId)"
 			class="table-header"
 		>
 			<input

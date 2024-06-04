@@ -16,7 +16,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        $tenantUsers = DB::connection('mysql')->table('tenant_user')->get();
+        $tenantUsers = DB::connection('mysql')->table('tenant_pivot')->get();
         $portalOwners = [];
         foreach ($tenantUsers as $tenantUser)
         {

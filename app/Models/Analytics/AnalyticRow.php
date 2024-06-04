@@ -55,16 +55,17 @@ class AnalyticRow extends Model
             ->where('date', $date)
             ->where('name', 'name')
             ->first();
-
         $column_avg = AnalyticColumn::where('group_id', $group_id)
             ->where('date', $date)
             ->where('name', 'avg')
             ->first();
 
-        $column_plan = AnalyticColumn::where('group_id', $group_id)
-            ->where('date', $date)
-            ->where('name', 'plan')
-            ->first();
+        $column_plan = AnalyticColumn::query()
+            ->firstOrCreate([
+                'group_id'=> $group_id,
+                'date'=> $date,
+                'name'=> 'plan'
+            ]);
 
         $column_sum = AnalyticColumn::where('group_id', $group_id)
             ->where('date', $date)
@@ -94,7 +95,8 @@ class AnalyticRow extends Model
             if ($index + 1 == 11) $row_11 = $row->id;
 
             if ($index + 1 == 2) continue;
-            AnalyticStat::create([
+            AnalyticStat::query()
+                ->create([
                 'group_id' => $group_id,
                 'date' => $date,
                 'row_id' => $row->id,
@@ -116,10 +118,12 @@ class AnalyticRow extends Model
                 ];
 
                 foreach ($fields as $field) {
-                    $col = AnalyticColumn::where('group_id', $group_id)
-                        ->where('date', $date)
-                        ->where('name', $field)
-                        ->first();
+                    $col = AnalyticColumn::query()
+                        ->firstOrCreate([
+                            'group_id'=> $group_id,
+                            'date'=> $date,
+                            'name'=> $field,
+                        ]);
 
                     $arr = [
                         'group_id' => $group_id,
