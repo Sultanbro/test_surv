@@ -12,7 +12,7 @@ class PracticumPaymentWebhookListener
     {
         $dto = $event->dto;
 
-        $webhookHandler = Gateway::provider('practicum')->webhookHandler();
+        $webhookHandler = Gateway::provider('prodamus')->webhookHandler();
         $webhookHandler->map([
             'params' => $dto->payload,
             'headers' => $dto->headers,
