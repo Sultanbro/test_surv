@@ -7,7 +7,7 @@
 			<h2>Оплатить картой</h2>
 			<button>
 				<a
-					href="https://proeducation.kz/8g7j8/"
+					href="https://proeducation.kz/8g7jb/"
 				>
 					<img
 						class="workshopform__img"
