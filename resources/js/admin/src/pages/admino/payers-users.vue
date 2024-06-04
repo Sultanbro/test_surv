@@ -34,8 +34,16 @@
               <div
                 class="payers__edit"
                 v-bind="props"
+                v-if="payer.status === 'pending'"
               >
-                {{ payer.status }}
+                В ожидании
+              </div>
+              <div
+                class="payers__edit"
+                v-bind="props"
+                v-else
+              >
+                Оплатил
               </div>
             </template>
 
@@ -55,6 +63,11 @@
           </v-menu>
         </td>
         <td>{{ payer.amount }}</td>
+        <td>
+          <a :href="payer.url" target="_blank">
+            {{ payer.name }}
+          </a>
+        </td>
       </tr>
     </tbody>
   </VTable>
@@ -99,5 +112,12 @@ const updatePayerStatus = async (status: string, id: number) => {
 .payers__edit,
 .payers__option {
   cursor: pointer;
+}
+
+a {
+  color: #808080;
+  &:hover {
+    text-decoration: underline;
+  }
 }
 </style>

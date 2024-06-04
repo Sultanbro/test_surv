@@ -11,15 +11,20 @@
 	>
 		<template v-for="item in items">
 			<KBNavItem
-				v-if="sectionsMode && !isEditMode ? !parent && item.canRead : (opened || !parent) && item.canRead"
+				v-if="
+					sectionsMode && !isEditMode
+						? !parent && item.canRead
+						: (opened || !parent) && item.canRead
+				"
 				:key="`${parent ? parent.id : ''}-${item.id}`"
 				:item="item"
 				:parent="parent"
 				:mode="mode"
 				:sections-mode="sectionsMode"
-				:class="['KBNavItems-item', {
-					'KBNavItems-item_active': active === item.id
-				}]"
+				:class="[
+					'KBNavItems-item',
+					{ 'KBNavItems-item_active': active === item.id },
+				]"
 				@open="toggleOpen"
 				@add-page="addPage"
 				@add-book="$emit('add-book', $event)"
@@ -65,95 +70,94 @@
 </template>
 
 <script>
-import Draggable from 'vuedraggable'
-import KBNavItem from './KBNavItem.vue'
+import Draggable from 'vuedraggable';
+import KBNavItem from './KBNavItem.vue';
 
-const KBNavItems = {
+export default {
 	name: 'KBNavItems',
+	components: {
+		Draggable,
+		KBNavItem,
+	},
 	props: {
 		items: {
 			type: Array,
 			required: true,
+			default: () => [],
 		},
 		parent: {
-			validator(value){
-				return ['[object Null]', '[object Object]'].includes(Object.prototype.toString.call(value))
+			validator(value) {
+				return ['[object Null]', '[object Object]'].includes(
+					Object.prototype.toString.call(value)
+				);
 			},
 			required: true,
 		},
 		opened: {
 			type: Boolean,
+			default: true,
 		},
 		mode: {
 			type: String,
-			default: 'read'
+			default: 'read',
 		},
-		input : {
+		input: {
 			type: String,
+			default: '',
 		},
 		active: {
 			type: Number,
-			default: 0
+			default: 0,
 		},
 		sectionsMode: {
-			type: Boolean
-		}
+			type: Boolean,
+			default: false,
+		},
 	},
-	data(){
+	data() {
 		return {
 			key: 0,
-		}
+		};
 	},
 	computed: {
-		isEditMode(){
-			return this.mode === 'edit'
+		isEditMode() {
+			return this.mode === 'edit';
 		},
-		sorted(){
-			return this.items
-		}
 	},
 	watch: {
-		items(){
-			++this.key
-		}
+		items(newVal, oldVal) {
+			if (newVal !== oldVal) {
+				this.key++;
+			}
+		},
 	},
-	created(){},
-	mounted(){},
 	methods: {
 		toggleOpen(item) {
 			this.$emit('update-input');
-			item.opened = !item.opened
-			this.showPage(item, false, true)
-			++this.key
+			item.opened = !item.opened;
+			this.showPage(item, false, true);
+			this.key++;
 		},
 		showPage(page) {
-			this.$emit('show-page', page)
+			this.$emit('show-page', page);
 		},
 		addPage(item) {
-			this.$emit('add-page', item)
+			this.$emit('add-page', item);
 		},
-		onDrop(event){
-			this.$emit('page-order', event)
+		onDrop(event) {
+			this.$emit('page-order', event);
 			this.$nextTick(() => {
-				this.$forceUpdate()
-			})
+				this.$forceUpdate();
+			});
 		},
 	},
-}
-
-KBNavItems.components = {
-	Draggable,
-	KBNavItem,
-	KBNavItems,
-}
-
-export default KBNavItems
+};
 </script>
 
 <style lang="scss">
-.KBNavItems{
-	&-item{
-		&_active{
+.KBNavItems {
+	&-item {
+		&_active {
 			color: #3361ff;
 		}
 	}

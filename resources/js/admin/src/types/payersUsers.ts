@@ -7,4 +7,6 @@ export type TPayersUsers = {
   status: string
   transaction_id: null
   updated_at: string
+  name: string
+  url: string
 }
