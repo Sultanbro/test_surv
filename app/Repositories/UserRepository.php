@@ -223,7 +223,7 @@ final class UserRepository extends CoreRepository
             ]
         );
 
-        $authLink = $this->loginLinkToSubDomain(tenant(), $user->email);
+        $authLink = $this->getSubDomainLink(tenant(), $user->email);
         EmailNotificationEvent::dispatch($user->name, $user->email, $authLink, $password);
 
         return $user;
