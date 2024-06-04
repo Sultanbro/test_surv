@@ -117,7 +117,7 @@ export default {
 		align-items: center;
 		gap: 10px;
 
-		width: 90%;
+		width: 100%;
 		height: 48px;
 		padding: 10px 16px 10px 16px;
 		border: 1px solid #cdd1db;

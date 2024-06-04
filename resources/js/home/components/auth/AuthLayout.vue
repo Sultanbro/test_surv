@@ -94,8 +94,7 @@ export default {
 		width: 483px;
 		max-width: 100%;
 		// padding: 72px;
-    padding-top: 4%;
-    padding-left: 2%;
+    padding: 3%;
 
 		position: relative;
 		z-index: 1;

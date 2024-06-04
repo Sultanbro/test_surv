@@ -18,7 +18,7 @@
 			>
 				<S3Block
 					class="jSec3-block-1"
-					image="/svg/integration.svg"
+					:image="require('../../assets/img/integrations.svg').default"
 				>
 					<h3 class="jSec3-block-title">
 						{{ $lang(lang, 's3-b1-title') }}
@@ -30,7 +30,7 @@
 				<S3Block
 					:right="true"
 					class="jSec3-block-2"
-					image="/svg/support.svg"
+					:image="require('../../assets/img/support.svg').default"
 				>
 					<h3 class="jSec3-block-title">
 						{{ $lang(lang, 's3-b2-title') }}
@@ -41,7 +41,7 @@
 				</S3Block>
 				<S3Block
 					class="jSec3-block-3"
-					image="/svg/flex.svg"
+					:image="require('../../assets/img/flexibility.svg').default"
 				>
 					<h3 class="jSec3-block-title">
 						{{ $lang(lang, 's3-b3-title') }}

@@ -50,7 +50,7 @@ export default {
 	justify-content: center;
 	gap: 4px;
 
-	width: 90%;
+	width: 100%;
 	height: 48px;
 	padding: 16px;
 	border: none;

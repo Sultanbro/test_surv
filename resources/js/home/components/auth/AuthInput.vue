@@ -98,7 +98,7 @@ export default {
 		flex-flow: row nowrap;
 		align-items: center;
 
-		width: 90%;
+		width: 100%;
 		height: 48px;
 		padding: 10px 16px 10px 16px;
 		gap: 10px;

@@ -50,7 +50,7 @@ export default {
 	display: block;
   width: 70%;
 	margin: 0 auto;
-  box-shadow: 0 0 1rem rgba(0, 0, 0, 0.1);
+  // box-shadow: 0 0 1rem rgba(0, 0, 0, 0.1);
 }
 
 @media screen and (min-width: $medium) {
