@@ -28,20 +28,15 @@ class AppServiceProvider extends ServiceProvider
         $this->setS3DiskForTenant();
 
         $this->registerMacros();
-        $dateToValue = [];
-        if (table_exists('permissions')) {
-            $dateToValue = $this->dataToVue();
-        }
-
         // наверное нужно удалить если перешли на layouts.spa
-        View::composer('layouts.app', function ($view) use ($dateToValue) {
+        View::composer('layouts.app', function ($view) {
             $view->with([
-                'laravelToVue' => $dateToValue
+                'laravelToVue' => $this->dataToVue()
             ]);
         });
-        View::composer('layouts.spa', function ($view) use ($dateToValue) {
+        View::composer('layouts.spa', function ($view) {
             $view->with([
-                'laravelToVue' => $dateToValue
+                'laravelToVue' => $this->dataToVue()
             ]);
         });
 
