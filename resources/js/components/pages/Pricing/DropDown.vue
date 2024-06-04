@@ -2,7 +2,6 @@
 	<div class="price-dropdown">
 		<button
 			class="price-dropdown-toggle"
-			@click="toggleDropdown"
 		>
 			<div class="price-dropdown-option">
 				<img
@@ -14,7 +13,6 @@
 					{{ selectedOption && selectedOption ? selectedOption.id || selectedOption : placeholder }}
 				</p>
 			</div>
-			<DropDownIcon />
 		</button>
 		<div
 			v-if="isOpen"
@@ -54,11 +52,9 @@
 
 
 <script>
-import DropDownIcon from './DropDownIcon.vue';
 
 export default {
 	name: 'DropdownPrice',
-	components: {DropDownIcon},
 	props: {
 		options: {
 			type: Array,

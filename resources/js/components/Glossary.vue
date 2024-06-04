@@ -191,6 +191,7 @@ export default {
 				&-word,
 				&-definition{
 					.form-control{
+            height: 35px;
 						// background: repeating-linear-gradient(
 						// 	-45deg,
 						// 	#fff,

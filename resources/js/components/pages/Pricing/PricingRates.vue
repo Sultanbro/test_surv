@@ -110,10 +110,16 @@
 							>
 								{{ item.connection }}
 							</p>
-							<p v-else-if="activeOption === 12">
+							<p
+								v-else-if="activeOption === 12"
+								class="PricingRates-header-connection"
+							>
 								В год
 							</p>
-							<p v-else-if="activeOption === 3">
+							<p
+								v-else-if="activeOption === 3"
+								class="PricingRates-header-connection"
+							>
 								В 3 месяца
 							</p>
 							<button
@@ -429,25 +435,39 @@ export default {
 		proUsed(){
 			if(this.proUsed) this.useProDemo()
 		},
-
+		tarifs(){
+			this.itemSpace()
+		},
+		info(){
+			this.itemSpace()
+		},
 	},
 
 	created(){
 		this.fetchPricing()
 		this.fetchDemo()
+		this.itemSpace()
 		this.infoFetch()
-
+		// this.addedItemSpace(this.tarifs.filter((tarif) => {
+		// 	tarif.name
+		// }))
 	},
 	methods: {
 		...mapActions(useModalStore, ['setCurrentModal', 'setPrice']),
 		...mapActions(usePricingStore, ['fetchPricing']),
 		...mapActions(usePricingPeriodStore, ['addedPrice']),
-		...mapActions(usePricingPeriodStore, ['connectedTariff', 'setTariffId']),
+		...mapActions(usePricingPeriodStore, ['connectedTariff', 'setTariffId', 'addedItemSpace']),
 		infoFetch(){
 			this.axios('tariff/subscriptions').then((response) => {
 				this.info = response.data.data
 				this.managerPlainPhone()
 			})
+		},
+		itemSpace(){
+			if (this.info.tariff && this.tarifs){
+				this.addedPrice(this.tarifs[this.info.tariff.kind])
+			}
+
 		},
 
 		editRate(){
@@ -474,7 +494,6 @@ export default {
 				this.setPrice('free')
 				this.setCurrentModal('pricingToBuy')
 			}
-
 
 			this.addedPrice(item)
 		},
@@ -771,6 +790,7 @@ export default {
 		width: 100%;
 		display: flex ;
 		background-color: #f2f2f2 ;
+		gap: 4px;
 		padding: 4px ;
 		border-radius: 8px ;
 	}
@@ -870,7 +890,7 @@ export default {
 		background-color: #F2F2F2;
 		padding: 4px;
 		border-radius: 8px;
-
+		gap: 4px;
 		}
 
 		&-options-button{
@@ -896,7 +916,7 @@ export default {
 			font-size: 14px;
 			font-weight: 500;
 			border-radius: 8px;
-			width: 105px;
+			width: 108px;
 
 	}
 	&-header-item:hover{

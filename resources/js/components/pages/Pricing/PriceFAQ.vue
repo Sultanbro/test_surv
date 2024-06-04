@@ -231,6 +231,7 @@ export default {
 .faq-item-image {
 	transition: transform 0.3s ease;
 	background-color: #F2F2F2;
+	width: 16px;
 }
 
 .faq-item-image.active {

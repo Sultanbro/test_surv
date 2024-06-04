@@ -43,7 +43,7 @@
 				class="KBNavItem-actions"
 			>
 				<div
-					v-if="!sectionsMode"
+					v-if="(type === 'book' && $laravel.is_admin) || !sectionsMode"
 					title="Добавить страницу"
 					@click.stop="$emit('add-page', item)"
 				>

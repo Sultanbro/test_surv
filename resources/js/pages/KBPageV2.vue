@@ -392,13 +392,14 @@
 			v-if="isReadSelect"
 			:z="99999"
 			@close="isReadSelect = false"
-		>
+		> 
 			<AccessSelect
 				v-model="who_can_read"
 				:access-dictionaries="accessDictionaries"
 				search-position="beforeTabs"
-				submit-button=""
+				submit-button="Сохранить"
 				absolute
+				@submit="() => isReadSelect = false"
 			/>
 		</JobtronOverlay>
 
@@ -1058,7 +1059,7 @@ export default {
 			book.parent_id = parent.id;
 
 			if (!parent.children) parent.children = [];
-			parent.children.push(book);
+			parent.children.unshift(book);
 			this.booksMap[book.id] = book;
 
 			this.$nextTick(() => {

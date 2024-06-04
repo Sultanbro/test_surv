@@ -80,6 +80,7 @@
 				<template v-else>
 					<button
 						v-if="isEdit && !isActiveCategory"
+						v-b-popover.hover.top="'Редактировать'"
 						class="KBToolbar-action KBToolbar-action_save"
 						@click="$emit('edit-page')"
 					>
@@ -87,14 +88,15 @@
 					</button>
 					<button
 						v-if="!isActiveCategory"
+						v-b-popover.hover.top="'Поделиться ссылкой'"
 						class="KBToolbar-action KBToolbar-action_info"
-						title="Поделиться ссылкой"
 						@click="copyLink()"
 					>
 						<ShareLinkIcon />
 					</button>
 					<button
 						v-if="isEdit && !isActiveCategory"
+						v-b-popover.hover.top="'Удалить страницу'"
 						class="KBToolbar-action KBToolbar-action_remove"
 						@click="$emit('delete-page', activeBook)"
 					>
@@ -418,7 +420,7 @@ input:checked + .switch:after {
 
 	&-breadcrumb {
 		display: block;
-		font-size: 14px;
+		font-size: 12px;
 		font-weight: 500;
 		color: #0b172d;
 		&:last-child {
@@ -460,8 +462,8 @@ input:checked + .switch:after {
 	}
 	&-action {
 		padding: 6px;
-		height: 35px;
-		width: 35px;
+    height: 28px;
+    width: 28px;
 		display: flex;
 		justify-content: center;
 		outline: none;
