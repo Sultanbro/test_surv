@@ -9,4 +9,6 @@ interface BaseWebhookMapper
     public function InvoiceSuccessfullyHandled(): bool;
 
     public function getTransactionId(): string|int;
+
+    public function getParams(string $key = null): string|int|array;
 }

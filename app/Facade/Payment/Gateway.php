@@ -15,6 +15,7 @@ use Mockery;
  * @method static BasePaymentGateway provider(string $name)
  * @method static array list()
  * @method static bool exists(string $name)
+ * @method static BasePaymentGateway config(array $config)
  * @mixin Register
  */
 class Gateway extends Facade

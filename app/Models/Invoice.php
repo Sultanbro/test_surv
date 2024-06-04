@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Classes\Helpers\Phone;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -39,6 +40,15 @@ class Invoice extends Model
         /** @var Invoice */
         return self::query()
             ->where('transaction_id', $getTransactionId)
+            ->first();
+    }
+
+    public static function getByPayerPhone(string $phone): ?Invoice
+    {
+
+        /** @var Invoice */
+        return self::query()
+            ->where('payer_phone', Phone::normalize($phone))
             ->first();
     }
 

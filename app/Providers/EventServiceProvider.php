@@ -28,6 +28,7 @@ use App\Listeners\{ActivityUpdatedListener,
     KpiChangedListener,
     Payment\ExternalPaymentWebhookListener,
     Payment\LogPaymentWebhookListener,
+    Payment\PracticumPaymentWebhookListener,
     Payment\TariffPaymentWebhookListener,
     TimeTrack\CreateTimeTrackHistoryListener,
     TrackCourseItemFinishedListener,
@@ -40,8 +41,7 @@ use App\Listeners\{ActivityUpdatedListener,
     TransferUserInGroupListener,
     UserStatUpdatedListener,
     UserUpdatedListener,
-    WorkdayListener
-};
+    WorkdayListener};
 use App\Models\WorkChart\WorkChartModel;
 use App\Observers\Timetracking\TimetrackingObserver;
 use App\Observers\UserObserver;
@@ -113,7 +113,8 @@ class EventServiceProvider extends ServiceProvider
         PaymentWebhookTriggeredEvent::class => [
             TariffPaymentWebhookListener::class,
             ExternalPaymentWebhookListener::class,
-            LogPaymentWebhookListener::class
+            LogPaymentWebhookListener::class,
+            PracticumPaymentWebhookListener::class
         ]
     ];
 

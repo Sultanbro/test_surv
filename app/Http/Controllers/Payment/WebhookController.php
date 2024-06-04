@@ -24,6 +24,7 @@ class WebhookController extends Controller
      */
     public function callback(Request $request, string $currency): JsonResponse
     {
+        dd($request->all());
         $dto = new WebhookDto(
             $currency,
             $request->all(),

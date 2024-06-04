@@ -3,6 +3,8 @@
 namespace App\Service\Payment\Core;
 
 use App\Service\Payment\Core\Base\BasePaymentGateway;
+use App\Service\Payment\Prodamus\ProdamusConnector;
+use App\Service\Payment\Prodamus\ProdamusGateway;
 use Closure;
 use Exception;
 use Illuminate\Support\Arr;
@@ -78,14 +80,23 @@ class Register
         return $instance(app());
     }
 
-    public function config(array $config): static
+    /**
+     * @throws Exception
+     */
+    public function config(array $config): BasePaymentGateway
     {
         if ($config['gateway'] === 'prodamus') {
             $this->register($config['provider'], function () use ($config) {
-
+                $connector = new ProdamusConnector(
+                    $config['payment_url'],
+                    $config['secret_key'],
+                    $config['success_url'],
+                    $config['failed_url']
+                );
+                return new ProdamusGateway($connector);
             });
         }
 
-        return $this;
+        return $this->provider($config['provider']);
     }
 }

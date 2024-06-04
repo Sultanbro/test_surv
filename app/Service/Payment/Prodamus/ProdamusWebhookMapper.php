@@ -12,10 +12,12 @@ class ProdamusWebhookMapper implements BaseWebhookMapper
 
     private string|int $transactionId;
     private bool $success;
+    private array $payload = [];
 
     public function map(array $data): void
     {
         $this->transactionId = $data['fields']['order_id'];
         $this->success = Str::lower($data['fields']['payment_status'] ?? 'failed') === 'success';
+        $this->payload = $data['fields'];
     }
 }

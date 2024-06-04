@@ -13,4 +13,9 @@ trait HasState
     {
         return $this->transactionId;
     }
+
+    public function getParams(string $key = null): string|int|array
+    {
+        return $this->payload[$key] ?? $this->payload ?? '';
+    }
 }

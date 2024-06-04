@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Payment;
 
+use App\Classes\Helpers\Phone;
 use App\Http\Requests\Payment\NewInvoiceRequest;
 use App\Models\Invoice;
 use Illuminate\Http\JsonResponse;
@@ -19,7 +20,7 @@ class InvoiceController
 
         Invoice::query()->create([
             'payer_name' => $data['payer_name'],
-            'payer_phone' => $data['payer_phone'],
+            'payer_phone' => Phone::normalize($data['payer_phone']),
             'name' => $data['name'],
             'url' => $data['url'],
             'provider' => $data['provider'],
