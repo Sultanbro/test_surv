@@ -22,17 +22,9 @@ class EmailNotificationEvent
     public function __construct(
         public string $name,
         public string $email,
-        public ?array $authData
+        public string $password,
+        public string $link
     )
-    {}
-
-    /**
-     * Get the channels the event should broadcast on.
-     *
-     * @return \Illuminate\Broadcasting\Channel|array
-     */
-    public function broadcastOn()
     {
-        return new PrivateChannel('channel-name');
     }
 }

@@ -35,7 +35,7 @@ class PortalCreatedMail extends Mailable
      */
     public function build(): static
     {
-        return $this->view('mail.portal-created')
+        return $this->view('mail.send-created')
             ->subject('Портал создан');
     }
 }

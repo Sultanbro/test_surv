@@ -78,6 +78,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property string $currency
  * @property string $timezone
  * @property string $segment
+ * @property string $deleted_at
  * @property int $working_day_id
  * @property int $working_time_id
  * @property string $working_country
@@ -1889,5 +1890,15 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
     public function workEndTime(): Carbon
     {
         return $this->scheduleFast(true)['end'];
+    }
+
+    public function wasFired(): bool
+    {
+        return !!$this->deleted_at;
+    }
+
+    public function isActiveEmployee(): bool
+    {
+        return $this->deleted_at === null;
     }
 }

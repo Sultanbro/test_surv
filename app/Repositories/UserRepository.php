@@ -7,12 +7,14 @@ use App\Classes\Helpers\Phone;
 use App\DTO\Settings\StoreUserDTO;
 use App\Enums\UserFilterEnum;
 use App\Events\EmailNotificationEvent;
+use App\Http\Controllers\Auth\Traits\LoginToSubDomain;
 use App\Models\Bitrix\Segment;
 use App\Models\CentralUser;
 use App\Models\UserCoordinate;
 use App\User;
 use App\User as Model;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
@@ -23,6 +25,8 @@ use Illuminate\Support\Facades\Hash;
  */
 final class UserRepository extends CoreRepository
 {
+    use LoginToSubDomain;
+
     /**
      * @param Carbon $startDate
      * @param Carbon $endDate
@@ -175,15 +179,19 @@ final class UserRepository extends CoreRepository
             ->when($endDateDeactivate, fn($q) => $q->whereDate('users.deleted_at', '<=', $endDateDeactivate));
     }
 
+    /**
+     * @throws Exception
+     */
     public function updateOrCreateNewEmployee(
         StoreUserDTO $dto
     ): User
     {
-        $centralUser = CentralUser::where('email', $dto->email)->first();
+        $centralUser = CentralUser::query()->where('email', $dto->email)->first();
 
         $segment = Segment::query()->where('name', 'Принят через Jobtron')->first();
         $password = str_random(8);
 
+        /** @var User $user */
         $user = User::query()->updateOrCreate(
             [
                 'email' => strtolower($dto->email)
@@ -215,19 +223,10 @@ final class UserRepository extends CoreRepository
             ]
         );
 
-        $authData = null;
-
-        if (!isset($centralUser)) {
-            $authData = [
-                'email' => $dto->email,
-                'password' => $password,
-            ];
-        }
-
-        EmailNotificationEvent::dispatch($dto->name, $dto->email, $authData);
+        $link = $this->loginLinkToSubDomain(tenant(), $user->email);
+        EmailNotificationEvent::dispatch($dto->name, $dto->email, $link, $password);
 
         return $user;
-
     }
 
     /**

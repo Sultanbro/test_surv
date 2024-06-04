@@ -24,6 +24,8 @@ use Carbon\Carbon;
  * @property string $payment_provider
  * @property string $status
  * @property string $lead_id
+ *
+ * @property-read int $total_user_limit
  */
 class TariffSubscription extends Model
 {
@@ -124,6 +126,7 @@ class TariffSubscription extends Model
             ->groupBy('tariff_subscriptions.id')
             ->first();
     }
+
     public static function hasValidTariffPayment(string $tenant = null): bool
     {
         $today = Carbon::today();
