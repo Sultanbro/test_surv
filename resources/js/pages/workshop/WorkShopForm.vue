@@ -17,7 +17,7 @@
 			placeholder="Укажите номер телефона"
 		>
 		<button type="submit">
-			Оплатить
+			Отправить
 		</button>
 	</form>
 </template>
@@ -47,8 +47,9 @@ export default {
 			const isSaveUser = this.axios.post(userSaveApi, {
 				payer_name: this.name,
 				payer_phone: this.phone,
-				formLink: window.location.href,
-				formTitle: 'База знаний',
+				url: window.location.href,
+				name: 'База знаний',
+				provider: 'prodamus',
 			});
 
 			if (isSaveUser) {

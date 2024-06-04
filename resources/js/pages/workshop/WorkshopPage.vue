@@ -7,7 +7,7 @@
 			<h2>Оплатить картой</h2>
 			<button>
 				<a
-					href="https://proeducation.kz/e44NQ/"
+					href="https://jobtron.proeducation.kz/?invoice_id=f6c2bfb0a1f94b027f5f9bf88c29f35d&paylink=1"
 				>
 					<img
 						class="workshopform__img"
