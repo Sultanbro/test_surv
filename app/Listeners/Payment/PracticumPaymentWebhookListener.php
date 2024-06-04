@@ -17,7 +17,6 @@ class PracticumPaymentWebhookListener
             'params' => $dto->payload,
             'headers' => $dto->headers,
         ]);
-
         if (!$webhookHandler->InvoiceSuccessfullyHandled()) return;
         $invoice = Invoice::getByPayerPhone($webhookHandler->getParams('customer_phone'));
         if (!$invoice) return;
