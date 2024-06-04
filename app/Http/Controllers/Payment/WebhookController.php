@@ -35,8 +35,6 @@ class WebhookController extends Controller
             'headers' => $dto->headers,
         ]);
 
-        dd($webhookHandler);
-
         PaymentWebhookTriggeredEvent::dispatch($dto);
 
         return response()
