@@ -64,7 +64,10 @@
         </td>
         <td>{{ payer.amount }}</td>
         <td>
-          <a :href="payer.url" target="_blank">
+          <a
+            :href="payer.url"
+            target="_blank"
+          >
             {{ payer.name }}
           </a>
         </td>
@@ -77,7 +80,8 @@
 import { formatDateTime } from '@/utils/formatDateTime'
 import { type TPayersUsers } from '@/types/payersUsers'
 import { sortedByDatePayersUsers } from '@/utils/sortedPayersUsers'
-import axios from 'axios'
+import { fetchPayersUsers } from '@/api/payers/getPayers'
+import { updatePayerStatus } from '@/api/payers/updatePayer'
 
 const sortedPayersUsers = computed(() => {
   return sortedByDatePayersUsers(payersUsers.value)
@@ -95,17 +99,9 @@ const statuses: TStatuses[] = reactive([
 
 const payersUsers = ref<TPayersUsers[]>([])
 
-const PAERS_USERS = 'https://jobtron.org/api/v1/invoices'
-
-const fetchPayersUsers = async () => {
-  payersUsers.value = (await axios.get(PAERS_USERS)).data
-}
-
-fetchPayersUsers()
-
-const updatePayerStatus = async (status: string, id: number) => {
-  console.log(status, id)
-}
+fetchPayersUsers().then(res => {
+  return (payersUsers.value = res.data)
+})
 </script>
 
 <style scoped lang="scss">
