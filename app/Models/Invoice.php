@@ -12,6 +12,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $payer_phone
  * @property string $amount
  * @property string $status
+ * @property string $name
+ * @property string $url
+ * @property string $provider
  */
 class Invoice extends Model
 {
@@ -24,7 +27,11 @@ class Invoice extends Model
         'payer_name',
         'payer_phone',
         'amount',
-        'status'
+        'status',
+        'name',
+        'url',
+        'provider'
+
     ];
 
     public static function getByTransactionId(int|string $getTransactionId): ?Invoice

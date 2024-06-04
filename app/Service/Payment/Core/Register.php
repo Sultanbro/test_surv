@@ -77,4 +77,11 @@ class Register
     {
         return $instance(app());
     }
+
+    public function config(array $config): array
+    {
+        if ($config['gateway'] === 'prodamus') {
+            $this->register($config['gateway']);
+        }
+    }
 }

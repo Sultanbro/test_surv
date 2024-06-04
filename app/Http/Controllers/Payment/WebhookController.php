@@ -31,11 +31,7 @@ class WebhookController extends Controller
 
         PaymentWebhookTriggeredEvent::dispatch($dto);
 
-        slack(json_encode([
-            'provider' => Gateway::provider($currency)->name(),
-            'payload' => $dto->payload,
-        ]));
-
-        return response()->json(Gateway::provider($currency)->staticWebhookResponse());
+        return response()
+            ->json(Gateway::provider($currency)->staticWebhookResponse());
     }
 }

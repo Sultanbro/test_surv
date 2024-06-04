@@ -5,7 +5,6 @@ namespace App\Listeners\Payment;
 use App\Events\Payment\PaymentWebhookTriggeredEvent;
 use App\Facade\Payment\Gateway;
 use App\Models\Invoice;
-use App\Models\Tariff\TariffSubscription;
 
 class ExternalPaymentWebhookListener
 {

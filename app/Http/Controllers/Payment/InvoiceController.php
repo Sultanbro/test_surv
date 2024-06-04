@@ -20,7 +20,9 @@ class InvoiceController
         Invoice::query()->create([
             'payer_name' => $data['payer_name'],
             'payer_phone' => $data['payer_phone'],
-            'amount' => 0
+            'name' => $data['name'],
+            'url' => $data['url'],
+            'provider' => $data['provider'],
         ]);
 
         return response()->json([], 201);
