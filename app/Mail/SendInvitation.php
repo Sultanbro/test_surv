@@ -9,10 +9,10 @@ use Illuminate\Mail\Mailables\Envelope;
 class SendInvitation extends Mailable
 {
     public function __construct(
-        public readonly string $name,
-        public readonly string $email,
-        public readonly string $password,
-        public readonly string $link
+        public string $name,
+        public string $email,
+        public string $password,
+        public string $link
     )
     {
         //
