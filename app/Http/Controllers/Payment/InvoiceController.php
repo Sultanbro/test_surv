@@ -24,6 +24,7 @@ class InvoiceController
             'name' => $data['name'],
             'url' => $data['url'],
             'provider' => $data['provider'],
+            'status' => 'pending',
         ]);
 
         return response()->json([], 201);

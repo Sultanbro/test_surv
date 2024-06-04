@@ -52,11 +52,6 @@ return new class extends Migration {
                     ->onDelete('cascade');
             });
         }
-        if (!$schema->hasTable('telescope_monitoring')) {
-            $schema->create('telescope_monitoring', function (Blueprint $table) {
-                $table->string('tag')->primary();
-            });
-        }
     }
 
     /**
