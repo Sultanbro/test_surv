@@ -14,26 +14,28 @@
     </thead>
     <tbody>
       <tr
-        v-for="payerUser in sortedPayersUsers"
-        :key="payerUser.id"
+        v-for="payer in sortedPayersUsers"
+        :key="payer.id"
       >
-        <td>{{ payerUser.id }}</td>
-        <td>{{ formatDateTime(payerUser.created_at) }}</td>
-        <td>{{ payerUser.payer_name }}</td>
-        <td>{{ payerUser.payer_phone }}</td>
+        <td>{{ payer.id }}</td>
+        <td>{{ formatDateTime(payer.created_at) }}</td>
+        <td>{{ payer.payer_name }}</td>
+        <td>{{ payer.payer_phone }}</td>
         <td>
-          {{ payerUser.status }}
-          <!-- <v-menu location="bottom">
+          <v-menu location="bottom">
             <template v-slot:activator="{ props }">
-              <v-btn
+              <!-- <v-btn
                 color="primary"
                 dark
                 v-bind="props"
               >
                 {{ payerUser.status }}
-              </v-btn>
-              <div v-bind="props">
-                {{ payerUser.status }}
+              </v-btn> -->
+              <div
+                class="payers__edit"
+                v-bind="props"
+              >
+                {{ payer.status }}
               </div>
             </template>
 
@@ -42,12 +44,17 @@
                 v-for="status in statuses"
                 :key="status.id"
               >
-                <v-list-item-title>{{ status.title }}</v-list-item-title>
+                <v-list-item-title
+                  @click="updatePayerStatus(status.title, payer.id)"
+                  class="payers__option"
+                >
+                  {{ status.title }}
+                </v-list-item-title>
               </v-list-item>
             </v-list>
-          </v-menu> -->
+          </v-menu>
         </td>
-        <td>{{ payerUser.amount }}</td>
+        <td>{{ payer.amount }}</td>
       </tr>
     </tbody>
   </VTable>
@@ -58,6 +65,10 @@ import { formatDateTime } from '@/utils/formatDateTime'
 import { type TPayersUsers } from '@/types/payersUsers'
 import { sortedByDatePayersUsers } from '@/utils/sortedPayersUsers'
 import axios from 'axios'
+
+const sortedPayersUsers = computed(() => {
+  return sortedByDatePayersUsers(payersUsers.value)
+})
 
 type TStatuses = {
   id: number
@@ -79,7 +90,14 @@ const fetchPayersUsers = async () => {
 
 fetchPayersUsers()
 
-const sortedPayersUsers = computed(() => {
-  return sortedByDatePayersUsers(payersUsers.value)
-})
+const updatePayerStatus = async (status: string, id: number) => {
+  console.log(status, id)
+}
 </script>
+
+<style scoped lang="scss">
+.payers__edit,
+.payers__option {
+  cursor: pointer;
+}
+</style>

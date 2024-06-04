@@ -9,7 +9,7 @@
 		:data-id="parent ? parent.id : 0"
 		@end="onDrop"
 	>
-		<template v-for="item in sorted">
+		<template v-for="item in items">
 			<KBNavItem
 				v-if="sectionsMode && !isEditMode ? !parent && item.canRead : (opened || !parent) && item.canRead"
 				:key="`${parent ? parent.id : ''}-${item.id}`"

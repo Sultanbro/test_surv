@@ -15,7 +15,10 @@
 		>
 			Проверочные вопросы
 		</div>
-		<div class="quetions__wrapper">
+		<div
+			v-if="questions.length"
+			class="quetions__wrapper"
+		>
 			<div
 				v-for="(q, q_index) in questions"
 				:key="q_index"
@@ -79,19 +82,7 @@
 							@keyup="changed = true"
 						/>
 						<div class="row">
-							<div class="col-12 col-md-4">
-								<select
-									v-model="q.type"
-									class="type form-control mt-2 w-230"
-								>
-									<option value="0">
-										Тест
-									</option>
-									<option value="1">
-										Открытый вопрос
-									</option>
-								</select>
-							</div>
+							<div class="col-12 col-md-4" />
 						</div>
 					</template>
 					<div
@@ -101,7 +92,7 @@
 						<div
 							v-for="(v, v_index) in q.variants"
 							:key="v_index"
-							class="variant d-flex aic"
+							class="variant d-flex aic mt-4"
 						>
 							<label
 								v-if="mode == 'edit'"
@@ -110,7 +101,7 @@
 								<input
 									v-model="v.right"
 									type="checkbox"
-									class="mr-2"
+									class="mr-2 checkbox"
 									title="Отметьте галочкой, если думаете, что ответ правильный. Правильных вариантов может быть несколько"
 									@change="changed = true"
 								>
@@ -164,30 +155,6 @@
 							type="text"
 						>
 					</div>
-
-					<div class="d-flex jcsb">
-						<div
-							v-if="mode == 'edit'"
-							class="points mr-3"
-						>
-							<p>
-								Бонусы
-								<i
-									v-b-popover.hover.right.html="
-										'Количество бонусов на счет сотрудника при правильном ответе'
-									"
-									class="fa fa-info-circle ml-2 mr-2"
-									title="Бонусы"
-								/>
-							</p>
-							<input
-								v-model="q.points"
-								type="number"
-								min="0"
-								max="999"
-							>
-						</div>
-					</div>
 				</div>
 			</div>
 		</div>
@@ -216,12 +183,12 @@
 					v-if="points != -1 && mode == 'read'"
 					class="mt-3 scores mr-3"
 				>
-					<span v-if="scores"><b>Вы заработали {{ points }} бонусов из {{ total }}</b></span>
+					<span v-if="scores" />
 					<span v-else>Вы не набрали проходной балл...</span>
 				</p>
 				<button
 					v-if="mode == 'read' && passed"
-					class="net-btn btn btn-primary"
+					class="net-btn btn btn-primary mt-4"
 					@click="$emit('nextElement')"
 				>
 					Продолжить
@@ -231,7 +198,18 @@
 		</template>
 
 		<template v-if="mode == 'edit'">
-			<div class="d-flex jcsb aifs">
+			<button
+				v-if="!questions.length"
+				class="btn"
+				@click.stop="addQuestion"
+			>
+				Добавить вопрос
+			</button>
+
+			<div
+				v-if="questions.length"
+				class="d-flex jcsb aifs mt-4"
+			>
 				<div>
 					<button
 						v-if="['kb', 'video'].includes(type)"
@@ -255,11 +233,12 @@
 						style="width: 200px"
 					>
 						Проходной балл:
-						<i
+						<img
 							v-b-popover.hover.right.html="'Правильных ответов для прохода'"
-							class="fa fa-info-circle"
+							src="/images/dist/profit-info.svg"
 							title="Проходной балл"
-						/>
+							alt=""
+						>
 					</p>
 
 					<div class="d-flex aic">
@@ -761,10 +740,13 @@ export default {
 		color: #152136;
 	}
 	.question-form-group {
-		background-color: #ffffff;
-		border-radius: 8px;
-		padding: 1.4%;
 	}
+}
+
+.variant {
+	background-color: #fff;
+	border-radius: 8px;
+	padding: 0.5%;
 }
 
 .questions .question-form-group label:before {
@@ -778,7 +760,7 @@ export default {
 	align-items: center;
 	justify-content: center;
 	border-radius: 50%;
-	background-color: #fff;
+	background-color: #f5f5f5;
 	border: 1px solid #eff5fc;
 	position: relative;
 	cursor: pointer;
@@ -796,8 +778,49 @@ export default {
 	border: solid #fff;
 	border-width: 0 2px 2px 0;
 	opacity: 0;
-	transform: rotate(-45deg);
+	transform: rotate(30deg);
 	transition: 0.3s all ease;
+}
+
+.checkbox {
+	-webkit-appearance: none;
+	width: 25px;
+	min-width: 25px;
+	height: 25px;
+	min-height: 20px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 50%;
+	background-color: #ffffff;
+	border: 1px solid #f2f4ff;
+	position: relative;
+	cursor: pointer;
+	margin-right: 10px;
+	transition: background-color 0.3s ease;
+}
+
+.checkbox:checked {
+	background-color: #3781ef;
+	border-color: #3781ef;
+}
+
+.checkbox:checked:after {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 6px;
+	left: 10px;
+	width: 5px;
+	height: 11px;
+	border: solid #fff;
+	border-width: 0 2px 2px 0;
+	opacity: 1;
+	transform: rotate(30deg);
+}
+
+.checkbox:hover {
+	border-color: #ccc; /* изменяем цвет границы при наведении курсора */
 }
 
 .quetion__button {

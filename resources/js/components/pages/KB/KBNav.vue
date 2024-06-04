@@ -1,16 +1,6 @@
 <template>
 	<aside class="KBNav">
 		<div class="KBNav-wrapper">
-			<div class="KBNav-search">
-				<SearchIcon class="fa fa-search" />
-				<input
-					v-model="search.input"
-					type="text"
-					placeholder="Быстрый поиск"
-					class="form-input"
-				>
-			</div>
-
 			<div
 				v-if="!currentBook"
 				class="KBNav-glossary"
@@ -29,6 +19,17 @@
 				>
 					<SettingsIcon />
 				</button>
+			</div>
+
+			<div class="KBNav-search">
+				<SearchIcon class="fa fa-search" />
+				<input
+					v-model="search.input"
+					type="text"
+					placeholder="Быстрый поиск"
+					class="form-input"
+					@input="searchInput"
+				>
 			</div>
 
 			<!-- Back buttons -->
@@ -99,7 +100,7 @@
 				:key="'p' + listsKey"
 				:input="search.input"
 				class="KBNav-items"
-				:items="searchItems()"
+				:items="filteredItems"
 				:opened="true"
 				:mode="mode"
 				:parent="currentBook"
@@ -117,7 +118,7 @@
 				:key="'b' + listsKey"
 				:input="search.input"
 				class="KBNav-items"
-				:items="searchItems()"
+				:items="filteredItems"
 				:opened="true"
 				:mode="mode"
 				:parent="null"
@@ -313,6 +314,7 @@ export default {
 				timepout: null,
 				loading: false,
 			},
+			allItems: [],
 			archived: {
 				show: false,
 				items: [],
@@ -327,6 +329,13 @@ export default {
 			this.getPages(map, this.pages);
 			return map;
 		},
+		filteredItems() {
+			if (!this.search.input.length) {
+				return this.allItems;
+			} else {
+				return this.search.items;
+			}
+		},
 	},
 	watch: {
 		pages() {
@@ -336,13 +345,18 @@ export default {
 			this.updateKeys();
 		},
 	},
-	mounted() {},
+	async mounted() {
+		try {
+			const { tree } = await API.fetchKBBooksV2();
+			this.allItems = tree;
+			this.search.items = this.allItems;
+		} catch (error) {
+			console.error(error);
+		}
+	},
 	methods: {
 		unFavorite(favorite) {
 			return (favorite.isFavorite = false);
-		},
-		updateInput() {
-			this.search.input = ''
 		},
 		updateKeys() {
 			++this.listsKey;
@@ -362,7 +376,14 @@ export default {
 		// === SEARCH ===
 		searchInput() {
 			clearTimeout(this.search.timeout);
-			this.search.timeout = setTimeout(this.runSearch, 500);
+			this.search.timeout = setTimeout(() => {
+				this.runSearch().then(() => {
+					this.$forceUpdate();
+				});
+			}, 500);
+		},
+		updateInput(input) {
+			this.search.input = input;
 		},
 		searchCheck() {
 			if (this.search.input.length === 0) this.clearSearch();
@@ -377,7 +398,7 @@ export default {
 			};
 		},
 		async runSearch() {
-			if (this.search.input.length <= 2) return null;
+			if (this.search.input.length <= 2) return;
 			try {
 				const data = await API.searchKBBook({
 					text: this.search.input,
@@ -391,6 +412,7 @@ export default {
 					);
 					return item;
 				});
+				this.$forceUpdate();
 			} catch (error) {
 				console.error(error);
 				this.$toast.error('Поиск не удался');
@@ -500,6 +522,7 @@ $KBNav-padding: 15px;
 		background-color: #f7fafc;
 		padding: 5%;
 		border-radius: 8px;
+		margin-top: 6%;
 		width: 102%;
 		position: relative;
 		.fa-search {
@@ -526,7 +549,6 @@ $KBNav-padding: 15px;
 		}
 	}
 	&-glossary {
-		margin-top: 16px;
 		display: flex;
 		align-items: center;
 		gap: 4px;
