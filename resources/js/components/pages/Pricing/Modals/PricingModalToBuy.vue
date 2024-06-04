@@ -5,7 +5,6 @@
 		>
 			Оплата тарифа {{ priceStore.name }}
 		</h1>
-		<input :value="word">
 		<div class="pricing-buy-description">
 			Выберите необходимые параметры
 		</div>
@@ -127,15 +126,15 @@
 							/>
 						</svg>
 					</button>
+					<p class="pricing-buy-added-price">
+						+{{ sumPeople * Math.round(priceForOnePerson[currencyCode]) }} {{ currency }}  к оплате
+					</p>
 				</div>
 
 				<p class="pricing-buy-added-clue">
 					*Подключаются на весь период оплаты тарифа
 				</p>
 			</div>
-			<p class="pricing-buy-added-price">
-				+{{ sumPeople * Math.round(priceForOnePerson[currencyCode]) }} {{ currency }}  к оплате
-			</p>
 		</div>
 		<p
 			v-if="!activePromo"
@@ -541,6 +540,19 @@ export default  {
 </script>
 
 	<style lang="scss" scoped>
+	@media (max-height: 740px) {
+	.pricing-buy-total-content{
+		margin-bottom: 12px !important;
+	}
+  }
+  @media (max-height: 725px) {
+	.pricing-buy-total-content{
+		margin-bottom: 6px !important;
+	}
+	.pricing-button-group{
+		margin-top: 15px !important;
+	}
+	}
 	@media (min-width: 1600px) {
 		.PricingRates {
 		&-options-content {
@@ -652,7 +664,7 @@ export default  {
 		margin-bottom: 24px !important;
 		}
 		.pricing-buy-added-content {
-		width: 258px !important;
+		width: 358px !important;
 		display: flex !important;
 		flex-direction: column !important;
 		gap: 8px !important;
@@ -665,6 +677,7 @@ export default  {
 
 		.pricing-buy-added-button-content {
 		display: flex !important;
+			align-items: center;
 		gap: 8px !important;
 		}
 
@@ -926,7 +939,7 @@ export default  {
 		margin-bottom: 12px;
 	}
 	.pricing-buy-added-content{
-		width: 230px;
+		width: 350px;
 		display: flex;
 		flex-direction: column;
 		gap: 8px;
@@ -940,6 +953,7 @@ export default  {
 	.pricing-buy-added-button-content{
 		display: flex;
 		gap: 8px;
+	align-items: center;
 	}
 
 	.pricing-buy-added-button{
@@ -949,12 +963,12 @@ export default  {
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: 48px;
-		height: 48px;
+		width: 38px;
+		height: 38px;
 	}
 
 	.pricing-buy-added-input{
-	padding: 14px 16px;
+	padding: 10px 16px;
 		border-radius: 8px;
 		border: 1px solid #CDD1DB;
 		max-width: 88px;

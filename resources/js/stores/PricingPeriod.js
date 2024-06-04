@@ -5,6 +5,7 @@ export const usePricingPeriodStore = defineStore('priceStore', {
 		tariffStore: 'Бесплатный',
 		priceStore: null,
 		tariffId: null,
+		itemSpace: null,
 	}),
 	actions: {
 		connectedTariff(value) {
@@ -15,6 +16,9 @@ export const usePricingPeriodStore = defineStore('priceStore', {
 		},
 		addedPrice(value) {
 			this.priceStore = value;
+		},
+		addedItemSpace(value) {
+			this.itemSpace = value;
 		},
 	},
 });

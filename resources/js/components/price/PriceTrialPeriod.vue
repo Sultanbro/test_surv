@@ -187,6 +187,7 @@ export default {
 		border-radius: 8px;
 			padding: 13px 28px;
 			font-size: 14px;
+			color: white;
   }
 .price-trial-button:focus{
 	outline: none !important;

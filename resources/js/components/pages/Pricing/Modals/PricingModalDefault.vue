@@ -126,7 +126,7 @@ export default {
 	}
 	.pricing-img-block{
 		position: relative;
-		bottom: 6%;
+		bottom: 4.8% !important;
 		height: 326px !important;
 		background-color: #1A1A1A;
 		border-radius: 40px;
@@ -241,7 +241,7 @@ export default {
 
 .pricing-img-block{
 	position: relative;
-	bottom: 6%;
+	bottom: 4.8%;
 	height: 206px;
 	background-color: #1A1A1A;
 	border-radius: 40px;
@@ -310,6 +310,7 @@ export default {
 	font-size: 14px;
 	margin-bottom: 24px;
 	font-family: Inter,serif;
+		line-height:18px
 }
 
 .pricing-choice-tariff{

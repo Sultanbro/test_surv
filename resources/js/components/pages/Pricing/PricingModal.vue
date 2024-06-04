@@ -90,7 +90,7 @@ export default {
 
 .pricing-buttonClose{
   position: relative;
-  right: 12%;
+  right: 10%;
   width: 30px;
   height: 30px;
   padding: 4px;

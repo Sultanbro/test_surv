@@ -51,13 +51,17 @@
 						<p class="price-space-text-name">
 							Оплачен до:
 						</p>
-						<p>{{ info.tariff.expire_date }}</p>
+						<p class="price-space-date-text">
+							{{ info.tariff.expire_date }}
+						</p>
 					</div>
 					<div
 						v-if="info.tariff && info.tariff.payment_id !=='trial'"
 						class="price-space-buttons"
 					>
-						<button>Продлить</button>
+						<button @click="connectedToBuy">
+							Продлить
+						</button>
 						<p
 
 							@click="editRate"
@@ -211,11 +215,20 @@ export default {
 
 	},
 	methods: {
-		...mapActions(usePricingPeriodStore, ['connectedTariff']),
-		...mapActions(useModalStore, ['setCurrentModal', 'removeModalActive']),
+		...mapActions(usePricingPeriodStore, ['connectedTariff', 'setTariffId']),
+		...mapActions(useModalStore, ['setCurrentModal', 'removeModalActive', 'setPrice']),
 		...mapActions(usePricingStore, ['fetchManager']),
 		ownerUpdate(newValue) {
 			this.owner = [...this.owner, newValue.owner];
+		},
+		connectedToBuy(){
+			if (this.info.tariff) {
+				this.connectedTariff(this.names[this.info.tariff.kind])
+				this.setPrice(this.names[this.info.tariff.kind])
+				this.setTariffId(this.info.tariff)
+				this.setCurrentModal('pricingToBuy')
+			}
+
 		},
 		formatPhoneNumber(phone) {
 			// Удаляем все символы, кроме цифр
@@ -287,7 +300,13 @@ export default {
 	.price-space-text-name {
 		font-size: 16px !important;
 	}
+	.price-space-date-text{
+			font-size: 16px !important;
+	}
+	.price-space-date{
+		margin-top: 10px !important;
 
+  }
 	.price-space-name-data {
 		font-size: 16px !important;
 	}
@@ -354,6 +373,9 @@ export default {
 	font-size: 14px;
 	font-weight: 400;
 }
+.price-space-date-text{
+		font-size: 14px;
+}
 
 .price-space-name-data {
 	font-size: 14px;
@@ -409,8 +431,7 @@ export default {
 .price-space-buttons {
 	margin-top: auto;
 	display: flex;
-	flex-direction: column;
-	align-items: flex-start;
+	align-items: center;
 	gap: 5px;
 }
 
@@ -431,7 +452,7 @@ export default {
 }
 
 .price-space-date{
-		margin-top: 10px;
+		margin-top: 5px;
 	display: flex;
 		gap: 5px;
 }
