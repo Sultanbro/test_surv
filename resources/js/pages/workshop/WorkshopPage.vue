@@ -7,7 +7,7 @@
 			<h2>Оплатить картой</h2>
 			<button>
 				<a
-					href="https://jobtron.proeducation.kz/?invoice_id=f6c2bfb0a1f94b027f5f9bf88c29f35d&paylink=1"
+					href="https://proeducation.kz/8g7j8/"
 				>
 					<img
 						class="workshopform__img"
@@ -75,30 +75,6 @@ export default {
 		this.setMetaViewport();
 	},
 	methods: {
-		createForm(res) {
-			const form = document.createElement('form');
-			form.style.display = 'none';
-			form.method = 'post';
-			form.action = res.url;
-			Object.keys(res.params).forEach((key) => {
-				const inp = document.createElement('input');
-				inp.name = key;
-				inp.value = res.params[key];
-				form.appendChild(inp);
-			});
-			document.body.appendChild(form);
-			form.submit();
-		},
-		// getAmount() {
-		// 	return this.axios
-		// 		.post(this.amountApi, {
-		// 			phone: sessionStorage.getItem('phoneWorkShopForm'),
-		// 			name: sessionStorage.getItem('phoneForm'),
-		// 		})
-		// 		.then((res) => {
-		// 			this.createForm(res.data);
-		// 		});
-		// },
 		setMetaViewport() {
 			const meta = document.createElement('meta');
 			meta.setAttribute('name', 'viewport');
