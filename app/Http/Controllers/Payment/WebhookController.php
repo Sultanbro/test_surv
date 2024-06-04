@@ -29,6 +29,12 @@ class WebhookController extends Controller
             $request->all(),
             $request->header());
 
+        $webhookHandler = Gateway::provider('practicum')->webhookHandler();
+        $webhookHandler->map([
+            'params' => $dto->payload,
+            'headers' => $dto->headers,
+        ]);
+        dd($webhookHandler->getParams('customer_phone'));
         PaymentWebhookTriggeredEvent::dispatch($dto);
 
         return response()
