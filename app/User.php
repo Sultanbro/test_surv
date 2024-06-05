@@ -1329,6 +1329,13 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
             ->first();
     }
 
+    public function activeGroupInGiveDate(string $date): ?ProfileGroup
+    {
+        return $this->groups()
+            ->where('to', '>=', $date)
+            ->first();
+    }
+
     /**
      * Количество рабочих дней в неделе по графику.
      *
