@@ -106,7 +106,6 @@
 				</div>
 
 				<div
-					v-if="isBp"
 					class="dialerlist"
 				>
 					<div class="fl">

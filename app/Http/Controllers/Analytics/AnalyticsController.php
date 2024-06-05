@@ -521,19 +521,19 @@ class AnalyticsController extends Controller
             ]);
         }
         UserStatUpdatedEvent::dispatch($dto);
-//        // ne nado poka izmenit chasi
 
         if ($group->time_address == $dto->activityId && !in_array($dto->employeeId, $group->time_exceptions)) {
             Timetracking::updateTimes($dto->employeeId, $date, $dto->value * 60);
         }
-
-        if (tenant('id') != 'bp') {
-            return null;
-        }
-
-        if ($dto->groupId == 31 && $dto->activityId == 20) { // DM and 20 колво действий
-            DM::updateTimesNew($dto->employeeId, $date);
-        }
+        // deprecated
+//
+//        if (tenant('id') != 'bp') {
+//            return null;
+//        }
+//
+//        if ($dto->groupId == 31 && $dto->activityId == 20) { // DM and 20 колво действий
+//            DM::updateTimesNew($dto->employeeId, $date);
+//        }
 
         ProcessUpdateSalary::dispatch($date, $dto->groupId)
             ->onConnection("sync")
