@@ -30,7 +30,7 @@
 					class="form-input"
 					@input="searchInput"
 				>
-			</div>
+			</div>  
 
 			<!-- Back buttons -->
 			<div
@@ -100,7 +100,7 @@
 				:key="'p' + listsKey"
 				:input="search.input"
 				class="KBNav-items"
-				:items="filteredItems"
+				:items="books"
 				:opened="true"
 				:mode="mode"
 				:parent="currentBook"
@@ -117,7 +117,7 @@
 				v-else-if="books.length"
 				:key="'b' + listsKey"
 				class="KBNav-items"
-				:items="filteredItems"
+				:items="books"
 				:opened="true"
 				:mode="mode"
 				:parent="null"
@@ -330,7 +330,7 @@ export default {
 		},
 		filteredItems() {
 			if (!this.search.input.length) {
-				return this.allItems;
+				return this.books;
 			} else {
 				return this.search.items;
 			}
@@ -377,14 +377,12 @@ export default {
 			clearTimeout(this.search.timeout);
 			this.search.timeout = setTimeout(() => {
 				this.runSearch().then(() => {
-					this.$nextTick(() => {
-						this.$forceUpdate();
-					});
+					this.$forceUpdate();
 				});
 			}, 500);
 		},
 		updateInput() {
-			this.search.input = ''
+			this.search.input = '';
 		},
 		searchCheck() {
 			if (this.search.input.length === 0) this.clearSearch();
@@ -413,6 +411,7 @@ export default {
 					);
 					return item;
 				});
+				this.$forceUpdate();
 			} catch (error) {
 				console.error(error);
 				this.$toast.error('Поиск не удался');
