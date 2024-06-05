@@ -392,14 +392,14 @@
 			v-if="isReadSelect"
 			:z="99999"
 			@close="isReadSelect = false"
-		> 
+		>
 			<AccessSelect
 				v-model="who_can_read"
 				:access-dictionaries="accessDictionaries"
 				search-position="beforeTabs"
 				submit-button="Сохранить"
 				absolute
-				@submit="() => isReadSelect = false"
+				@submit="() => (isReadSelect = false)"
 			/>
 		</JobtronOverlay>
 
@@ -749,10 +749,12 @@ export default {
 
 	methods: {
 		canEdit() {
-			return !!(!this.activeBook && this.currentBook && this.currentBook.canEdit) ||
-        !!(this.parentBook && this.parentBook.canEdit) ||
-        !!(this.activeBook && this.activeBook.canEdit) ||
-        this.isAdmin;
+			return (
+				!!(!this.activeBook && this.currentBook && this.currentBook.canEdit) ||
+				!!(this.parentBook && this.parentBook.canEdit) ||
+				!!(this.activeBook && this.activeBook.canEdit) ||
+				this.isAdmin
+			);
 		},
 		...mapActions(['loadCompany']),
 		routerPush,
@@ -1128,7 +1130,11 @@ export default {
 					pass_grade: this.bookForm.pass_grade,
 				});
 				this.editBook = false;
-				this.$set(this.booksMap[this.bookForm.id], 'title', this.bookForm.title);
+				this.$set(
+					this.booksMap[this.bookForm.id],
+					'title',
+					this.bookForm.title
+				);
 				this.activeBook = {
 					...this.bookForm,
 					editor_id: this.user.id,
@@ -1159,8 +1165,11 @@ export default {
 					const index = this.books.findIndex((page) => page.id === id);
 					if (~index) this.books.splice(index, 1);
 				}
-				this.activeBook = this.booksMap[this.currentBook.id];
-				this.$toast.success('Удалено');
+
+				this.$nextTick(() => {
+					this.activeBook = this.booksMap[this.currentBook.id];
+					this.$toast.success('Удалено');
+				});
 			} catch (error) {
 				console.error(error);
 				this.$toast.error('Не удалось удалить страницу');
