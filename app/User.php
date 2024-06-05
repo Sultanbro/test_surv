@@ -1332,7 +1332,8 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
     public function activeGroupInGiveDate(string $date): ?ProfileGroup
     {
         return $this->groups()
-            ->where('to', '>=', $date)
+            ->where('status', '=', 'active')
+            ->OrWhere('to', '>=', $date)
             ->first();
     }
 
