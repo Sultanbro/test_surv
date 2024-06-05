@@ -968,7 +968,7 @@ class TimetrackingController extends Controller
         $date = Carbon::createFromDate($request->year, $request->month, $request->day);
 
         /** @var User $user */
-        $user = User::with(['workChart', 'groups.workChart'])->find($userId);
+        $user = User::withTrashed()->with(['workChart', 'groups.workChart'])->find($userId);
 //        $schedule = $user->scheduleFast();
 //        if ($schedule['start']) {
 //            $enter = $schedule['start']->setDate(intval($request->year), intval($request->month), intval($request->day))->subHours(6);
