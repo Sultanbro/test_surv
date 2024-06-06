@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Service\Referral\ReferrerSalaryService;
 use App\Timetracking;
 use App\User;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 
 class CheckTimetrackers extends Command
@@ -44,6 +45,9 @@ class CheckTimetrackers extends Command
 
             if ($user) {
                 $userSchedule = $user->schedule();
+                $exit = $userSchedule['end']->subHours($user->timezone)
+                    ->format('Y-m-d H:i:s');
+                if (Carbon::parse($exit)->isFuture()) continue; //TODO: check in tomorrow
                 $recordFromTimeTrack->update([
                     'exit' => $userSchedule['end']->subHours($user->timezone)
                         ->format('Y-m-d H:i:s')
