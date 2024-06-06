@@ -318,7 +318,7 @@ export default {
 			}
 		}
 		&_justmark {
-			background-color: #fcf8e3;
+			background-color: #ffd500;
 			padding: 0 0.2em;
 			color: default;
 			&:after {
