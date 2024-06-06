@@ -97,27 +97,16 @@
 			</div>
 
 			<!-- Search -->
-			<div
+			<!-- <div
 				v-if="search.input.length"
 				style="margin-top: 2%"
 				ss="KBNav-searchResults"
 			>
-				<div
-					v-if="search.input.length < 3"
-					class="text-muted"
-				>
+				<div v-if="search.input.length < 3" class="text-muted">
 					Введите минимум 3 символа
 				</div>
-				<div
-					v-else-if="search.loading"
-					class="text-muted"
-				>
-					Загрузка...
-				</div>
-				<div
-					v-else-if="!search.items.length"
-					class="text-muted"
-				>
+				<div v-else-if="search.loading" class="text-muted">Загрузка...</div>
+				<div v-else-if="!search.items.length" class="text-muted">
 					Ничего не найдено
 				</div>
 				<div class="KBNav-searchItems">
@@ -127,18 +116,40 @@
 						class="KBNav-searchItem"
 						@click="$emit('search', item, search.input)"
 					>
-						<p
-							v-if="item.book"
-							class="KBNav-searchBook"
-						>
+						<p v-if="item.book" class="KBNav-searchBook">
 							{{ item.book.title }}
 						</p>
 						<p class="KBNav-searchTitle">
 							{{ item.title }}
-						</p>
-						<!-- eslint-disable-next-line -->
-						<div class="KBNav-searchText" v-html="item.text" />
+						</p> -->
+			<!-- eslint-disable-next-line -->
+						<!-- <div class="KBNav-searchText" v-html="item.text" />
 					</div>
+				</div>
+			</div> -->
+
+
+			<div
+				v-if="search.input.length"
+				class="KBNav-searchItems"
+			>
+				<div
+					v-for="item in search.items"
+					:key="item.id"
+					class="KBNav-searchItem"
+					@click="$emit('search', item, search.input)"
+				>
+					<p
+						v-if="item.book"
+						class="KBNav-searchBook"
+					>
+						{{ item.book.title }}
+					</p>
+					<p class="KBNav-searchTitle">
+						{{ item.title }}
+					</p>
+					<!-- eslint-disable-next-line -->
+						<div class="KBNav-searchText" v-html="item.text" />
 				</div>
 			</div>
 
