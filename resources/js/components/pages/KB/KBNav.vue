@@ -30,7 +30,7 @@
 					class="form-input"
 					@input="searchInput"
 				>
-			</div>  
+			</div>
 
 			<!-- Back buttons -->
 			<div
@@ -95,93 +95,87 @@
 					</div>
 				</template>
 			</div>
-			<KBNavItems
-				v-if="currentBook"
-				:key="'p' + listsKey"
-				:input="search.input"
-				class="KBNav-items"
-				:items="books"
-				:opened="true"
-				:mode="mode"
-				:parent="currentBook"
-				:active="activeBook ? activeBook.id : null"
-				@update-input="updateInput"
-				@show-page="$emit('page', $event)"
-				@add-page="$emit('add-page', $event)"
-				@page-order="$emit('page-order', $event)"
-				@add-book="$emit('create', $event)"
-				@remove-book="archiveBook($event)"
-				@settings="$emit('settings', $event)"
-			/>
-			<KBNavItems
-				v-else-if="books.length"
-				:key="'b' + listsKey"
-				class="KBNav-items"
-				:items="books"
-				:opened="true"
-				:mode="mode"
-				:parent="null"
-				:active="null"
-				:sections-mode="true"
-				@update-input="updateInput"
-				@show-page="$emit('book', $event)"
-				@page-order="$emit('page-order', $event)"
-				@add-book="$emit('create', $event)"
-				@remove-book="archiveBook($event)"
-				@settings="$emit('settings', $event)"
-			/>
 			<div
-				v-else-if="archived.show"
-				class="KBNav-archive"
+				v-if="search.input.length"
+				class="KBNav-searchItems"
 			>
-				<div
-					v-for="(book, bIndex) in archived.items"
-					:key="bIndex"
-					class="KBNav-item"
-					:title="book.title"
-				>
-					<p class="KBNav-itemText">
-						{{ book.title }}
-					</p>
-					<div class="KBNav-itemActions">
-						<i
-							class="KBNav-itemAction fa fa-trash-restore mr-1"
-							@click.stop="archiveRestore(book)"
-						/>
-					</div>
-				</div>
-			</div>
-
-			<!-- Search -->
-			<!-- <div
-			v-if="search.input.length"
-			style="margin-top: 2%"
-			ss="KBNav-searchResults"
-		>
-			<div v-if="search.input.length < 3" class="text-muted">
-				Введите минимум 3 символа
-			</div>
-			<div v-else-if="search.loading" class="text-muted">Загрузка...</div>
-			<div v-else-if="!search.items.length" class="text-muted">
-				Ничего не найдено
-			</div>
-			<div class="KBNav-searchItems">
 				<div
 					v-for="item in search.items"
 					:key="item.id"
 					class="KBNav-searchItem"
 					@click="$emit('search', item, search.input)"
 				>
-					<p v-if="item.book" class="KBNav-searchBook">
+					<p
+						v-if="item.book"
+						class="KBNav-searchBook"
+					>
 						{{ item.book.title }}
 					</p>
 					<p class="KBNav-searchTitle">
 						{{ item.title }}
 					</p>
-					<div class="KBNav-searchText" v-html="item.text" />
+					<!-- eslint-disable-next-line -->
+						<div class="KBNav-searchText" v-html="item.text" />
 				</div>
 			</div>
-		</div> -->
+			<div v-else>
+				<KBNavItems
+					v-if="currentBook"
+					:key="'p' + listsKey"
+					:input="search.input"
+					class="KBNav-items"
+					:items="books"
+					:opened="true"
+					:mode="mode"
+					:parent="currentBook"
+					:active="activeBook ? activeBook.id : null"
+					@update-input="updateInput"
+					@show-page="$emit('page', $event)"
+					@add-page="$emit('add-page', $event)"
+					@page-order="$emit('page-order', $event)"
+					@add-book="$emit('create', $event)"
+					@remove-book="archiveBook($event)"
+					@settings="$emit('settings', $event)"
+				/>
+				<KBNavItems
+					v-else-if="books.length"
+					:key="'b' + listsKey"
+					class="KBNav-items"
+					:items="books"
+					:opened="true"
+					:mode="mode"
+					:parent="null"
+					:active="null"
+					:sections-mode="true"
+					@update-input="updateInput"
+					@show-page="$emit('book', $event)"
+					@page-order="$emit('page-order', $event)"
+					@add-book="$emit('create', $event)"
+					@remove-book="archiveBook($event)"
+					@settings="$emit('settings', $event)"
+				/>
+				<div
+					v-else-if="archived.show"
+					class="KBNav-archive"
+				>
+					<div
+						v-for="(book, bIndex) in archived.items"
+						:key="bIndex"
+						class="KBNav-item"
+						:title="book.title"
+					>
+						<p class="KBNav-itemText">
+							{{ book.title }}
+						</p>
+						<div class="KBNav-itemActions">
+							<i
+								class="KBNav-itemAction fa fa-trash-restore mr-1"
+								@click.stop="archiveRestore(book)"
+							/>
+						</div>
+					</div>
+				</div>
+			</div>
 		</div>
 
 		<!-- Archive -->
@@ -397,8 +391,9 @@ export default {
 			};
 		},
 		async runSearch() {
-			if (this.search.input.length <= 2) return;
 			try {
+				if (!this.search.input.length) this.$emit('back')
+        
 				const data = await API.searchKBBook({
 					text: this.search.input,
 					id: this.currentBook?.id || null,

@@ -787,7 +787,7 @@ export default {
 					this.routerPush(`/kb?s=${bookId}`);
 					return this.$toast.error('Страница удалена');
 				}
-				this.onPage(page, true);
+				this.onPage(page);
 				this.setParentsOpened(pageId);
 			}
 		},
@@ -1079,7 +1079,7 @@ export default {
 			this.createParentId = parent?.id || null;
 		},
 
-		async onPage(page, init) {
+		async onPage(page) {
 			const loader = this.$loading.show();
 			this.showGlossary = false;
 			try {
@@ -1095,7 +1095,7 @@ export default {
 				this.activeBook.canRead = page.canRead;
 				this.editBook = false;
 				// TODO: clear search
-				if (!init) this.routerPush(`/kb?s=${this.currentBook.id}&b=${page.id}`);
+				// if (!init) this.routerPush(`/kb?s=${this.currentBook.id}&b=${page.id}`);
 			} catch (error) {
 				console.error(error);
 			}
@@ -1108,7 +1108,7 @@ export default {
 			if (!root) return;
 			await this.onBook(root);
 			this.$nextTick(async () => {
-				await this.onPage(page, true);
+				await this.onPage(page);
 				this.routerPush(
 					`/kb?s=${this.currentBook.id}&b=${page.id}${
 						search ? '&hl=' + search : ''
