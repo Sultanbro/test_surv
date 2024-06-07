@@ -37,16 +37,12 @@ class AnalyticColumn extends Model
         static::addGlobalScope(new AnalyticColumnScope);
     }
 
-    public static function defaults($group_id, $date)
+    public static function defaults($group_id, $date): void
     {
-        $fields = [
-            'name',
-            'sum',
-            'avg',
-        ];
+        $fields = ['name', 'sum', 'avg'];
 
         foreach ($fields as $index => $field) {
-            self::create([
+            self::query()->create([
                 'group_id' => $group_id,
                 'name' => $field,
                 'date' => $date,
@@ -54,17 +50,17 @@ class AnalyticColumn extends Model
             ]);
         }
 
-        $date = Carbon::parse($date);
-
-        for ($i = 1; $i <= $date->daysInMonth; $i++) {
-            self::create([
+        $dateStart = Carbon::parse($date)->startOfMonth();
+        $dateEnd = Carbon::parse($date)->endOfMonth();
+        while ($dateStart <= $dateEnd) {
+            self::query()->create([
                 'group_id' => $group_id,
-                'name' => $i,
+                'name' => $dateStart->day,
                 'date' => $date,
-                'order' => $i + 5,
+                'order' => $dateStart->day + 4,
             ]);
+            $dateStart->addDay();
         }
-
     }
 
     /**

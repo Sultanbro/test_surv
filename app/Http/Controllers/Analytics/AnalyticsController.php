@@ -134,7 +134,7 @@ class AnalyticsController extends Controller
         $fired_percent = $analyticService->getFiredUsersPerMonthPercent($group, $date->addMonth());
         $fired_number_prev = $analyticService->getFiredUsersPerMonth($group, $date->subMonth());
         $fired_number = $analyticService->getFiredUsersPerMonth($group, $date->addMonth());
-    
+
         return [
             'decomposition' => DecompositionValue::table($group_id, $date->format('Y-m-d')),
             'activities' => UserStat::activities($group_id, $date->format('Y-m-d')),
@@ -511,8 +511,7 @@ class AnalyticsController extends Controller
         if ($us) {
             $us->value = $dto->value;
             $us->save();
-        }
-        else {
+        } else {
             UserStat::query()->create([
                 'date' => $date,
                 'user_id' => $dto->employeeId,
@@ -695,27 +694,34 @@ class AnalyticsController extends Controller
      */
     public function addFormula_1_31(Request $request)
     {
-        $date = $request->date;
+        $date = $request->get('date');
+        $formula = $request->get('formula');
 
-        $formula_row = AnalyticRow::find($request->row_id);
-        $rows = AnalyticRow::where('group_id', $formula_row->group_id)->get();
+        /** @var AnalyticRow $formula_row */
+        $formula_row = AnalyticRow::query()->find($request->get('row_id'));
+        /** @var Collection<AnalyticRow> $rows */
+        $rows = AnalyticRow::query()->where('group_id', $formula_row->group_id)->get();
 
-        $days = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31];
+        $days = range(1, Carbon::parse($date)->lastOfMonth()->day);
 
+        /** @var Collection<AnalyticColumn> $columns */
         $columns = AnalyticColumn::query()
             ->where('group_id', $formula_row->group_id)
             ->where('date', $date)
             ->whereIn('name', $days)
             ->get();
 
-        foreach ($columns as $column) {
-            $stat = AnalyticStat::query()
-                ->where('row_id', $formula_row->id)
-                ->where('column_id', $column->id)
-                ->first();
+        /** @var Collection<AnalyticStat> $stats */
+        $stats = AnalyticStat::query()
+            ->where('row_id', $formula_row->id)
+            ->whereIn('column_id', $columns->pluck('id')->toArray())
+            ->get();
 
-            $formula = $request->formula;
-            foreach ($rows as $key => $row) {
+        foreach ($columns as $column) {
+            /** @var AnalyticStat $stat */
+            $stat = $stats->where('column_id', $column->id)->first();
+
+            foreach ($rows as $row) {
                 $formula = str_replace("{" . $row->id . "}", "[" . $column->id . ":" . $row->id . "]", $formula);
             }
 
@@ -740,10 +746,9 @@ class AnalyticsController extends Controller
             if ($stat) {
                 $stat->update($fields);
             } else {
-                AnalyticStat::create($fields);
+                AnalyticStat::query()->create($fields);
             }
         }
-
     }
 
 
