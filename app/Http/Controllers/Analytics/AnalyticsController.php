@@ -31,6 +31,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 use View;
@@ -907,12 +908,11 @@ class AnalyticsController extends Controller
 
     private function getClass(string $name, mixed $givenClass)
     {
-        dd(str_contains(strtolower($name),'рентабельность'));
-        if (str_contains('факт', strtolower($name))) {
+        if (str_contains(strtolower($name), 'факт')) {
             return "$givenClass bg-violet";
         }
 
-        if (str_contains('рентабельность', strtolower($name)) || str_contains('опережения', strtolower($name))) {
+        if (str_contains(strtolower($name), 'рентабельность') || str_contains(strtolower($name), 'опережения')) {
             return "$givenClass bg-green";
         }
 
