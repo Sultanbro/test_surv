@@ -288,7 +288,6 @@
 														<span v-else>В отделе нет сотрудников с должностями</span>
 													</div>
 													<label
-														v-if="isMain && [5].includes(+$laravel.userId)"
 														class="AnContext2-row AnContext2-field"
 													>
 														<div class="AnContext2-label">Делить на</div>
