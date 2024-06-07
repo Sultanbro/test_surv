@@ -909,8 +909,8 @@ class AnalyticsController extends Controller
     private function getClass(string $name, mixed $givenClass)
     {
         return match (true) {
-            Str::contains(Str::lower($name), 'факт') => "$givenClass bg-violet",
-            Str::contains(Str::lower($name), 'опережения') => "$givenClass bg-green",
+            Str::contains(Str::lower($name), 'план') => "$givenClass bg-violet",
+            Str::contains(Str::lower($name), 'опережения'),
             Str::contains(Str::lower($name), 'рентабельность') => "$givenClass bg-green",
             default => $givenClass,
         };
