@@ -180,7 +180,7 @@ class Timetracking extends Model
             ->whereIn('user_id', $users->pluck('id')->toArray())
             ->whereDate('enter', $date)
             ->sum('total_hours');
-        dd($total_hours);
+
         return $total_hours / 60;
     }
 
