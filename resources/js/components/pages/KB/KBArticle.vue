@@ -2,14 +2,9 @@
 	<div class="KBArticle">
 		<div
 			class="KBArticle-favorite"
-			@click="toogleFavorite"
+			@click="toggleFavorite"
 		>
-			<!-- <i
-				class="fa-heart"
-				:class="[
-					activeBook.isFavorite ? 'fas' : 'far',
-				]"
-			/> -->
+			<!-- <i class="fa-heart" :class="[ activeBook.isFavorite ? 'fas' : 'far', ]" /> -->
 			<div v-if="isFavorite">
 				<FavoriteIcon />
 			</div>
@@ -29,7 +24,7 @@
 			<div class="KBArticle-authors">
 				<div class="KBArticle-author">
 					<p class="KBArticle-authorTime">
-						<span>Cоздан:</span> {{ activeBook.created }}
+						<span>Создан:</span> {{ activeBook.created }}
 					</p>
 					<i class="fa fa-chevron-right" />
 					<p class="KBArticle-authorName">
@@ -67,19 +62,14 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
 import Mark from 'mark.js/dist/mark.es6.js';
-
 import Questions from '@/pages/Questions';
 import JobtronAvatar from '@ui/Avatar.vue';
-
 import FavoriteIcon from '../../../../assets/icons/FavoriteIcon.vue';
-
 import HeartOutlineIcon from '../../../../assets/icons/HeartOutlineIcon.vue';
-
 import * as KBAPI from '@/stores/api/kb.js';
 
-// const quotes = ['«»', '“”', '""', '()']
-// const enders = '.,!?:;'.split('')
 const markOptions = {
 	element: 'span',
 	className: 'KBArticle-mark',
@@ -93,23 +83,6 @@ function createDefinition(text) {
 	span.classList.add('KBArticle-definition');
 	return span;
 }
-// function getSynonims(term){
-// 	const result = []
-// 	enders.forEach(char => {
-// 		result.push(term + char)
-// 	})
-// 	quotes.forEach(pair => {
-// 		result.push(pair[0] + term)
-// 		result.push(term + pair[1])
-// 		result.push(pair[0] + term + pair[1])
-// 		enders.forEach(char => {
-// 			result.push(pair[0] + term + char)
-// 			result.push(term + pair[1] + char)
-// 			result.push(pair[0] + term + pair[1] + char)
-// 		})
-// 	})
-// 	return result
-// }
 
 export default {
 	name: 'KBArticle',
@@ -153,14 +126,6 @@ export default {
 						el.appendChild(createDefinition(term.definition));
 					},
 				});
-				// getSynonims(term.word).forEach(word => {
-				// 	instance.mark(word, {
-				// 		...markOptions,
-				// 		each: el => {
-				// 			el.appendChild(createDefinition(term.definition))
-				// 		}
-				// 	})
-				// })
 			});
 
 			if (hl) {
@@ -169,7 +134,6 @@ export default {
 					accuracy: 'partially',
 					each: (el) => {
 						el.classList.add('KBArticle-mark_justmark');
-						// this.$nextTick(() => el.classList.add('KBArticle-mark_justmark'))
 					},
 				});
 			}
@@ -191,32 +155,52 @@ export default {
 			return fixed;
 		},
 	},
-	watch: {},
-	mounted()  {
-		this.isFavoriteBook()
+	watch: {
+		activeBook: {
+			immediate: true,
+			handler() {
+				this.isFavoriteBook();
+			},
+		},
+	},
+	mounted() {
+		this.isFavoriteBook();
 	},
 	methods: {
-		toogleFavorite () {
-			this.isFavorite = !this.isFavorite
-			this.$emit('favorite', this.activeBook)
+		async toggleFavorite() {
+			this.isFavorite = !this.isFavorite;
+			try {
+				if (this.isFavorite) {
+					await KBAPI.addFavorite(this.activeBook.id);
+				} else {
+					await KBAPI.removeFavorite(this.activeBook.id);
+				}
+				this.$emit('favorite', this.activeBook);
+			} catch (error) {
+				console.error('Error updating favorite status:', error);
+				this.isFavorite = !this.isFavorite; // Revert the change on error
+			}
 		},
 		async isFavoriteBook() {
-			const favoritesBooks = await KBAPI.fetchKBFavorites();
-			const currentBook = favoritesBooks.items.find((book) => {
-				return book.id === this.activeBook.id;
-			});
+			try {
+				const favoritesBooks = await KBAPI.fetchKBFavorites();
+				const currentBook = favoritesBooks.items.some((book) => book.id === this.activeBook.id);
 
-			return currentBook ? this.isFavorite = true : this.isFavorite = false
+				this.isFavorite = currentBook;
+				return this.isFavorite;
+			} catch (error) {
+				console.error('Error fetching favorite books:', error);
+				this.isFavorite = false;
+				return this.isFavorite;
+			}
 		},
 		passed() {
-			// pass if its not course.  cos there not nextElement button
 			if (!this.activeBook.item_model) {
 				this.setSegmentPassed();
 			}
 		},
 		nextElement() {},
 		setSegmentPassed() {
-			/* eslint-disable camelcase */
 			this.axios
 				.post('/my-courses/pass', {
 					id: this.activeBook.id,
@@ -230,7 +214,6 @@ export default {
 				.catch((error) => {
 					alert(error);
 				});
-			/* eslint-enable camelcase */
 		},
 		onChangePassGrade() {},
 	},

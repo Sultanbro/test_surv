@@ -14,8 +14,8 @@
 			@book="onBook"
 			@search="onSearch"
 			@page="onPage"
-			@add-page="addPage"
 			@page-order="savePageOrder"
+			@add-page="addPage"
 			@create="onCreate"
 			@settings="editAccess"
 			@archive="archive"
@@ -959,10 +959,12 @@ export default {
 
 				this.updateBook = book;
 				await this.updateSection(true);
+        
+				// this.onSearch(parent.id)
 
 				this.createParentId = null;
 
-				this.$toast.success('Раздел успешно создан!');
+				this.$toast.success('Раздел успешно создан');
 			} catch (error) {
 				console.error(error);
 				this.$toast.error('Не создать раздел');
@@ -1036,6 +1038,7 @@ export default {
 			try {
 				const data = await API.addKBPage(parent.id);
 				this.addPageHandler(data, parent);
+				// this.onPage(parent)
 			} catch (error) {
 				console.error(error);
 				this.$toast.error('Не удалось создать страницу');
@@ -1069,12 +1072,12 @@ export default {
 				this.editBook = true;
 				parent.opened = true;
 			});
-
 			this.$toast.info('Добавлена страница');
 		},
 
 		onCreate(parent) {
 			this.clearAccess();
+			parent.opened = !parent.opened
 			this.showCreate = true;
 			this.createParentId = parent?.id || null;
 		},
@@ -1095,7 +1098,8 @@ export default {
 				this.activeBook.canRead = page.canRead;
 				this.editBook = false;
 				// TODO: clear search
-				// if (!init) this.routerPush(`/kb?s=${this.currentBook.id}&b=${page.id}`);
+				// if (!init) this.routerPush(`/kb?s=${this.currentBook.id}&b=${page.id}`); - отображает полностью url со страницей
+				this.routerPush(`/kb?s=${this.currentBook.id}&b=${page.id}`);
 			} catch (error) {
 				console.error(error);
 			}
