@@ -32,7 +32,7 @@ class UpdateSalaryServiceBetweenRange implements UpdateSalaryInterface
                 });
             })
             ->get();
-        dd($users->pluck('id')->toArray());
+
         while ($startDate <= $endDate) {
             $this->updateDaySalary($users, $startDate);
             $startDate->addDay();
@@ -54,9 +54,8 @@ class UpdateSalaryServiceBetweenRange implements UpdateSalaryInterface
 
             $amount = $this->getUserRate($user);
 
-            if ($user['id'] != 5) {
-                if (!$this->isWorked($date, $user)) continue;
-            }
+            dd_if($date->is('2024-05-05') && $user->id === 30484, $this->isWorked($date, $user));
+            if (!$this->isWorked($date, $user)) continue;
 
             // Find the salary for the user
             $salary = $this->getSalary($user, $date);
