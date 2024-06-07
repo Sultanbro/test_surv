@@ -185,8 +185,8 @@ class Timetracking extends Model
         $total_hours = self::query()
             ->whereIn('user_id', $users)
             ->whereDate('enter', $date)
-            ->first()
-            ->total_hours;
+            ->sum('total_hours');
+
         dd($total_hours);
         return $total_hours / 60;
     }

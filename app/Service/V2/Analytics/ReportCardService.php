@@ -41,9 +41,9 @@ class ReportCardService
                     ->where('row_id', $dto->rowId)
                     ->where('column_id', $column->id)
                     ->first();
-                dd($stat);
                 if ($stat) {
                     $dayTotal = Timetracking::totalHours($date, $dto->groupId, $dto->positions);
+                    dd($dayTotal);
                     $dayTotal = floor($dayTotal / 9 * 10 / $dto->divide);
                     $stat->update([
                         'day_total' => $dayTotal,
