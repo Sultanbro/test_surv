@@ -50,20 +50,6 @@
 						@settings="$emit('settings', $event)"
 					/>
 				</template>
-				<template
-					v-else-if="isEditMode"
-					#nested
-				>
-					<Draggable
-						:id="'KBNavItems' + (item ? item.id : 0)"
-						class="KBNavItems dragArea"
-						tag="ul"
-						:handle="'.fa-bars'"
-						:group="{ name: 'g1' }"
-						:data-id="item ? item.id : 0"
-						@end="onDrop"
-					/>
-				</template>
 			</KBNavItem>
 		</template>
 	</Draggable>
@@ -123,16 +109,16 @@ export default {
 		},
 	},
 	watch: {
-		items(){
-			++this.key
+		items() {
+			++this.key;
 		},
 	},
 	methods: {
 		toggleOpen(item) {
 			this.$emit('update-input');
-			item.opened = !item.opened
-			this.showPage(item, false, true)
-			++this.key
+			item.opened = !item.opened;
+			this.showPage(item, false, true);
+			++this.key;
 		},
 		showPage(page) {
 			this.$emit('show-page', page);

@@ -19,7 +19,10 @@
 							v-if="isEditMode && (parent ? parent.canEdit : true)"
 							class="KBNavItem-handlerIcon KBNavItem-mover"
 						>
-							<!-- <i class="fa fa-bars" /> -->
+							<CategoryIcon
+								v-if="isEditMode && (parent ? parent.canEdit : true)"
+								class="KBNavItem-mover fa fa-bars"
+							/>
 						</div>
 						<div
 							class="KBNavItem-handlerIcon KBNavItem-shower"
@@ -49,12 +52,6 @@
 				>
 					<AddСhapterIcon />
 				</div>
-				<!-- <i
-					v-if="!sectionsMode"
-					class="KBNavItem-action fa fa-plus"
-					title="Добавить страницу"
-					@click.stop="$emit('add-page', item)"
-				/> -->
 				<div
 					v-if="type === 'book' && $laravel.is_admin"
 					title="Добавить базу знаний"
@@ -138,9 +135,6 @@ export default {
 			return 'fa fa-circle';
 		},
 	},
-	watch: {},
-	created() {},
-	mounted() {},
 	methods: {
 		showIcons() {
 			this.isHideIcons = true;
