@@ -910,9 +910,9 @@ class AnalyticsController extends Controller
     {
         dd($name);
         return match (true) {
-            str_contains(strtolower($name), 'факт') => "$givenClass bg-violet",
-            str_contains(strtolower($name), 'опережения') => "$givenClass bg-green",
-            str_contains(strtolower($name), 'рентабельность') => "$givenClass bg-green",
+            Str::contains(Str::lower($name), 'факт') => "$givenClass bg-violet",
+            Str::contains(Str::lower($name), 'опережения') => "$givenClass bg-green",
+            Str::contains(Str::lower($name), 'рентабельность') => "$givenClass bg-green",
             default => $givenClass,
         };
     }
