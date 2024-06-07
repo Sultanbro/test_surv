@@ -32,8 +32,8 @@ class ReportCardService
             ->get();
 
         try {
-//            DB::beginTransaction();
-//            $this->saveReportCards($dto, $firstOfMonth);
+            DB::beginTransaction();
+            $this->saveReportCards($dto, $firstOfMonth);
             foreach ($columns as $column) {
                 $date = Carbon::createFromDate($dto->year, $dto->month, $column->name)->format('Y-m-d');
                 $stat = AnalyticStat::query()
@@ -43,7 +43,6 @@ class ReportCardService
                     ->first();
                 if ($stat) {
                     $dayTotal = Timetracking::totalHours($date, $dto->groupId, $dto->positions);
-                    dd($dayTotal);
                     $dayTotal = floor($dayTotal / 9 * 10 / $dto->divide);
                     $stat->update([
                         'day_total' => $dayTotal,
@@ -52,7 +51,7 @@ class ReportCardService
                     ]);
                 }
             }
-//            DB::commit();
+            DB::commit();
             return true;
         } catch (Throwable $e) {
             DB::rollBack();
