@@ -25,36 +25,39 @@ class ReportCardService
     public function handle(ReportCardDto $dto): bool
     {
         $firstOfMonth = Carbon::createFromDate($dto->year, $dto->month)->firstOfMonth()->format('Y-m-d');
-        DB::beginTransaction();
-
-        $this->saveReportCards($dto, $firstOfMonth);
-
-        AnalyticColumn::query()
+        $columns = AnalyticColumn::query()
             ->where('date', $firstOfMonth)
             ->where('group_id', $dto->groupId)
             ->whereNotIn('name', ['name', 'sum', 'avg', 'plan'])
-            ->get()->map(function ($column) use ($dto, $firstOfMonth) {
-                $date = Carbon::createFromDate($dto->year, $dto->month, $column->name)->format('Y-m-d');
+            ->get();
 
+        try {
+            DB::beginTransaction();
+            $this->saveReportCards($dto, $firstOfMonth);
+            foreach ($columns as $column) {
+                $date = Carbon::createFromDate($dto->year, $dto->month, $column->name)->format('Y-m-d');
                 $stat = AnalyticStat::query()
                     ->where('date', $firstOfMonth)
                     ->where('row_id', $dto->rowId)
                     ->where('column_id', $column->id)
                     ->first();
-
+                dd($stat);
                 if ($stat) {
                     $dayTotal = Timetracking::totalHours($date, $dto->groupId, $dto->positions);
                     $dayTotal = floor($dayTotal / 9 * 10 / $dto->divide);
-
-                    $stat->value = $dayTotal;
-                    $stat->show_value = $dayTotal;
-                    $stat->type = AnalyticStat::TIME;
-
-                    $stat->save();
+                    $stat->update([
+                        'day_total' => $dayTotal,
+                        'show_value' => $dayTotal,
+                        'type' => AnalyticStat::TIME,
+                    ]);
                 }
-            });
-        DB::commit();
-        return true;
+            }
+            DB::commit();
+            return true;
+        } catch (Throwable $e) {
+            DB::rollBack();
+            throw $e;
+        }
     }
 
     /**
@@ -62,7 +65,8 @@ class ReportCardService
      * @param string $date
      * @return void
      */
-    private function saveReportCards(ReportCardDto $dto, string $date): void
+    private
+    function saveReportCards(ReportCardDto $dto, string $date): void
     {
         $reportCards = [];
 

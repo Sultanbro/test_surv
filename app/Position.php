@@ -12,6 +12,18 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Permission\Traits\HasRoles;
 
+/**
+ * @property int $id
+ * @property string $book_groups
+ * @property string $position
+ * @property string $indexation
+ * @property float $sum
+ * @property bool $is_head
+ * @property bool $is_spec
+ * @property string $ckp_status
+ * @property string $ckp
+ * @property string $ckp_link
+ * */
 class Position extends Model
 {
     use HasRoles, SoftDeletes, HasFactory;
@@ -57,6 +69,14 @@ class Position extends Model
      * ID Руководитель группы.
      */
     const GROUP_HEAD = 45;
+
+    public static function operator(): Position
+    {
+        /** @var Position */
+        return self::query()
+            ->where('name', 'Оператор контакт-центра')
+            ->firstOrCreate();
+    }
 
     /**
      * @return MorphMany
