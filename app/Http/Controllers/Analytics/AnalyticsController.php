@@ -364,7 +364,7 @@ class AnalyticsController extends Controller
         }
 
         $stat->type = $request->get("type");
-        $stat->class = $request->get("class");
+        $stat->class = $this->getClass($request->get('show_value'), $request->get("class"));
         $stat->save();
 
         return $this->response(
@@ -906,6 +906,19 @@ class AnalyticsController extends Controller
             $days[] = $i;
         }
         return $days;
+    }
+
+    private function getClass(string $name, mixed $givenClass)
+    {
+        if (str_contains('факт', strtolower($name))) {
+            return "$givenClass bg-violet";
+        }
+
+        if (str_contains('рентабельность', strtolower($name)) || str_contains('опережения', strtolower($name))) {
+            return "$givenClass bg-green";
+        }
+
+        return $givenClass;
     }
 }
 
