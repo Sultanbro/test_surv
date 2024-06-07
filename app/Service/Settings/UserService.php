@@ -99,7 +99,7 @@ class UserService
         StoreUserDTO $dto
     ): User
     {
-        CurrentTariff::ensureHasFreeSlot();
+        CurrentTariff::ensureCanAddNewUser();
 
         $user = $this->userRepository->getUserByEmail($dto->email);
 

@@ -12,7 +12,7 @@ class CurrentTariff
     /**
      * @throws UsersLimitExceededException
      */
-    public static function ensureHasFreeSlot(): void
+    public static function ensureCanAddNewUser(): void
     {
         $tariffPlan = TariffSubscription::getValidTariffPayment();
 
@@ -23,7 +23,7 @@ class CurrentTariff
         }
 
         $usersCount = User::query()->count();
-
+        dd("$usersCount >= $userLimit");
         if ($usersCount >= $userLimit) {
             UsersLimitExceededException::countException($userLimit);
         }
