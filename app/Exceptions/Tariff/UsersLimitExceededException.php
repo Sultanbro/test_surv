@@ -11,6 +11,7 @@ class UsersLimitExceededException extends Exception
      */
     public static function countException(int $userLimit)
     {
+
         throw new self('Максималное кол-во ползвотелей ' . $userLimit . ' обратитесь к руководилелю');
     }
 }
