@@ -187,7 +187,7 @@ class Timetracking extends Model
             ->whereDate('enter', $date)
             ->sum('total_hours');
 
-        dd($total_hours);
+        dd($users,$date);
         return $total_hours / 60;
     }
 
