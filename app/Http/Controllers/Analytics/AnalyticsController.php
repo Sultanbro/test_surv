@@ -692,34 +692,27 @@ class AnalyticsController extends Controller
      */
     public function addFormula_1_31(Request $request)
     {
-        $date = $request->get('date');
-        $formula = $request->get('formula');
+        $date = $request->date;
 
-        /** @var AnalyticRow $formula_row */
-        $formula_row = AnalyticRow::query()->find($request->get('row_id'));
-        /** @var Collection<AnalyticRow> $rows */
-        $rows = AnalyticRow::query()->where('group_id', $formula_row->group_id)->get();
+        $formula_row = AnalyticRow::find($request->row_id);
+        $rows = AnalyticRow::where('group_id', $formula_row->group_id)->get();
 
-        $days = range(1, Carbon::parse($date)->lastOfMonth()->day);
+        $days = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31];
 
-        /** @var Collection<AnalyticColumn> $columns */
         $columns = AnalyticColumn::query()
             ->where('group_id', $formula_row->group_id)
             ->where('date', $date)
             ->whereIn('name', $days)
             ->get();
 
-        /** @var Collection<AnalyticStat> $stats */
-        $stats = AnalyticStat::query()
-            ->where('row_id', $formula_row->id)
-            ->whereIn('column_id', $columns->pluck('id')->toArray())
-            ->get();
-
         foreach ($columns as $column) {
-            /** @var AnalyticStat $stat */
-            $stat = $stats->where('column_id', $column->id)->first();
+            $stat = AnalyticStat::query()
+                ->where('row_id', $formula_row->id)
+                ->where('column_id', $column->id)
+                ->first();
 
-            foreach ($rows as $row) {
+            $formula = $request->formula;
+            foreach ($rows as $key => $row) {
                 $formula = str_replace("{" . $row->id . "}", "[" . $column->id . ":" . $row->id . "]", $formula);
             }
 
@@ -744,9 +737,10 @@ class AnalyticsController extends Controller
             if ($stat) {
                 $stat->update($fields);
             } else {
-                AnalyticStat::query()->create($fields);
+                AnalyticStat::create($fields);
             }
         }
+
     }
 
 
