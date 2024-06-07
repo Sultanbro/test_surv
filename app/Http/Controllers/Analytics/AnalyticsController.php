@@ -909,15 +909,12 @@ class AnalyticsController extends Controller
     private function getClass(string $name, mixed $givenClass)
     {
         dd($name);
-        if (str_contains(strtolower($name), 'факт')) {
-            return "$givenClass bg-violet";
-        }
-
-        if (str_contains(strtolower($name), 'рентабельность') || str_contains(strtolower($name), 'опережения')) {
-            return "$givenClass bg-green";
-        }
-
-        return $givenClass;
+        return match (true) {
+            str_contains(strtolower($name), 'факт') => "$givenClass bg-violet",
+            str_contains(strtolower($name), 'опережения') => "$givenClass bg-green",
+            str_contains(strtolower($name), 'рентабельность') => "$givenClass bg-green",
+            default => $givenClass,
+        };
     }
 }
 
