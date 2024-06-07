@@ -119,6 +119,8 @@ export default {
 			item.opened = !item.opened;
 			this.showPage(item, false, true);
 			++this.key;
+			// console.log(item.children);
+			// console.log(item.opened);
 		},
 		showPage(page) {
 			this.$emit('show-page', page);

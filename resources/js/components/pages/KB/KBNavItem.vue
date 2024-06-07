@@ -1,10 +1,10 @@
 <template>
 	<li
-		v-if="!sectionsMode || item.is_category"
 		class="KBNavItem"
 		:class="['KBNavItem_' + type, 'KBNavItem_' + mode]"
 		:data-id="item.id"
 	>
+		<!-- v-if="!sectionsMode || item.is_category" - то из-за чего не отображались страницы -->
 		<div class="KBNavItem-button">
 			<div class="d-flex aic gap-2">
 				<template v-if="type === 'book'">

@@ -960,7 +960,7 @@ export default {
 				this.updateBook = book;
 				await this.updateSection(true);
         
-				this.onSearch(parent.id)
+				// this.onSearch(parent.id)
 
 				this.createParentId = null;
 
@@ -1038,6 +1038,7 @@ export default {
 			try {
 				const data = await API.addKBPage(parent.id);
 				this.addPageHandler(data, parent);
+				// this.onPage(parent)
 			} catch (error) {
 				console.error(error);
 				this.$toast.error('Не удалось создать страницу');
@@ -1071,7 +1072,6 @@ export default {
 				this.editBook = true;
 				parent.opened = true;
 			});
-
 			this.$toast.info('Добавлена страница');
 		},
 
@@ -1098,7 +1098,8 @@ export default {
 				this.activeBook.canRead = page.canRead;
 				this.editBook = false;
 				// TODO: clear search
-				// if (!init) this.routerPush(`/kb?s=${this.currentBook.id}&b=${page.id}`);
+				// if (!init) this.routerPush(`/kb?s=${this.currentBook.id}&b=${page.id}`); - отображает полностью url со страницей
+				this.routerPush(`/kb?s=${this.currentBook.id}&b=${page.id}`);
 			} catch (error) {
 				console.error(error);
 			}
