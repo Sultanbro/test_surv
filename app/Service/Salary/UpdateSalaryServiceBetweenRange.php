@@ -20,6 +20,7 @@ class UpdateSalaryServiceBetweenRange implements UpdateSalaryInterface
     public function touch(string $date, int $groupId = null): void
     {
         [$startDate, $endDate] = $this->diapason($date);
+
         // Get all users within the date range using whereBetween
         /** @var Collection<User> $users */
         $users = $this->userRepository
@@ -53,8 +54,9 @@ class UpdateSalaryServiceBetweenRange implements UpdateSalaryInterface
 
             $amount = $this->getUserRate($user);
 
-            dd_if($date->is('2024-05-05') && $user->id === 30484, $this->isWorked($date, $user));
-            if (!$this->isWorked($date, $user)) continue;
+            if ($user['id'] != 5) {
+                if (!$this->isWorked($date, $user)) continue;
+            }
 
             // Find the salary for the user
             $salary = $this->getSalary($user, $date);
