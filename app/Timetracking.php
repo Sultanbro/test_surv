@@ -174,8 +174,9 @@ class Timetracking extends Model
     ): float|int
     {
         $positions = empty($positions) ? [Position::operator()->id] : $positions;
-        $users = ProfileGroup::employees($group_id, $date, 0, $positions);
-        dd($users);
+        $users = ProfileGroup::employeesNew($group_id, $date, $positions);
+
+        dd($users->toArray());
         $total_hours = self::query()
             ->whereIn('user_id', $users)
             ->whereDate('enter', $date)

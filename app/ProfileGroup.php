@@ -149,6 +149,24 @@ class ProfileGroup extends Model
         return self::query()->findOrFail($id);
     }
 
+    public static function employeesNew(int $group_id, string $date, array $positions): Collection
+    {
+        /** @var Collection<User> */
+        return User::query()
+            ->whereIn('position_id', $positions)
+            ->whereHas('groups', function (Builder $query) use ($group_id, $date) {
+                $query->where('id', $group_id);
+                $query->where(function (Builder $query) use ($date) {
+                    $query->where('to', '>=', $date);
+                    $query->orWhereNull('to');
+                });
+            })
+            ->whereHas('user_description', function (Builder $query) {
+                $query->where('is_trainee', 0);
+            })
+            ->get();
+    }
+
     /**
      * @return BelongsTo
      */
@@ -457,6 +475,7 @@ class ProfileGroup extends Model
         if ($date) {
             $date = Carbon::parse($date)->subMonth();
         }
+
         $query = (new ProfileGroupUsersQuery())
             ->whereIsTrainee(false)
             ->deletedByMonthFilter($deleteType, $date)
