@@ -176,13 +176,11 @@ class Timetracking extends Model
         $positions = empty($positions) ? [Position::operator()->id] : $positions;
         $users = ProfileGroup::employeesNew($group_id, $date, $positions);
 
-        dd($users->toArray());
         $total_hours = self::query()
-            ->whereIn('user_id', $users)
+            ->whereIn('user_id', $users->pluck('id')->toArray())
             ->whereDate('enter', $date)
             ->sum('total_hours');
-
-        dd($users, $date);
+        dd($total_hours);
         return $total_hours / 60;
     }
 
