@@ -14,8 +14,8 @@
 			@book="onBook"
 			@search="onSearch"
 			@page="onPage"
-			@add-page="addPage"
 			@page-order="savePageOrder"
+			@add-page="addPage"
 			@create="onCreate"
 			@settings="editAccess"
 			@archive="archive"
@@ -959,10 +959,12 @@ export default {
 
 				this.updateBook = book;
 				await this.updateSection(true);
+        
+				this.onSearch(parent.id)
 
 				this.createParentId = null;
 
-				this.$toast.success('Раздел успешно создан!');
+				this.$toast.success('Раздел успешно создан');
 			} catch (error) {
 				console.error(error);
 				this.$toast.error('Не создать раздел');
@@ -1075,6 +1077,7 @@ export default {
 
 		onCreate(parent) {
 			this.clearAccess();
+			parent.opened = !parent.opened
 			this.showCreate = true;
 			this.createParentId = parent?.id || null;
 		},
