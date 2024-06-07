@@ -105,7 +105,11 @@ class AppServiceProvider extends ServiceProvider
 //            tenancy()->initialize('bp');
 //        }
 //        dd(auth()->user());
-        $permissions = auth()->user()->getAllPermissions()->pluck('name')->toArray();
+        if (!table_exists('permissions', 'mysql')) {
+            $permissions = [];
+        } else {
+            $permissions = auth()->user()->getAllPermissions()->pluck('name')->toArray();
+        }
 
         if (auth()->user()->program_id === 1 && tenant('id') == 'bp') {
             $permissions[] = 'ucalls_view';
