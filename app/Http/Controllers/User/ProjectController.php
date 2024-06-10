@@ -86,7 +86,7 @@ class ProjectController extends Controller
         $data['password'] = $password;
         $user = $this->createTenantUser($tenant, $data);
         $this->cabinetService->add($tenant->id, $user, true);
-
+        dd($this->loginLinkToSubDomain($tenant, $user->email));
         return response()->json([
             'link' => $this->loginLinkToSubDomain($tenant, $user->email)
         ]);
