@@ -82,9 +82,6 @@ class Kernel extends ConsoleKernel
         ///////////////////////////////////////////////////////////////////////////////////////////////////
         // $2y$10$z.TRZIaD8t2HN/F1V5o1l.XxiQ0x7MxEFwl8kQNS7JhMS9HnRu2MC // если сможешь расшифровать то охуеешь
         ///////////////////////////////////////////////////////////////////////////////////////////////////
-        $schedule->command('currency:refresh')->dailyAt('00:00'); // Обновление курса валют currencylayer.com
-        $schedule->command('check-payments-status:run')->everyFiveMinutes();
-//        $schedule->command('auto-payment:run')->daily(); // Команда для авто-оплаты запускается каждый день.
         /*
         |--------------------------------------------------------------------------
         | Команды кабинета bp.jobtron.org

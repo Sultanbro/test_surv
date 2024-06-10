@@ -25,7 +25,6 @@ class CurrentTariff
 
         $usersCount = User::query()->count();
         if ($usersCount >= $userLimit) {
-
             UsersLimitExceededException::countException($userLimit);
         }
     }
