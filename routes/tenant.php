@@ -791,26 +791,24 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
         Route::post('delete/user-tax', [TaxGroupController::class, 'deleteUserTax']);
     });
 
-    Route::middleware(['check_tariff'])->group(function () {
 
-        Route::group(['prefix' => 'profile', 'as' => 'profile.'], function () {
-            Route::any('/activities', [User\ProfileController::class, 'activities']);
-            Route::any('/courses', [User\ProfileController::class, 'courses']);
-        });
+    Route::group(['prefix' => 'profile', 'as' => 'profile.'], function () {
+        Route::any('/activities', [User\ProfileController::class, 'activities']);
+        Route::any('/courses', [User\ProfileController::class, 'courses']);
+    });
 
-        Route::group(['prefix' => 'kpi', 'as' => 'kpi.', 'middleware' => 'auth'], function () {
-            Route::post('/get', [Kpi\KpiController::class, 'index'])->name('get');
-            Route::post('/save', [Kpi\KpiController::class, 'save'])->name('save');
-            Route::put('/update', [Kpi\KpiController::class, 'update'])->name('update');
-            Route::put('/set-off-limit', [Kpi\KpiController::class, 'setOffLimit'])->name('set-off-limit');
-            Route::delete('/delete/{id}', [Kpi\KpiController::class, 'delete'])->name('delete');
-        });
+    Route::group(['prefix' => 'kpi', 'as' => 'kpi.', 'middleware' => 'auth'], function () {
+        Route::post('/get', [Kpi\KpiController::class, 'index'])->name('get');
+        Route::post('/save', [Kpi\KpiController::class, 'save'])->name('save');
+        Route::put('/update', [Kpi\KpiController::class, 'update'])->name('update');
+        Route::put('/set-off-limit', [Kpi\KpiController::class, 'setOffLimit'])->name('set-off-limit');
+        Route::delete('/delete/{id}', [Kpi\KpiController::class, 'delete'])->name('delete');
+    });
 
-        Route::get('/tenants', [Company\CompanyController::class, 'tenants'])->name('get-tenants');
+    Route::get('/tenants', [Company\CompanyController::class, 'tenants'])->name('get-tenants');
 
-        Route::group(['prefix' => 'company', 'as' => 'company.', 'middleware' => 'auth'], function () {
-            Route::get('/get-owner', [Company\CompanyController::class, 'getCompanyOwner'])->name('get-owner');
-        });
+    Route::group(['prefix' => 'company', 'as' => 'company.', 'middleware' => 'auth'], function () {
+        Route::get('/get-owner', [Company\CompanyController::class, 'getCompanyOwner'])->name('get-owner');
     });
 
     Route::group([
