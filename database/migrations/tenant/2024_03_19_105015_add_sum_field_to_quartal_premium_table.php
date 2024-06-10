@@ -15,7 +15,7 @@ return new class extends Migration {
         if (column_exists('quartal_premiums', 'sum')) return;
         Schema::table('quartal_premiums', function (Blueprint $table) {
 
-            $table->string('fact')->nullable();
+            $table->string('sum')->nullable();
         });
     }
 
@@ -27,7 +27,7 @@ return new class extends Migration {
     public function down()
     {
         Schema::table('quartal_premiums', function (Blueprint $table) {
-            $table->dropColumn('fact');
+            $table->dropColumn('sum');
         });
     }
 };
