@@ -27,7 +27,8 @@ class QuartalPremiumSaveRequest extends FormRequest
             'method' => 'nullable|string',
             'fact' => 'nullable|string',
             'from' => 'required|date',
-            'to' => 'required|date'
+            'to' => 'required|date',
+            'sum' => 'nullable|string',
         ];
     }
 }

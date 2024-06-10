@@ -6,19 +6,22 @@ use App\Models\Tariff\Tariff;
 use App\Models\Tariff\TariffSubscription;
 use App\User;
 use Closure;
+use Exception;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class CheckTariff
 {
     /**
      * Handle an incoming request.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse) $next
-     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
-     * @throws \Exception
+     * @param Request $request
+     * @param Closure(Request): (Response|RedirectResponse) $next
+     * @return Response|RedirectResponse
+     * @throws Exception
      */
-    public function handle(Request $request, Closure $next)
+    public function handle(Request $request, Closure $next): Response|RedirectResponse
     {
         $response = $next($request);
 
@@ -35,13 +38,13 @@ class CheckTariff
             $response->header('X-IsHaveTariff', 1);
         }
 
-        $limitedUser = User::select('id')->skip($userLimit)->first();
+        $limitedUser = User::query()->select('id')->skip($userLimit)->first();
 
         if ($limitedUser) {
             $response->header('X-IsTariffRequired', 1);
 
             if(\Auth::user()->id >= $limitedUser->id) {
-                throw new \Exception('Tariff limit out of range', 401);
+                throw new Exception('Tariff limit out of range', 401);
             }
         }
 
