@@ -49,8 +49,8 @@ trait CreateTenant
         $fullName = explode(' ', $data['name']);
 
         try {
-            DB::beginTransaction();
             tenancy()->initialize($tenant);
+            DB::beginTransaction();
             /** @var User $user */
             $user = User::query()->create([
                 'name' => $fullName[0],

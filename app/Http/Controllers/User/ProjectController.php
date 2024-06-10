@@ -8,6 +8,9 @@ use App\Http\Controllers\Controller;
 use App\Models\CentralUser;
 use App\Models\Tenant;
 use App\Service\Tenancy\CabinetService;
+use App\User;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ProjectController extends Controller
@@ -34,7 +37,7 @@ class ProjectController extends Controller
      * Login to another tenant - subdomain
      *
      * @param String $subdomain
-     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
+     * @return \Illuminate\Http\RedirectResponse|JsonResponse
      */
     public function login(string $subdomain)
     {
@@ -58,12 +61,13 @@ class ProjectController extends Controller
      *
      * @param Request $request
      *
-     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
-     * @throws \Exception
+     * @return JsonResponse
+     * @throws Exception
      */
-    public function create(Request $request)
+    public function create(): JsonResponse
     {
-        $user = auth()->user();
+        /** @var User $authUser */
+        $authUser = auth()->user();
 
         // deprecated
 //        if (!$user->working_country) {
@@ -73,13 +77,14 @@ class ProjectController extends Controller
 //            ], 400);
 //        }
 
-        $centralUser = CentralUser::query()->where('email', $user->email)->first();
+
+        $centralUser = CentralUser::userByEmail($authUser->email);
 
         $tenant = $this->createTenant($centralUser);
-        $password = CentralUser::query()->selectRaw('password')->where('id', $centralUser->id)->first()?->password;
-        $data = $user->toArray();
+        $password = $centralUser->password;
+        $data = $authUser->toArray();
         $data['password'] = $password;
-        $user = $this->createTenantUser($tenant, $data, true);
+        $user = $this->createTenantUser($tenant, $data);
         $this->cabinetService->add($tenant->id, $user, true);
 
         return response()->json([
