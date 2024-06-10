@@ -150,6 +150,7 @@
 					@update-input="updateInput"
 					@show-page="$emit('book', $event)"
 					@page-order="$emit('page-order', $event)"
+					@add-page="$emit('add-page', $event)"
 					@add-book="$emit('create', $event)"
 					@remove-book="archiveBook($event)"
 					@settings="$emit('settings', $event)"
