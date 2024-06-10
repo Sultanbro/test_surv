@@ -84,7 +84,6 @@ class QuartalPremiumService
     public function save(QuartalPremiumSaveRequest $request): array
     {
         try {
-
             $quartal_premium = QuartalPremium::query()->create([
                 'targetable_id' => $request->targetable_id,
                 'targetable_type' => $request->targetable_type,
