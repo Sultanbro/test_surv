@@ -22,6 +22,7 @@ class CurrentTariff
             $userLimit = $tariffPlan->total_user_limit;
         }
 
+
         $usersCount = User::query()->count();
         if ($usersCount >= $userLimit) {
 
