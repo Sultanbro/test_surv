@@ -124,7 +124,7 @@
 					:key="'p' + listsKey"
 					:input="search.input"
 					class="KBNav-items"
-					:items="localBooks"
+					:items="books"
 					:opened="true"
 					:mode="mode"
 					:parent="currentBook"
@@ -138,10 +138,10 @@
 					@settings="$emit('settings', $event)"
 				/>
 				<KBNavItems
-					v-else-if="localBooks.length"
+					v-else-if="books.length"
 					:key="'b' + listsKey"
 					class="KBNav-items"
-					:items="localBooks"
+					:items="books"
 					:opened="true"
 					:mode="mode"
 					:parent="null"
@@ -312,7 +312,6 @@ export default {
 				items: [],
 			},
 			listsKey: 1,
-			localBooks: [...this.books]
 		};
 	},
 	computed: {
@@ -331,14 +330,7 @@ export default {
 			this.updateKeys();
 		},
 	},
-	async mounted() {
-		try {
-			const { tree } = await API.fetchKBBooksV2();
-			this.allItems = tree;
-			this.search.items = this.allItems;
-		} catch (error) {
-			console.error(error);
-		}
+	mounted() {
 	},
 	methods: {
 		unFavorite(favorite) {
@@ -420,7 +412,8 @@ export default {
 
 				const { tree } = await API.fetchKBBooksV2();
 
-				this.localBooks = await tree
+				// eslint-disable-next-line vue/no-mutating-props
+				this.books = await tree
 
 				this.$toast.success('Раздел восстановлен');
 			} catch (error) {
