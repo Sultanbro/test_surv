@@ -118,7 +118,7 @@
 						<div class="KBNav-searchText" v-html="item.text" />
 				</div>
 			</div>
-			<div v-else>
+			<div v-else-if="!archived.show">
 				<KBNavItems
 					v-if="currentBook"
 					:key="'p' + listsKey"
@@ -155,31 +155,29 @@
 					@remove-book="archiveBook($event)"
 					@settings="$emit('settings', $event)"
 				/>
+			</div>
+			<div
+				v-else
+				class="KBNav-archive"
+			>
 				<div
-					v-else-if="archived.show"
-					class="KBNav-archive"
+					v-for="(book, bIndex) in archived.items"
+					:key="bIndex"
+					class="KBNav-item"
+					:title="book.title"
 				>
-					<div
-						v-for="(book, bIndex) in archived.items"
-						:key="bIndex"
-						class="KBNav-item"
-						:title="book.title"
-					>
-						<p class="KBNav-itemText">
-							{{ book.title }}
-						</p>
-						<div class="KBNav-itemActions">
-							<i
-								class="KBNav-itemAction fa fa-trash-restore mr-1"
-								@click.stop="archiveRestore(book)"
-							/>
-						</div>
+					<p class="KBNav-itemText">
+						{{ book.title }}
+					</p>
+					<div class="KBNav-itemActions">
+						<i
+							class="KBNav-itemAction fa fa-trash-restore mr-1"
+							@click.stop="archiveRestore(book)"
+						/>
 					</div>
 				</div>
 			</div>
 		</div>
-
-		<!-- Archive -->
 
 		<div v-if="mode === 'edit' && !currentBook">
 			<div
@@ -189,7 +187,7 @@
 				<button
 					class="KBNav__footer-button"
 					title="Добавить базу знаний"
-					@click="$emit('create')"
+					@click="$emit('create', $event)"  
 				>
 					<AddIcon />
 					Добавить
@@ -323,13 +321,6 @@ export default {
 			this.getPages(map, this.pages);
 			return map;
 		},
-		filteredItems() {
-			if (!this.search.input.length) {
-				return this.books;
-			} else {
-				return this.search.items;
-			}
-		},
 	},
 	watch: {
 		pages() {
@@ -339,14 +330,7 @@ export default {
 			this.updateKeys();
 		},
 	},
-	async mounted() {
-		try {
-			const { tree } = await API.fetchKBBooksV2();
-			this.allItems = tree;
-			this.search.items = this.allItems;
-		} catch (error) {
-			console.error(error);
-		}
+	mounted() {
 	},
 	methods: {
 		unFavorite(favorite) {
@@ -415,15 +399,6 @@ export default {
 			}
 		},
 
-		searchItems() {
-			return this.books.filter((book) => {
-				return book.title
-					.toLowerCase()
-					.includes(this.search.input.toLowerCase());
-			});
-		},
-		// === SEARCH ===
-
 		// === ARCHIVE ===
 		async archiveRestore(book) {
 			if (!confirm('Вы уверены что хотите восстановить раздел?')) return;
@@ -434,6 +409,12 @@ export default {
 				);
 				this.archived.items.splice(index, 1);
 				this.$emit('unarchive', book);
+
+				const { tree } = await API.fetchKBBooksV2();
+
+				// eslint-disable-next-line vue/no-mutating-props
+				this.books = await tree
+
 				this.$toast.success('Раздел восстановлен');
 			} catch (error) {
 				console.error(error);
@@ -467,7 +448,6 @@ export default {
 			}
 			loader.hide();
 		},
-		// === ARCHIVE ===
 
 		// === ORDER ===
 		async saveBookOrder(event) {
@@ -498,14 +478,13 @@ export default {
 	align-items: center;
 }
 
-$KBNav-padding: 15px;
 .KBNav {
 	display: flex;
 	flex-flow: column nowrap;
 	justify-content: space-between;
 
 	height: 100vh;
-	padding: $KBNav-padding;
+	padding: 0.4% 1%;
 	border-right: 1px solid #dfdfdf;
 
 	background-color: #ffffff;
@@ -604,8 +583,10 @@ $KBNav-padding: 15px;
 	}
 	&-searchTitle {
 		font-size: 16px;
-		font-weight: 700;
-		color: #666;
+		// font-weight: 700;
+		// color: #666;
+    cursor: pointer;
+    margin-top: 4px;
 	}
 	&-searchText {
 		margin-top: 5px;

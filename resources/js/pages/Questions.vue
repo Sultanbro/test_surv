@@ -731,7 +731,7 @@ export default {
 	}
 }
 .quetions__wrapper {
-	padding: 2%;
+	padding: 3%;
 	background-color: #f2f4ff;
 	border-radius: 20px;
 	.quetion__title {
@@ -746,7 +746,7 @@ export default {
 .variant {
 	background-color: #fff;
 	border-radius: 8px;
-	padding: 0.5%;
+	padding: 0.7%;
 }
 
 .questions .question-form-group label:before {

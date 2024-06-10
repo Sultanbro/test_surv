@@ -438,8 +438,8 @@ input:checked + .switch:after {
 		.KBToolbar-dropdown {
 			z-index: 5;
 			position: absolute;
-			top: 41px;
-			right: 220px;
+			top: 37px;
+			right: 190px;
 			padding: 1%;
 			border-radius: 12px;
 			background-color: white;

@@ -317,7 +317,7 @@ export default {
 
 	.AuthSubmit {
 		position: relative;
-    width: 90%;
+    width: 100%;
 		button {
 			width: 100%;
 
