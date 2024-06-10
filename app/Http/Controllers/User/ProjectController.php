@@ -81,10 +81,8 @@ class ProjectController extends Controller
         $centralUser = CentralUser::userByEmail($authUser->email)->makeVisible('password');
 
         $tenant = $this->createTenant($centralUser);
-        $password = $centralUser->password;
-        dd($password);
         $data = $authUser->toArray();
-        $data['password'] = $password;
+        $data['password'] = $centralUser->password;;
         $user = $this->createTenantUser($tenant, $data);
         $this->cabinetService->add($tenant->id, $user, true);
         return response()->json([
