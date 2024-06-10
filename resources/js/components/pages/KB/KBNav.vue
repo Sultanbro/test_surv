@@ -498,14 +498,13 @@ export default {
 	align-items: center;
 }
 
-$KBNav-padding: 15px;
 .KBNav {
 	display: flex;
 	flex-flow: column nowrap;
 	justify-content: space-between;
 
 	height: 100vh;
-	padding: $KBNav-padding;
+	padding: 0.4% 1%;
 	border-right: 1px solid #dfdfdf;
 
 	background-color: #ffffff;

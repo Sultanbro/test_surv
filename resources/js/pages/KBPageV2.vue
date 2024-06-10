@@ -1066,11 +1066,11 @@ export default {
 			if (!parent.children) parent.children = [];
 			parent.children.unshift(book);
 			this.booksMap[book.id] = book;
+			parent.opened = true; 
 
 			this.$nextTick(() => {
 				this.activeBook = book;
 				this.editBook = true;
-				parent.opened = true;
 			});
 			this.$toast.info('Добавлена страница');
 		},
