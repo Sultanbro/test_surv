@@ -118,13 +118,13 @@
 						<div class="KBNav-searchText" v-html="item.text" />
 				</div>
 			</div>
-			<div v-else>
+			<div v-else-if="!archived.show">
 				<KBNavItems
 					v-if="currentBook"
 					:key="'p' + listsKey"
 					:input="search.input"
 					class="KBNav-items"
-					:items="books"
+					:items="localBooks"
 					:opened="true"
 					:mode="mode"
 					:parent="currentBook"
@@ -138,10 +138,10 @@
 					@settings="$emit('settings', $event)"
 				/>
 				<KBNavItems
-					v-else-if="books.length"
+					v-else-if="localBooks.length"
 					:key="'b' + listsKey"
 					class="KBNav-items"
-					:items="books"
+					:items="localBooks"
 					:opened="true"
 					:mode="mode"
 					:parent="null"
@@ -155,31 +155,29 @@
 					@remove-book="archiveBook($event)"
 					@settings="$emit('settings', $event)"
 				/>
+			</div>
+			<div
+				v-else
+				class="KBNav-archive"
+			>
 				<div
-					v-else-if="archived.show"
-					class="KBNav-archive"
+					v-for="(book, bIndex) in archived.items"
+					:key="bIndex"
+					class="KBNav-item"
+					:title="book.title"
 				>
-					<div
-						v-for="(book, bIndex) in archived.items"
-						:key="bIndex"
-						class="KBNav-item"
-						:title="book.title"
-					>
-						<p class="KBNav-itemText">
-							{{ book.title }}
-						</p>
-						<div class="KBNav-itemActions">
-							<i
-								class="KBNav-itemAction fa fa-trash-restore mr-1"
-								@click.stop="archiveRestore(book)"
-							/>
-						</div>
+					<p class="KBNav-itemText">
+						{{ book.title }}
+					</p>
+					<div class="KBNav-itemActions">
+						<i
+							class="KBNav-itemAction fa fa-trash-restore mr-1"
+							@click.stop="archiveRestore(book)"
+						/>
 					</div>
 				</div>
 			</div>
 		</div>
-
-		<!-- Archive -->
 
 		<div v-if="mode === 'edit' && !currentBook">
 			<div
@@ -189,7 +187,7 @@
 				<button
 					class="KBNav__footer-button"
 					title="Добавить базу знаний"
-					@click="$emit('create')"
+					@click="$emit('create', $event)"  
 				>
 					<AddIcon />
 					Добавить
@@ -314,6 +312,7 @@ export default {
 				items: [],
 			},
 			listsKey: 1,
+			localBooks: [...this.books]
 		};
 	},
 	computed: {
@@ -322,13 +321,6 @@ export default {
 			const map = {};
 			this.getPages(map, this.pages);
 			return map;
-		},
-		filteredItems() {
-			if (!this.search.input.length) {
-				return this.books;
-			} else {
-				return this.search.items;
-			}
 		},
 	},
 	watch: {
@@ -415,15 +407,6 @@ export default {
 			}
 		},
 
-		searchItems() {
-			return this.books.filter((book) => {
-				return book.title
-					.toLowerCase()
-					.includes(this.search.input.toLowerCase());
-			});
-		},
-		// === SEARCH ===
-
 		// === ARCHIVE ===
 		async archiveRestore(book) {
 			if (!confirm('Вы уверены что хотите восстановить раздел?')) return;
@@ -434,6 +417,11 @@ export default {
 				);
 				this.archived.items.splice(index, 1);
 				this.$emit('unarchive', book);
+
+				const { tree } = await API.fetchKBBooksV2();
+
+				this.localBooks = await tree
+
 				this.$toast.success('Раздел восстановлен');
 			} catch (error) {
 				console.error(error);
@@ -467,7 +455,6 @@ export default {
 			}
 			loader.hide();
 		},
-		// === ARCHIVE ===
 
 		// === ORDER ===
 		async saveBookOrder(event) {
@@ -603,8 +590,10 @@ export default {
 	}
 	&-searchTitle {
 		font-size: 16px;
-		font-weight: 700;
-		color: #666;
+		// font-weight: 700;
+		// color: #666;
+    cursor: pointer;
+    margin-top: 4px;
 	}
 	&-searchText {
 		margin-top: 5px;
