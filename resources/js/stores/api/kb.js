@@ -182,11 +182,11 @@ export async function fetchKBFavorites(){
 		})
 	}
 }
+
 export async function toggleKBPageFavorite(id, request){
 	const {data} = await axios.post(`/kb/toggle-favorite/${id}`, request)
 	return data
 }
-/* favorites */
 
 /* glossary */
 export async function fetchGlossary(){
