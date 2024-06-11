@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\SavePromoCodeRequest;
 use App\Repositories\PromoCode\PromoCodeRepositoryInterface;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class PromoCodeController extends Controller
 {
@@ -38,9 +39,9 @@ class PromoCodeController extends Controller
         );
     }
 
-    public function destroy(string $code): JsonResponse
+    public function destroy(Request  $request): JsonResponse
     {
-        $this->deletePromoCodeAction->delete(new DeletePromoCodeDto($code));
+        $this->deletePromoCodeAction->delete(new DeletePromoCodeDto($request->get('code')));
         return $this->response(
             message: 'success',
             code: 204
