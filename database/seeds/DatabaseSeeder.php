@@ -27,7 +27,6 @@ class DatabaseSeeder extends Seeder
             WorkingDaySeeder::class,
             WorkingTimeSeeder::class,
             SettingSeeder::class,
-            TariffSeeder::class,
             WorkChartTypeRbSeeder::class
 //            MailingTemplateSeeder::class,
             // KpiSeeder::class,
