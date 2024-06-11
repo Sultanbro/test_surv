@@ -69,15 +69,6 @@ class ProjectController extends Controller
         /** @var User $authUser */
         $authUser = auth()->user();
 
-        // deprecated
-//        if (!$user->working_country) {
-//            // App/User cannot be null while creating new tenant
-//            return response()->json([
-//                'error' => 'Для создания нового кабинета заполните город в настройках профиля'
-//            ], 400);
-//        }
-
-
         $centralUser = CentralUser::userByEmail($authUser->email)->makeVisible('password');
 
         $tenant = $this->createTenant($centralUser);
