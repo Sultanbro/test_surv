@@ -451,7 +451,9 @@ class AnalyticsController extends Controller
      */
     public function createActivity(Request $request)
     {
+        dd(Str::lower($request->activity['name']) === 'ячейка из сводной');
         $isCell = Str::lower($request->activity['name']) === 'ячейка из сводной';
+
         Activity::query()->create([
             'name' => $request->activity['name'],
             'group_id' => $request->group_id,
