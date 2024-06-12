@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * @property int $id
  * @property string $transaction_id
+ * @property string $lead_id
  * @property string $payer_name
  * @property string $payer_phone
  * @property string $amount
@@ -25,6 +26,7 @@ class Invoice extends Model
     protected $table = 'invoices';
     protected $fillable = [
         'transaction_id',
+        'lead_id',
         'payer_name',
         'payer_phone',
         'amount',
@@ -32,7 +34,6 @@ class Invoice extends Model
         'name',
         'url',
         'provider'
-
     ];
 
     public static function getByTransactionId(int|string $getTransactionId): ?Invoice

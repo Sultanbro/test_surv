@@ -111,15 +111,6 @@
 								alt="Banana"
 							>
 						</a>
-						<a
-							href="/images/sms-4.png"
-							title="Banana"
-						>
-							<img
-								src="/images/sms-4.png"
-								alt="Banana"
-							>
-						</a>
 					</div>
 				</template>
 				<template #tab(1)>

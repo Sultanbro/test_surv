@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
             ProgramSeeder::class,
             ProfileGroupSeeder::class,
             PageAndPermissionSeeder::class,
+            PermissionSeeder::class,
             WorkingDaySeeder::class,
             WorkingTimeSeeder::class,
             SettingSeeder::class,
