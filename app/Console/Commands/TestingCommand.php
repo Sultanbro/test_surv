@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Invoice;
+use App\Service\Invoice\UpdateDealInBitrix;
 use App\Service\Sms\ReceiverDto;
 use App\Service\Sms\SmsInterface;
 use Carbon\Carbon;
@@ -18,6 +20,8 @@ class TestingCommand extends Command
 
     public function handle(): void
     {
-        slack('the scheduler is working . ' . Carbon::now()->toDateTimeString());
+        $invoice = Invoice::query()->where('lead_id', 179216)->first();
+        $updateService = new UpdateDealInBitrix($invoice);
+        $updateService->send();
     }
 }
