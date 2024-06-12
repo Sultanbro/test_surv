@@ -47,7 +47,6 @@ class AnalyticRow extends Model
         $columns = AnalyticColumn::query()
             ->where('date', $date)
             ->where('group_id', $group_id)
-            ->whereIn('name', range(1, 31))
             ->get();
 
         $rows = collect();
