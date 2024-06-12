@@ -42,7 +42,6 @@ function treeToMap(items: Array<Question>, result: { [key: string]: Question } =
 async function fetchFAQ() {
   try {
     const { data } = await axios.get<{ data: Array<Question> }>('/faq')
-    console.log(data)
     questions.value = data.data.map(item => ({ ...item, isCollapsed: false }))
   } catch (error) {
     console.error(error)
@@ -65,7 +64,6 @@ async function updateFAQ() {
 
   try {
     await axios.put(`/faq/update/${active.value.id}`, active.value)
-    console.log(active.value)
   } catch (error) {
     console.error(error)
   }
@@ -93,7 +91,6 @@ async function onSelect(item: Question) {
       ...data.data,
       isCollapsed: true,
     }
-    console.log(active.value)
   } catch (error) {
     console.error(error)
   }
@@ -113,12 +110,9 @@ async function addElement(parent_id: number, order: number) {
 }
 
 async function saveOrder(parentId: number, currentId: number) {
-  console.log(`Родитель: ${parentId}`, `Дочерний ${currentId}`)
   const items = parentId ? questionsMap.value[parentId]?.children : questions.value
 
   const quetion = questionsMap.value[currentId]
-
-  console.log(quetion)
 
   if (!items) return
   const request = {
@@ -155,20 +149,19 @@ type TItem = {
 function onOrder(item: TItem) {
   const currentQuestion = questionsMap.value[item.itemId]
 
-  console.log(`Текущий вопрос ${item.itemId}`)
+  if (!currentQuestion) return;
 
-  if (!currentQuestion) return
-
-  const parentId = currentQuestion.parent_id
+  // const parentId = currentQuestion.parent_id
   const currentQuestionId = currentQuestion.id
   currentQuestion.parent_id = +item.toId || null
 
-  if (+item.toId !== parentId) saveOrder(+item.toId, currentQuestionId)
+  //if (+item.toId !== parentId) - условие которое мешело порядку сохранение элементу внутри родительского элемента
+
+  saveOrder(+item.toId, currentQuestionId)
 }
 </script>
 
 <template>
-  {{ questions }}
   <VCard class="faq-card">
     <VCardTitle class="faq-card-header">
       <div>Вопросы и ответы</div>
