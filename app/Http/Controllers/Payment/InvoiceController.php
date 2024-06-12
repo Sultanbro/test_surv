@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Payment;
 use App\Classes\Helpers\Phone;
 use App\Http\Requests\Payment\NewInvoiceRequest;
 use App\Jobs\ProcessCreatePracticumInvoiceLead;
-use App\Models\CentralUser;
 use App\Models\Invoice;
 use Illuminate\Http\JsonResponse;
 
@@ -20,8 +19,6 @@ class InvoiceController
     {
         $data = $request->validated();
 
-        $user = CentralUser::fromAuthUser();
-
         /** @var Invoice $invoice */
         $invoice = Invoice::query()->create([
             'payer_name' => $data['payer_name'],
@@ -32,11 +29,11 @@ class InvoiceController
             'status' => 'pending',
         ]);
 
-        $job = new  ProcessCreatePracticumInvoiceLead($invoice);
+        $job = new ProcessCreatePracticumInvoiceLead($invoice);
 
         dispatch($job)
             ->onConnection('sync')
-            ->afterCommit();
+            ->afterResponse();
 
         return response()->json([], 201);
     }
