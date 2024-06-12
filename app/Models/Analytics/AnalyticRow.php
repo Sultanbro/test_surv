@@ -47,7 +47,9 @@ class AnalyticRow extends Model
         $columns = AnalyticColumn::query()
             ->where('date', $date)
             ->where('group_id', $group_id)
+            ->whereIn('name', range(1, 31))
             ->get();
+
         $rows = collect();
         foreach ($rowsToCreate as $create) {
             /** @var AnalyticRow $row */
@@ -59,20 +61,37 @@ class AnalyticRow extends Model
             ]));
         }
 
+        $firstRow = $rows->where('group_id', $group_id)->first();
+
         foreach ($columns as $column) {
             foreach ($rows as $row) {
-                AnalyticStat::query()
-                    ->create([
-                        'group_id' => $group_id,
-                        'date' => $date,
-                        'row_id' => $row->id,
-                        'column_id' => $column->id,
-                        'value' => '',
-                        'show_value' => '',
-                        'editable' => 1,
-                        'class' => 'text-left font-bold',
-                        'type' => AnalyticStat::INITIAL,
-                    ]);
+                if ($row->id == $firstRow->id) {
+                    AnalyticStat::query()
+                        ->create([
+                            'group_id' => $group_id,
+                            'date' => $date,
+                            'row_id' => $firstRow->id,
+                            'column_id' => $column->id,
+                            'value' => $column->name,
+                            'show_value' => $column->name,
+                            'editable' => 1,
+                            'class' => 'text-left font-bold',
+                            'type' => AnalyticStat::INITIAL,
+                        ]);
+                } else {
+                    AnalyticStat::query()
+                        ->create([
+                            'group_id' => $group_id,
+                            'date' => $date,
+                            'row_id' => $row->id,
+                            'column_id' => $column->id,
+                            'value' => '',
+                            'show_value' => '',
+                            'editable' => 1,
+                            'class' => 'text-left font-bold',
+                            'type' => AnalyticStat::INITIAL,
+                        ]);
+                }
             }
         }
     }
