@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\User;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\ServiceProvider;
@@ -103,9 +104,8 @@ class AppServiceProvider extends ServiceProvider
 //
         if (auth()->user()->id == 1 && tenant('id') == null) {
             tenancy()->initialize('bp');
-            dd(tenant('id'));
         }
-        $permissions = auth()->user()->getAllPermissions()->pluck('name')->toArray();
+        $permissions = User::where('email', auth()->user()->email)->getAllPermissions()->pluck('name')->toArray();
 //        }
         if (auth()->user()->program_id === 1 && tenant('id') == 'bp') {
             $permissions[] = 'ucalls_view';
