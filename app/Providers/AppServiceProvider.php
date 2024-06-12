@@ -108,6 +108,7 @@ class AppServiceProvider extends ServiceProvider
 //        if (!table_exists('permissions', 'mysql')) {
 //            $permissions = [];
 //        } else {
+        dd(tenant());
         $permissions = auth()->user()->getAllPermissions()->pluck('name')->toArray();
 //        }
         if (auth()->user()->program_id === 1 && tenant('id') == 'bp') {
