@@ -101,14 +101,10 @@ class AppServiceProvider extends ServiceProvider
     {
         if (\Auth::guest()) return ['csrfToken' => csrf_token()];
 //
-        dd(auth()->user()->id, tenant('id'));
         if (auth()->user()->id == 1 && tenant('id') == null) {
             tenancy()->initialize('bp');
+            dd(tenant('id'));
         }
-//        dd(auth()->user());
-//        if (!table_exists('permissions', 'mysql')) {
-//            $permissions = [];
-//        } else {
         $permissions = auth()->user()->getAllPermissions()->pluck('name')->toArray();
 //        }
         if (auth()->user()->program_id === 1 && tenant('id') == 'bp') {
