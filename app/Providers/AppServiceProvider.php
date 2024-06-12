@@ -105,7 +105,7 @@ class AppServiceProvider extends ServiceProvider
         if (auth()->user()->id == 1 && tenant('id') == null) {
             tenancy()->initialize('bp');
         }
-        $permissions = User::where('email', auth()->user()->email)->getAllPermissions()->pluck('name')->toArray();
+        $permissions = User::where('email', auth()->user()->email)->first()->getAllPermissions()->pluck('name')->toArray();
 //        }
         if (auth()->user()->program_id === 1 && tenant('id') == 'bp') {
             $permissions[] = 'ucalls_view';
