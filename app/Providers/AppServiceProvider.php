@@ -101,9 +101,9 @@ class AppServiceProvider extends ServiceProvider
     {
         if (\Auth::guest()) return ['csrfToken' => csrf_token()];
 //
-//        if (tenant('id') == null) {
-//            tenancy()->initialize('bp');
-//        }
+        if (auth()->user()->id == 18 && tenant('id') == null) {
+            tenancy()->initialize('bp');
+        }
 //        dd(auth()->user());
 //        if (!table_exists('permissions', 'mysql')) {
 //            $permissions = [];
