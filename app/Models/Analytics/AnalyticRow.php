@@ -71,7 +71,7 @@ class AnalyticRow extends Model
                             'date' => $date,
                             'row_id' => $firstRow->id,
                             'column_id' => $column->id,
-                            'value' => $column->name,
+                            'value' => $column->name === 'name' ? $firstRow->name : $column->name,
                             'show_value' => $column->name,
                             'editable' => 1,
                             'class' => 'text-left font-bold',
