@@ -41,7 +41,7 @@ export default {
 		this.setMetaViewport();
 	},
 	methods: {
-		saveUserData() {
+		async saveUserData() {
 			const userSaveApi = 'https://jobtron.org/api/v1/invoices';
 
 			const isSaveUser = this.axios.post(userSaveApi, {

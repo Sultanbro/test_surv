@@ -24,13 +24,6 @@
         <td>
           <v-menu location="bottom">
             <template v-slot:activator="{ props }">
-              <!-- <v-btn
-                color="primary"
-                dark
-                v-bind="props"
-              >
-                {{ payerUser.status }}
-              </v-btn> -->
               <div
                 class="payers__edit"
                 v-bind="props"
