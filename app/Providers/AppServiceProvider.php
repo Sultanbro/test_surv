@@ -101,7 +101,8 @@ class AppServiceProvider extends ServiceProvider
     {
         if (\Auth::guest()) return ['csrfToken' => csrf_token()];
 //
-        if (auth()->user()->id == 18 && tenant('id') == null) {
+
+        if (auth()->user()->id == 1 && tenant('id') == null) {
             tenancy()->initialize('bp');
         }
 //        dd(auth()->user());
