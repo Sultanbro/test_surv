@@ -109,7 +109,7 @@ class Activity extends Model
 
     public static function getView(string $name): int
     {
-        return Str::contains($$name, 'ячейка из сводной', true) ? 7 : 0;
+        return Str::contains($name, 'ячейка из сводной', true) ? 7 : 0;
     }
 
     /**
