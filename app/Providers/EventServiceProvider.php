@@ -5,7 +5,6 @@ namespace App\Providers;
 use App\Events\{ActivityUpdated,
     BonusUpdated,
     EmailNotificationEvent,
-    ExtrenalPaymentWebhookTriggeredListener,
     KpiChangedEvent,
     Payment\PaymentWebhookTriggeredEvent,
     TimeTrack\CreateTimeTrackHistoryEvent,
@@ -30,6 +29,7 @@ use App\Listeners\{ActivityUpdatedListener,
     Payment\LogPaymentWebhookListener,
     Payment\PracticumPaymentWebhookListener,
     Payment\TariffPaymentWebhookListener,
+    Payment\UpdateInvoiceStatusInLeadListener,
     TimeTrack\CreateTimeTrackHistoryListener,
     TrackCourseItemFinishedListener,
     TrackGroupChangingListener,
@@ -41,7 +41,8 @@ use App\Listeners\{ActivityUpdatedListener,
     TransferUserInGroupListener,
     UserStatUpdatedListener,
     UserUpdatedListener,
-    WorkdayListener};
+    WorkdayListener
+};
 use App\Models\WorkChart\WorkChartModel;
 use App\Observers\Timetracking\TimetrackingObserver;
 use App\Observers\UserObserver;
@@ -114,7 +115,8 @@ class EventServiceProvider extends ServiceProvider
             TariffPaymentWebhookListener::class,
             ExternalPaymentWebhookListener::class,
             LogPaymentWebhookListener::class,
-            PracticumPaymentWebhookListener::class
+            PracticumPaymentWebhookListener::class,
+            UpdateInvoiceStatusInLeadListener::class
         ]
     ];
 

@@ -208,12 +208,6 @@ class PageAndPermissionSeeder extends Seeder
                 "key" => "notifications"
             ],
             [
-                "id" => 20,
-                "name" => "Чек листы",
-                "parent_id" => 9,
-                "key" => "checklists"
-            ],
-            [
                 "id" => 21,
                 "name" => "Депремирование",
                 "parent_id" => null,
