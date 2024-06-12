@@ -34,7 +34,7 @@ class StoreDealInBitrix
                 "TITLE" => "Jobtron.org - Платеж практикум: {$this->invoice->id}",
                 "TYPE_ID" => "SALE",
                 "STAGE_ID" => "C38:NEW",
-                "OPPORTUNITY" => 0,
+                "OPPORTUNITY" => 12500,
                 "CURRENCY_ID" => "kzt",
                 "RESPONSIBLE_ID" => 1,
                 "CATEGORY_ID" => "38"
