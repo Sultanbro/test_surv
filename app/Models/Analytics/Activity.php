@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
 /**
  * @property int $id
@@ -105,6 +106,11 @@ class Activity extends Model
     const SOURCE_LOCAL = 4; // другие
     const SOURCE_TIMEBOARD = 5; // вкладка табель
     const SOURCE_HR = 6; // вкладка HR
+
+    public static function getView(string $name): int
+    {
+        return Str::contains($$name, 'ячейка из сводной', true) ? 7 : 0;
+    }
 
     /**
      * @return HasMany

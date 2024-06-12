@@ -451,8 +451,7 @@ class AnalyticsController extends Controller
      */
     public function createActivity(Request $request)
     {
-        $isCell = Str::contains( $request->activity['name'],'ячейка из сводной', true);
-        dd($isCell);
+
         Activity::query()->create([
             'name' => $request->activity['name'],
             'group_id' => $request->group_id,
@@ -462,7 +461,7 @@ class AnalyticsController extends Controller
             'weekdays' => $request->activity['weekdays'],
             'ud_ves' => 0,
             'source' => Activity::SOURCE_GROUP,
-            'view' => $isCell ? 7 : 0
+            'view' => Activity::getView($request->activity['name'])
         ]);
 
         $date = Carbon::createFromDate($request->year, $request->month, 1)->format('Y-m-d');
