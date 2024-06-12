@@ -29,9 +29,8 @@ class PermissionController extends Controller
 
     public function get(Request $request)
     {
-        $rolesx = Role::with('permissions')->get(['name', 'id']);
-
-
+        $rolesx = Role::with('permissions')
+            ->get(['name', 'id']);
 
         foreach($rolesx as $role) {
             $arr = [];

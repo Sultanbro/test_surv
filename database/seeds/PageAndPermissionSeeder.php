@@ -111,24 +111,24 @@ class PageAndPermissionSeeder extends Seeder
                 "parent_id" => null,
                 "key" => "reports"
             ],
-            [
-                "id" => 2,
-                "name" => "ТОП",
-                "parent_id" => 1,
-                "key" => "top"
-            ],
+//            [
+//                "id" => 2,
+//                "name" => "ТОП",
+//                "parent_id" => 1,
+//                "key" => "top"
+//            ],
             [
                 "id" => 3,
                 "name" => "Аналитика",
                 "parent_id" => 1,
                 "key" => "analytics"
             ],
-            [
-                "id" => 4,
-                "name" => "HR",
-                "parent_id" => 1,
-                "key" => "hr"
-            ],
+//            [
+//                "id" => 4,
+//                "name" => "HR",
+//                "parent_id" => 1,
+//                "key" => "hr"
+//            ],
             [
                 "id" => 5,
                 "name" => "Табель",

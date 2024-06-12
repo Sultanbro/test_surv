@@ -282,7 +282,7 @@ export default {
 			pages: [],
 			permissions: [],
 			showRoles: false,
-			isBp: ['bp', 'test'].includes(window.location.hostname.split('.')[0]),
+			isBp: true,
 			ignoreRules: [
 				'news_view',
 				'structure_view',
