@@ -320,19 +320,36 @@ class PermissionController extends Controller
             if ($request->get('role')['id']) {
                 /** @var Role $role */
                 $role = Role::query()->find($request->get('role')['id']);
-            } else {
+            }
+            else {
                 $role = Role::create(['name' => $request->get('role')['name']]);
             }
 
             $role->name = $request->get('role')['name'];
             $role->save();
 
+            $permissionsToCheck = [];
             $permissionsFromRequest = $request->get('permissions');
-            foreach ($permissionsFromRequest as $permission) {
-                if (!permission_exists($permission)) continue;
-                $role->syncPermissions($permission);
+            foreach ($this->getPages() as $page) {
+                if ($page->children) {
+                    foreach ($page->children as $child) {
+                        $permissionsToCheck[] = $child['key'] . '_view';
+                        $permissionsToCheck[] = $child['key'] . '_edit';
+                    }
+                }
+                $permissionsToCheck[] = $page['key'] . '_view';
+                $permissionsToCheck[] = $page['key'] . '_edit';
             }
 
+            foreach ($permissionsToCheck as $permission) {
+                if (!permission_exists($permission)) continue;
+
+                if (in_array($permission, $permissionsFromRequest)) {
+                    $role->givePermissionTo($permission);
+                } else {
+                    $role->revokePermissionTo($permission);
+                }
+            }
             DB::commit();
             return response()->json([
                 'role' => $role,
