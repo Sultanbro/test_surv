@@ -320,8 +320,7 @@ class PermissionController extends Controller
             if ($request->get('role')['id']) {
                 /** @var Role $role */
                 $role = Role::query()->find($request->get('role')['id']);
-            }
-            else {
+            } else {
                 $role = Role::create(['name' => $request->get('role')['name']]);
             }
 
