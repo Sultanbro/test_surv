@@ -22,7 +22,7 @@
 			<div
 				v-for="(q, q_index) in questions"
 				:key="q_index"
-				class="question mb-5"
+				class="question mt-4"
 				:class="{ show: q.editable }"
 			>
 				<div
@@ -30,30 +30,7 @@
 					class="title d-flex jcsb"
 					@click.stop="editQuestion(q_index)"
 				>
-					<div class="btns aic mr-4">
-						<i
-							v-if="q.type == 0"
-							class="fas fa-tasks"
-						/>
-						<i
-							v-else
-							class="fas fa-question"
-						/>
-						<span class="ml-3">{{ q.points }}</span>
-					</div>
-
-					<input
-						v-model="q.text"
-						type="text"
-						disabled
-						placeholder="Текст вопроса..."
-					>
-					<div class="btns aic ml-5">
-						<i
-							class="far fa-trash-alt pointer text-danger"
-							@click.stop="deleteQuestion(q_index)"
-						/>
-					</div>
+					{{ q.text || "Текст вопроса..." }}
 				</div>
 
 				<div
@@ -75,12 +52,20 @@
 
 				<div v-if="q.editable || mode == 'read'">
 					<template v-if="mode == 'edit'">
-						<textarea
-							v-model="q.text"
-							placeholder="Текст вопроса..."
-							class="form-control"
-							@keyup="changed = true"
-						/>
+						<div class="d-flex align-items-center gap-3">
+							<textarea
+								v-model="q.text"
+								placeholder="Напишите текст тестового вопроса"
+								class="form-control"
+								@keyup="changed = true"
+							/>
+							<div class="btns aic ml-auto">
+								<i
+									class="far fa-trash-alt pointer text-danger"
+									@click.stop="deleteQuestion(q_index)"
+								/>
+							</div>
+						</div>
 						<div class="row">
 							<div class="col-12 col-md-4" />
 						</div>
@@ -92,55 +77,67 @@
 						<div
 							v-for="(v, v_index) in q.variants"
 							:key="v_index"
-							class="variant d-flex aic mt-4"
+							class="d-flex aic mt-4"
+							@mouseover="handleMouseOver(v_index)"
+							@mouseleave="handleMouseLeave"
 						>
-							<label
-								v-if="mode == 'edit'"
-								class="d-flex w-full"
-							>
-								<input
-									v-model="v.right"
-									type="checkbox"
-									class="mr-2 checkbox"
-									title="Отметьте галочкой, если думаете, что ответ правильный. Правильных вариантов может быть несколько"
-									@change="changed = true"
-								>
-
-								<input
-									:ref="`variant${q_index}_${v_index}`"
-									v-model="v.text"
-									type="text"
-									placeholder="Введите вариант ответа..."
-									@keyup.enter="addVariant(q_index, v_index)"
-									@keyup.delete="deleteVariant(q_index, v_index)"
-								>
-							</label>
-
-							<div class="question-form-group">
-								<input
-									:id="'v-' + v_index + 'q' + q_index"
-									v-model="v.checked"
-									type="checkbox"
-									class="mr-2"
-									title="Отметьте галочкой, если думаете, что ответ правильный. Правильных вариантов может быть несколько"
-									@change="changed = true"
-								>
+							<div class="variant">
 								<label
-									v-if="mode == 'read'"
-									class="d-flex w-100 justify-content-between"
-									:class="{ right: scores && v.right == true }"
-									:for="'v-' + v_index + 'q' + q_index"
+									v-if="mode == 'edit'"
+									class="d-flex"
 								>
-									<p class="mb-0">{{ v.text }}</p>
+									<input
+										v-model="v.right"
+										type="checkbox"
+										class="mr-2 checkbox"
+										title="Отметьте галочкой, если думаете, что ответ правильный. Правильных вариантов может быть несколько"
+										@change="changed = true"
+									>
 
-									<i
-										v-if="scores && v.right == true"
-										class="fa fa-check right ml-2 mt-1"
-									/>
+									<input
+										:ref="`variant${q_index}_${v_index}`"
+										v-model="v.text"
+										type="text"
+										placeholder="Введите вариант ответа..."
+										@keyup.enter="addVariant(q_index, v_index)"
+										@keyup.delete="deleteVariant(q_index, v_index)"
+									>
 								</label>
+
+								<div class="question-form-group">
+									<input
+										:id="'v-' + v_index + 'q' + q_index"
+										v-model="v.checked"
+										type="checkbox"
+										class="mr-2"
+										title="Отметьте галочкой, если думаете, что ответ правильный. Правильных вариантов может быть несколько"
+										@change="changed = true"
+									>
+									<label
+										v-if="mode == 'read'"
+										class="d-flex w-100 justify-content-between"
+										:class="{ right: scores && v.right == true }"
+										:for="'v-' + v_index + 'q' + q_index"
+									>
+										<p class="mb-0">{{ v.text }}</p>
+
+										<i
+											v-if="scores && v.right == true"
+											class="fa fa-check right ml-2 mt-1"
+										/>
+									</label>
+								</div>
+							</div>
+							<div
+								v-if="mode == 'edit' && showDeleteVariant === v_index"
+								class="btns aic ml-auto"
+							>
+								<i
+									class="far fa-trash-alt pointer text-danger"
+									@click.stop="deleteVariant(q_index, v_index)"
+								/>
 							</div>
 						</div>
-
 						<button
 							v-if="mode == 'edit'"
 							class="btn btn-default mt-2 mb-2"
@@ -313,6 +310,7 @@ export default {
 			timer_turned_on: false,
 			passed: false,
 			right_ans: 0, // правильно отвеченные
+			showDeleteVariant: null,
 		};
 	},
 	computed: {
@@ -394,6 +392,12 @@ export default {
 	},
 	mounted() {},
 	methods: {
+		handleMouseOver(index) {
+			this.showDeleteVariant = index;
+		},
+		handleMouseLeave() {
+			this.showDeleteVariant = null;
+		},
 		setResults() {
 			this.questions.forEach((q) => {
 				if (q.result == null) return;
@@ -637,20 +641,22 @@ export default {
 		},
 
 		deleteVariant(q, v) {
-			let el = this.questions[q].variants[v];
-			if (
-				el.text == el.before &&
-				el.before == '' &&
-				this.questions[q].variants.length > 1
-			) {
+			if (this.questions[q] && this.questions[q].variants) {
 				this.questions[q].variants.splice(v, 1);
-				if (v > 0) this.$refs['variant' + q + '_' + (v - 1)][0].focus();
-			} else {
-				this.questions[q].variants[v].before =
-					this.questions[q].variants[v].text;
 			}
+			// if (
+			// 	el.text == el.before &&
+			// 	el.before == "" &&
+			// 	this.questions[q].variants.length > 1
+			// ) {
+			// 	this.questions[q].variants.splice(v, 1);
+			// 	if (v > 0) this.$refs["variant" + q + "_" + (v - 1)][0].focus();
+			// } else {
+			// 	this.questions[q].variants[v].before =
+			// 		this.questions[q].variants[v].text;
+			// }
 
-			this.changed = true;
+			// this.changed = true;
 		},
 
 		validate() {
@@ -747,6 +753,7 @@ export default {
 	background-color: #fff;
 	border-radius: 8px;
 	padding: 0.7%;
+	width: 97.5%;
 }
 
 .questions .question-form-group label:before {
@@ -810,13 +817,13 @@ export default {
 	display: block;
 	position: absolute;
 	top: 6px;
-	left: 10px;
+	left: 9px;
 	width: 5px;
 	height: 11px;
 	border: solid #fff;
 	border-width: 0 2px 2px 0;
 	opacity: 1;
-	transform: rotate(30deg);
+	transform: rotate(40deg);
 }
 
 .checkbox:hover {
