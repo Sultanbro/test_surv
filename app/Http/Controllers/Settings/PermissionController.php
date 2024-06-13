@@ -17,6 +17,7 @@ use App\Models\Books\BookGroup;
 use App\Models\Videos\VideoCategory;
 use App\KnowBase;
 use App\Models\PermissionItem;
+use Throwable;
 
 class PermissionController extends Controller
 {
@@ -307,62 +308,75 @@ class PermissionController extends Controller
         return Role::create(['name' => 'role_' . uniqid()]);
     }
 
+    /**
+     * @throws Throwable
+     */
     public function updateRole(Request $request)
     {
+        try {
 
-        if ($request->role['id']) {
-            $role = Role::find($request->role['id']);
-        } else {
-            $role = Role::create(['name' => $request->role['name']]);
-        }
-
-        if (!$role) return '';
-
-        $role->name = $request->role['name'];
-        $role->save();
-
-
-        foreach ($this->getPages() as $page) {
-
-            $permission = $page['key'] . '_view';
-
-            if (in_array($permission, $request->permissions) && permission_exists($permission)) {
-                $role->givePermissionTo($permission);
+            DB::beginTransaction();
+            if ($request->role['id']) {
+                $role = Role::find($request->role['id']);
             } else {
-                $role->revokePermissionTo($permission);
+                $role = Role::create(['name' => $request->role['name']]);
             }
 
-            $permission = $page['key'] . '_edit';
-            if (in_array($permission, $request->permissions)) {
-                $role->givePermissionTo($permission);
-            } else {
-                $role->revokePermissionTo($permission);
-            }
+            if (!$role) return '';
 
-            if ($page->children) {
-                foreach ($page->children as $key => $child) {
+            $role->name = $request->role['name'];
+            $role->save();
 
-                    $permission = $child['key'] . '_view';
 
-                    if (in_array($permission, $request->permissions)) {
-                        $role->givePermissionTo($permission);
-                    } else {
-                        $role->revokePermissionTo($permission);
-                    }
+            foreach ($this->getPages() as $page) {
 
-                    $permission = $child['key'] . '_edit';
-                    if (in_array($permission, $request->permissions)) {
-                        $role->givePermissionTo($permission);
-                    } else {
-                        $role->revokePermissionTo($permission);
+                $permission = $page['key'] . '_view';
+
+                if (in_array($permission, $request->permissions) && permission_exists($permission)) {
+                    $role->givePermissionTo($permission);
+                } else {
+                    $role->revokePermissionTo($permission);
+                }
+
+                $permission = $page['key'] . '_edit';
+                if (in_array($permission, $request->permissions)) {
+                    $role->givePermissionTo($permission);
+                } else {
+                    $role->revokePermissionTo($permission);
+                }
+
+                if ($page->children) {
+                    foreach ($page->children as $key => $child) {
+
+                        $permission = $child['key'] . '_view';
+
+                        if (in_array($permission, $request->permissions)) {
+                            $role->givePermissionTo($permission);
+                        } else {
+                            $role->revokePermissionTo($permission);
+                        }
+
+                        $permission = $child['key'] . '_edit';
+                        if (in_array($permission, $request->permissions)) {
+                            $role->givePermissionTo($permission);
+                        } else {
+                            $role->revokePermissionTo($permission);
+                        }
                     }
                 }
             }
-
-
+            DB::commit();
+            return response()->json([
+                'role' => $role,
+                'success' => 'Role updated successfully.'
+            ]);
+        } catch (Exception $exception) {
+            DB::rollBack();
+            return response()->json([
+                'error' => $exception->getMessage()
+            ], $exception->getCode()
+            );
         }
-
-        return $role;
     }
 
     public function deleteTarget(Request $request)
