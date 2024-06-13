@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Settings;
 
 use App\Http\Controllers\Controller;
+use App\Models\Permission\Permission;
 use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
@@ -32,7 +33,7 @@ class PermissionController extends Controller
         $rolesx = Role::with('permissions')
             ->get(['name', 'id']);
 
-        foreach($rolesx as $role) {
+        foreach ($rolesx as $role) {
             $arr = [];
             foreach ($role->permissions as $key => $perm) {
                 $arr[$perm->name] = true;
@@ -42,22 +43,21 @@ class PermissionController extends Controller
         }
 
 
-
         $items = PermissionItem::get();
 
         foreach ($items as $item) {
 
             $targets = [];
             foreach ($item->targets as $_target) {
-                if($_target['type'] == 1) {
+                if ($_target['type'] == 1) {
                     $target = User::withTrashed()->find($_target['id']);
                     $name = $target ? $target->last_name . ' ' . $target->name . ' #' . $target->id : 'Noname';
                 }
-                if($_target['type'] == 2) {
+                if ($_target['type'] == 2) {
                     $target = ProfileGroup::query()->find($_target['id']);
                     $name = $target ? $target->name : 'Noname';
                 }
-                if($_target['type'] == 3) {
+                if ($_target['type'] == 3) {
                     $target = Position::query()->find($_target['id']);
                     $name = $target ? $target->position : 'Noname';
                 }
@@ -94,19 +94,17 @@ class PermissionController extends Controller
         }
 
 
-
-
         $all_users_with_all_their_roles = User::withTrashed()->with('roles')->has('roles')->orderBy('id', 'asc')->get();
 
-        $users = User::query()->where(function($query) {
-                    $query->whereNotNull('name')
-                        ->orWhere('name', '!=', '')
-                        ->orWhere('last_name', '!=', '')
-                        ->orWhereNotNull('last_name');
-                })
-                ->whereNotIn('id', $all_users_with_all_their_roles->pluck('id')->toArray())
-                ->orderBy('id', 'desc')
-                ->get([\DB::raw("CONCAT(last_name,' ',name, ' #', id) as name"), 'id']);
+        $users = User::query()->where(function ($query) {
+            $query->whereNotNull('name')
+                ->orWhere('name', '!=', '')
+                ->orWhere('last_name', '!=', '')
+                ->orWhereNotNull('last_name');
+        })
+            ->whereNotIn('id', $all_users_with_all_their_roles->pluck('id')->toArray())
+            ->orderBy('id', 'desc')
+            ->get([\DB::raw("CONCAT(last_name,' ',name, ' #', id) as name"), 'id']);
 
         $groups_x = ProfileGroup::where('active', 1)->get(['name', 'id'])->toArray();
         array_unshift($groups_x, [
@@ -124,14 +122,15 @@ class PermissionController extends Controller
         ];
     }
 
-    private function userInGroups($id) {
+    private function userInGroups($id)
+    {
         $arr = [];
         $groups = ProfileGroup::get();
 
         foreach ($groups as $key => $group) {
             $editors_id = json_decode($group->editors_id);
-            if($editors_id == null) continue;
-            if(in_array($id, $editors_id)) {
+            if ($editors_id == null) continue;
+            if (in_array($id, $editors_id)) {
                 array_push($arr, [
                     'id' => $group->id,
                     'name' => $group->name
@@ -158,7 +157,8 @@ class PermissionController extends Controller
      * Rename updateUser to updateItem
      * @throws Exception
      */
-    public function updateTarget(Request $request) {
+    public function updateTarget(Request $request)
+    {
 
         try {
             $item = $request->item;
@@ -183,8 +183,7 @@ class PermissionController extends Controller
                 ->whereJsonLength('groups', '=', count($group_ids))
                 ->exists();
 
-            if ($exists)
-            {
+            if ($exists) {
                 return response()->json(['error' => 'Duplicate entry for unique key.'], 400);
             }
             if ($request->item['id'] == 0) {
@@ -268,10 +267,8 @@ class PermissionController extends Controller
 
             return $pi ? $pi->id : 0;
 
-        } catch (QueryException $queryException)
-        {
-            if ($queryException->errorInfo[1] == 1062)
-            {
+        } catch (QueryException $queryException) {
+            if ($queryException->errorInfo[1] == 1062) {
                 return response()->json(['error' => 'Duplicate entry for unique key.'], 400);
             }
         }
@@ -279,7 +276,7 @@ class PermissionController extends Controller
 
     private function assignGroups($user_id, $items, $full_access = false)
     {
-        if($items == null) $items = [];
+        if ($items == null) $items = [];
 
         $arr = [];
         foreach ($items as $key => $item) {
@@ -290,9 +287,9 @@ class PermissionController extends Controller
 
         foreach ($groups as $key => $group) {
             $editors_id = json_decode($group->editors_id);
-            if($editors_id == null) $editors_id = [];
+            if ($editors_id == null) $editors_id = [];
 
-            if($full_access || in_array($group->id, $arr)) {
+            if ($full_access || in_array($group->id, $arr)) {
                 array_push($editors_id, $user_id);
             } else {
                 $editors_id = array_diff($editors_id, [$user_id]);
@@ -305,54 +302,56 @@ class PermissionController extends Controller
         }
     }
 
-    public function createRole(Request $request) {
+    public function createRole(Request $request)
+    {
         return Role::create(['name' => 'role_' . uniqid()]);
     }
 
-    public function updateRole(Request $request) {
+    public function updateRole(Request $request)
+    {
 
-        if($request->role['id']) {
+        if ($request->role['id']) {
             $role = Role::find($request->role['id']);
         } else {
             $role = Role::create(['name' => $request->role['name']]);
         }
 
-        if(!$role) return '';
+        if (!$role) return '';
 
         $role->name = $request->role['name'];
         $role->save();
 
 
-        foreach ($this->getPages() as $key => $page) {
+        foreach ($this->getPages() as $page) {
 
             $permission = $page['key'] . '_view';
 
-            if(in_array($permission, $request->permissions)) {
+            if (in_array($permission, $request->permissions) && permission_exists($permission)) {
                 $role->givePermissionTo($permission);
             } else {
                 $role->revokePermissionTo($permission);
             }
 
             $permission = $page['key'] . '_edit';
-            if(in_array($permission, $request->permissions)) {
+            if (in_array($permission, $request->permissions)) {
                 $role->givePermissionTo($permission);
             } else {
                 $role->revokePermissionTo($permission);
             }
 
-            if($page->children) {
+            if ($page->children) {
                 foreach ($page->children as $key => $child) {
 
                     $permission = $child['key'] . '_view';
 
-                    if(in_array($permission, $request->permissions)) {
+                    if (in_array($permission, $request->permissions)) {
                         $role->givePermissionTo($permission);
                     } else {
                         $role->revokePermissionTo($permission);
                     }
 
                     $permission = $child['key'] . '_edit';
-                    if(in_array($permission, $request->permissions)) {
+                    if (in_array($permission, $request->permissions)) {
                         $role->givePermissionTo($permission);
                     } else {
                         $role->revokePermissionTo($permission);
@@ -366,24 +365,25 @@ class PermissionController extends Controller
         return $role;
     }
 
-    public function deleteTarget(Request $request) {
+    public function deleteTarget(Request $request)
+    {
 
         $pi = PermissionItem::find($request->id);
-        if($pi) {
+        if ($pi) {
             foreach ($pi->targets as $key => $target) {
-                if($target['type'] == 1) {
+                if ($target['type'] == 1) {
                     $item = User::withTrashed()->with('roles')->find($target['id']);
                 }
 
-                if($target['type'] == 2) {
-                    $item = ProfileGroup::where('active',1)->with('roles')->find($target['id']);
+                if ($target['type'] == 2) {
+                    $item = ProfileGroup::where('active', 1)->with('roles')->find($target['id']);
                 }
 
-                if($target['type'] == 3) {
+                if ($target['type'] == 3) {
                     $item = Position::with('roles')->find($target['id']);
                 }
 
-                if($item) {
+                if ($item) {
                     foreach ($item->roles as $key => $role) {
                         $item->removeRole($role->name);
                     }
@@ -396,9 +396,10 @@ class PermissionController extends Controller
 
     }
 
-    public function deleteRole(Request $request) {
+    public function deleteRole(Request $request)
+    {
         $role = Role::with('permissions')->find($request['role']['id']);
-        if($role) {
+        if ($role) {
 
             foreach ($role->permissions as $key => $p) {
                 $role->revokePermissionTo($p->name);
@@ -445,7 +446,7 @@ class PermissionController extends Controller
         }
 
         foreach ($_users as $key => $user) {
-            if($user->name == '' || $user->last_name == '') continue;
+            if ($user->name == '' || $user->last_name == '') continue;
             $users[] = [
                 'name' => $user->last_name . ' ' . $user->name,
                 'id' => $user->id,
@@ -473,8 +474,8 @@ class PermissionController extends Controller
         $playlist_cats = VideoCategory::with('playlists')->get();
         $kbs = KnowBase::whereNull('parent_id')->get();
 
-        foreach($bookgroups as $group) {
-            if(!is_null($group->books) && $group->books->count() > 0)
+        foreach ($bookgroups as $group) {
+            if (!is_null($group->books) && $group->books->count() > 0)
                 $options[] = [
                     'id' => $group->id,
                     'name' => $group->name,
@@ -482,7 +483,7 @@ class PermissionController extends Controller
                     'disabled' => true
                 ];
 
-            if ($group->books){
+            if ($group->books) {
                 foreach ($group->books as $book) {
                     $options[] = [
                         'id' => $book->id,
@@ -494,8 +495,8 @@ class PermissionController extends Controller
             }
         }
 
-        foreach($playlist_cats as $cat) {
-            if(!is_null($cat->playlists) && $cat->playlists->count() > 0)
+        foreach ($playlist_cats as $cat) {
+            if (!is_null($cat->playlists) && $cat->playlists->count() > 0)
                 $options[] = [
                     'id' => $cat->id,
                     'name' => $cat->title,
@@ -504,7 +505,7 @@ class PermissionController extends Controller
                 ];
 
 
-            if ($cat->playlists){
+            if ($cat->playlists) {
                 foreach ($cat->playlists as $pl) {
                     $options[] = [
                         'id' => $pl->id,
@@ -516,8 +517,8 @@ class PermissionController extends Controller
             }
         }
 
-        if ($kbs){
-            foreach($kbs as $kb) {
+        if ($kbs) {
+            foreach ($kbs as $kb) {
                 $options[] = [
                     'id' => $kb->id,
                     'name' => $kb->title,

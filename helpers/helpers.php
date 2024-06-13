@@ -1,8 +1,10 @@
 <?php
 
+use App\Models\Permission\Permission;
 use Carbon\Carbon;
 use Psr\Log\LoggerInterface;
 use Psr\SimpleCache\InvalidArgumentException;
+use Spatie\Permission\Exceptions\PermissionDoesNotExist;
 use Symfony\Component\VarDumper\VarDumper;
 
 if (!function_exists('translit')) {
@@ -147,5 +149,17 @@ if (!function_exists('slack')) {
         if ($message) $logger->info($message);
 
         return Log::channel('slackNotification');
+    }
+}
+
+if (!function_exists('permission_exists')) {
+    function permission_exists(string $name): bool
+    {
+        try {
+            Permission::findByName($name);
+            return true;
+        } catch (PermissionDoesNotExist) {
+            return false;
+        }
     }
 }
