@@ -693,10 +693,6 @@ class Salary extends Model
                 $x = $tts->where('day', $i);
                 $y = $tts_before_apply->where('day', $i);
 
-                if ($i == 10 && auth()->id() == 18 && $user->id == 32749) {
-                    dd($y);
-                }
-
                 $t = $trainee_days->where('day', $i)->first();
                 $r = $retraining_days->where('day', $i)->first();
                 $a = $absent_days->where('day', $i)->first();
@@ -707,15 +703,12 @@ class Salary extends Model
                         $hours[$i] = 0;
                     } else if ($x->count() > 0) { // отработанное время есть
                         $total_hours = $x->sum('total_hours');
-
                         $earning = ($total_hours / 60) * $hourly_pay;
                         $earnings[$i] = round($earning);
-
                         $hours[$i] = round(($total_hours / 60), 1);
-
                     } else if ($y->count() > 0) { // отработанное врея есть до принятия на работу
                         $total_hours = $y->sum('total_hours');
-                        $earning = $total_hours / 60 * $hourly_pay;
+                        $earning = $total_hours / 60 * $hourly_pay * 0.5;
                         $earnings[$i] = round($earning);
                         $hours[$i] = round(($total_hours / 60), 1);
                     } else if ($r) { // переобучение
