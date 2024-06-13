@@ -693,7 +693,7 @@ class Salary extends Model
                 $t = $trainee_days->where('day', $i)->first();
                 $r = $retraining_days->where('day', $i)->first();
                 $a = $absent_days->where('day', $i)->first();
-
+                dd_if(auth()->id() == 18 && $user->id == 32749, $y->count());
                 if (empty($statTotalHour)) {
                     if ($a) {
                         $earnings[$i] = 0;
@@ -732,8 +732,7 @@ class Salary extends Model
 
                         $hours[$i] = round($working_hours / 2, 1);
                     }
-                }
-                else {
+                } else {
                     if ($a) {
                         $earnings[$i] = 0;
                         $hours[$i] = 0;
