@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Permission\Permission;
 use Exception;
 use Illuminate\Database\QueryException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
@@ -311,60 +312,42 @@ class PermissionController extends Controller
     /**
      * @throws Throwable
      */
-    public function updateRole(Request $request)
+    public function updateRole(Request $request): JsonResponse
     {
         try {
-
             DB::beginTransaction();
-            if ($request->role['id']) {
-                $role = Role::find($request->role['id']);
-            } else {
-                $role = Role::create(['name' => $request->role['name']]);
+
+            if ($request->get('role')['id']) {
+                /** @var Role $role */
+                $role = Role::query()->find($request->get('role')['id']);
+            }
+            else {
+                $role = Role::create(['name' => $request->get('role')['name']]);
             }
 
-            if (!$role) return '';
-
-            $role->name = $request->role['name'];
+            $role->name = $request->get('role')['name'];
             $role->save();
 
-
+            $permissionsToCheck = [];
+            $permissionsFromRequest = $request->get('permissions');
             foreach ($this->getPages() as $page) {
+                if ($page->children) {
+                    foreach ($page->children as $child) {
+                        $permissionsToCheck[] = $child['key'] . '_view';
+                        $permissionsToCheck[] = $child['key'] . '_edit';
+                    }
+                }
+                $permissionsToCheck[] = $page['key'] . '_view';
+                $permissionsToCheck[] = $page['key'] . '_edit';
+            }
 
-                $permission = $page['key'] . '_view';
-
+            foreach ($permissionsToCheck as $permission) {
                 if (!permission_exists($permission)) continue;
 
-                if (in_array($permission, $request->permissions)) {
+                if (in_array($permission, $permissionsFromRequest)) {
                     $role->givePermissionTo($permission);
                 } else {
                     $role->revokePermissionTo($permission);
-                }
-
-                $permission = $page['key'] . '_edit';
-                if (in_array($permission, $request->permissions)) {
-                    $role->givePermissionTo($permission);
-                } else {
-                    $role->revokePermissionTo($permission);
-                }
-
-                if ($page->children) {
-                    foreach ($page->children as $key => $child) {
-
-                        $permission = $child['key'] . '_view';
-
-                        if (in_array($permission, $request->permissions)) {
-                            $role->givePermissionTo($permission);
-                        } else {
-                            $role->revokePermissionTo($permission);
-                        }
-
-                        $permission = $child['key'] . '_edit';
-                        if (in_array($permission, $request->permissions)) {
-                            $role->givePermissionTo($permission);
-                        } else {
-                            $role->revokePermissionTo($permission);
-                        }
-                    }
                 }
             }
             DB::commit();
@@ -372,7 +355,8 @@ class PermissionController extends Controller
                 'role' => $role,
                 'success' => 'Role updated successfully.'
             ]);
-        } catch (Exception $exception) {
+        } catch
+        (Exception $exception) {
             DB::rollBack();
             return response()->json([
                 'error' => $exception->getMessage()
@@ -549,6 +533,4 @@ class PermissionController extends Controller
             'options' => $options,
         ];
     }
-
-
 }
