@@ -1064,7 +1064,7 @@ export default {
 			book.parent_id = parent.id;
 
 			if (!parent.children) parent.children = [];
-			parent.children.unshift(book);
+			parent.children.push(book);
 			this.booksMap[book.id] = book;
 			parent.opened = true; 
 

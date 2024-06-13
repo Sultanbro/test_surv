@@ -45,8 +45,8 @@
 				v-if="isEditMode && item.canEdit"
 				class="KBNavItem-actions"
 			>
+				<!-- v-if="(type === 'book' && $laravel.is_admin) || sectionsMode" - убрал чтобы можно было добавлять страницу на главной, и внутри секций -->
 				<div
-					v-if="(type === 'book' && $laravel.is_admin) || !sectionsMode"
 					title="Добавить страницу"
 					@click.stop="$emit('add-page', item)"
 				>
