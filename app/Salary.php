@@ -595,9 +595,8 @@ class Salary extends Model
                 ->where('enter_as_date', '>=', Carbon::parse($user_applied_at)->format("Y-m-d"));
             $tts_before_apply = $user->timetracking
                 ->where('enter_as_date', '<', Carbon::parse($user_applied_at)->format("Y-m-d"));
-            if (auth()->id() == 18 && $user->id == 32749) {
-                dd($tts_before_apply);
-            }
+
+
             $trainee_days = $user->daytypes->whereIn('type', [5, 7]);
             $retraining_days = $user->daytypes->whereIn('type', [6]);
             $absent_days = $user->daytypes->whereIn('type', [2]);
