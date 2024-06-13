@@ -521,6 +521,7 @@ class Salary extends Model
                         DB::raw('DAY(enter) as day'),
                         DB::raw('sum(total_hours) as total_hours'),
                         DB::raw('UNIX_TIMESTAMP(enter) as time'),
+                        DB::raw('date(enter) as enter_as_date'),
                     ])
                         ->whereMonth('enter', $date->month)
                         ->whereYear('enter', $date->year)
