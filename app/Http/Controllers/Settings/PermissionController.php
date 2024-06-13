@@ -332,7 +332,9 @@ class PermissionController extends Controller
 
                 $permission = $page['key'] . '_view';
 
-                if (in_array($permission, $request->permissions) && permission_exists($permission)) {
+                if (!permission_exists($permission)) continue;
+
+                if (in_array($permission, $request->permissions)) {
                     $role->givePermissionTo($permission);
                 } else {
                     $role->revokePermissionTo($permission);

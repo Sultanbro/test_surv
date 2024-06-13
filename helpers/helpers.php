@@ -153,10 +153,10 @@ if (!function_exists('slack')) {
 }
 
 if (!function_exists('permission_exists')) {
-    function permission_exists(string $name): bool
+    function permission_exists(string $name, string $guard = 'web'): bool
     {
         try {
-            Permission::findByName($name);
+            Permission::findByName($name, $guard);
             return true;
         } catch (PermissionDoesNotExist) {
             return false;
