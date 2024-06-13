@@ -213,7 +213,7 @@ class TimetrackService
                 $data['salaries'][$day]['value'] = number_format(round($hour * $hourlyPay * $currencyRate * $user->internshipPayRate()), 0, '.', ''); // стажировочные на пол суммы
                 $data['salaries'][$day]['training'] = true;
             } else if ($timeTrackingBeforeApply->where('date', $day)->first()) {
-                $hour = $timeTrackingBeforeApply->where('date', $day)->first()->total_hours / 60;
+                $hour = $timeTrackingBeforeApply->where('date', $day)->first()->total_hours / 60 * 0.5;
                 $data['salaries'][$day]['value'] = number_format(round($hour * $hourlyPay * $currencyRate), 0, '.', '');
             }
 
