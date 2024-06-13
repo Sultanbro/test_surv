@@ -693,8 +693,9 @@ class Salary extends Model
                 $t = $trainee_days->where('day', $i)->first();
                 $r = $retraining_days->where('day', $i)->first();
                 $a = $absent_days->where('day', $i)->first();
-                dd($user->id);
-                dd_if(auth()->id() == 18 && $user->id == 32749, $y->count());
+                if(auth()->id() == 18 && $user->id == 32749){
+                    dd($y->count());
+                }
                 if (empty($statTotalHour)) {
                     if ($a) {
                         $earnings[$i] = 0;
