@@ -1,5 +1,8 @@
 <template>
-	<div class="workshop">
+	<div
+		v-if="!isShowQrCodeKaspi"
+		class="workshop"
+	>
 		<h1 class="workshop__title">
 			Оплата: Практикума по созданию Базы Знаний
 		</h1>
@@ -30,8 +33,8 @@
 			<p>Оплачивая картой вы соглашаетесь с условями <strong>оферты</strong></p>
 
 			<h2>Купить в рассрочку или в кредит</h2>
-			<button>
-				<a href="https://pay.kaspi.kz/pay/jjtpkyxq">
+			<button @click="toggleQrCode">
+				<a>
 					Оплата Каспи
 					<img
 						class="workshopform__kaspi-img"
@@ -52,8 +55,18 @@
 			</button>
 			<p>
 				Обязательно указывайте в примечании свой <strong>номер телефона</strong>
+				{{ isShowQrCodeKaspi }}
 			</p>
 		</div>
+	</div>
+	<div
+		v-else
+		class="workshop"
+	>
+		<img
+			:src="require('../assets/img/qr-code.png').default"
+			alt=""
+		>
 	</div>
 </template>
 
@@ -62,7 +75,7 @@ export default {
 	name: 'WorkshopPage',
 	data() {
 		return {
-			data: [],
+			isShowQrCodeKaspi: false,
 		};
 	},
 	created() {},
@@ -75,6 +88,9 @@ export default {
 		this.setMetaViewport();
 	},
 	methods: {
+		toggleQrCode() {
+			this.isShowQrCodeKaspi = true;
+		},
 		setMetaViewport() {
 			const meta = document.createElement('meta');
 			meta.setAttribute('name', 'viewport');
@@ -98,7 +114,7 @@ export default {
 		font-size: 35px;
 	}
 	&__wrapper {
-    min-width: 40%;
+		min-width: 40%;
 		margin-top: 3%;
 		h2 {
 			margin-top: 3%;
