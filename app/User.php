@@ -114,6 +114,8 @@ use Spatie\Permission\Traits\HasRoles;
  * @property Collection<ReferralSalary> $referralSalaries
  * @property Collection<DayType> $daytypes
  * @property Collection<Timetracking> $timetracking
+ * scopes
+ * @method static Builder whereActive()
  * @mixin Builder
  */
 class User extends Authenticatable implements Authorizable, ReferrerInterface
@@ -453,6 +455,11 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
             ->setStatus(Timetracking::DAY_ENDED)
             ->addTime($workEndTime, $record->user->timezone())
             ->save();
+    }
+
+    public static function scopeWhereActive(Builder $query): Builder
+    {
+        return $query->whereHas('groups', fn($query) => $query->where('status', 'active'));
     }
 
     /**
