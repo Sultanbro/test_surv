@@ -23,9 +23,10 @@
 				:sections-mode="sectionsMode"
 				:class="[
 					'KBNavItems-item',
-					{ 'KBNavItems-item_active': active === item.id },
+					{ 'KBNavItems-item_active': activeItem === item.id || active === item.id },
 				]"
 				@open="toggleOpen"
+				@click="setActiveItem(item.id)"
 				@add-page="addPage"
 				@add-book="$emit('add-book', $event)"
 				@remove-book="$emit('remove-book', $event)"
@@ -101,6 +102,7 @@ export default {
 	data() {
 		return {
 			key: 0,
+			activeItem: null,
 		};
 	},
 	computed: {
@@ -119,8 +121,6 @@ export default {
 			item.opened = !item.opened;
 			this.showPage(item, false, true);
 			++this.key;
-			// console.log(item.children);
-			// console.log(item.opened);
 		},
 		showPage(page) {
 			this.$emit('show-page', page);
@@ -133,6 +133,9 @@ export default {
 			this.$nextTick(() => {
 				this.$forceUpdate();
 			});
+		},
+		setActiveItem(id) {
+			this.activeItem = id;
 		},
 	},
 };
