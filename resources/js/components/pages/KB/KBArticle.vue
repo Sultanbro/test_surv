@@ -167,9 +167,9 @@ export default {
 		this.isFavoriteBook();
 	},
 	methods: {
-		async toggleFavorite() {
+		toggleFavorite() {
 			this.isFavorite = !this.isFavorite;
-			await this.$emit('favorite', this.activeBook);
+			this.$emit('favorite', this.activeBook);
 			// try {
 			// 	if (this.isFavorite) {
 			// 		await KBAPI.toggleKBPageFavorite(this.activeBook.id);
@@ -186,19 +186,12 @@ export default {
 			// }
 		},
 		async isFavoriteBook() {
-			try {
-				const favoritesBooks = await KBAPI.fetchKBFavorites();
-				const currentBook = favoritesBooks.items.some(
-					(book) => book.id === this.activeBook.id
-				);
+			const favoritesBooks = await KBAPI.fetchKBFavorites();
+			const currentBook = favoritesBooks.items.find((book) => {
+				return book.id === this.activeBook.id;
+			});
 
-				this.isFavorite = currentBook;
-				return this.isFavorite;
-			} catch (error) {
-				console.error('Error fetching favorite books:', error);
-				this.isFavorite = false;
-				return this.isFavorite;
-			}
+			return currentBook ? (this.isFavorite = true) : (this.isFavorite = false);
 		},
 		passed() {
 			if (!this.activeBook.item_model) {

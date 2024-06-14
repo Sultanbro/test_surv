@@ -564,6 +564,7 @@ export default {
 	props: {},
 	data() {
 		return {
+			previousParentId: undefined,
 			mode: 'read',
 			books: [],
 			currentBook: null,
@@ -899,8 +900,8 @@ export default {
 		},
 
 		onBook(book) {
-			if (this.mode === 'edit') return;
-			return this.fetchBook(book);
+			// if (this.mode === "edit") return - без условия страницы при редактировании открываются;
+			return this.fetchBook(book, false);
 		},
 
 		async fetchBook(root, init) {
@@ -959,7 +960,7 @@ export default {
 
 				this.updateBook = book;
 				await this.updateSection(true);
-        
+
 				// this.onSearch(parent.id)
 
 				this.createParentId = null;
@@ -1066,7 +1067,19 @@ export default {
 			if (!parent.children) parent.children = [];
 			parent.children.push(book);
 			this.booksMap[book.id] = book;
-			parent.opened = true; 
+
+			// Если есть предыдущий родитель и он не совпадает с текущим, закрываем его
+			if (this.previousParent && this.previousParent.id !== parent.id) {
+				this.previousParent.opened = false;
+			}
+
+			// Открываем текущего родителя, если это новая секция или первый вызов
+			if (this.createParentId !== parent?.id) {
+				parent.opened = true;
+			}
+
+			this.createParentId = parent?.id || null; // Сохранение текущего родителя
+			this.previousParent = parent; // Обновление предыдущего родителя
 
 			this.$nextTick(() => {
 				this.activeBook = book;
@@ -1077,9 +1090,18 @@ export default {
 
 		onCreate(parent) {
 			this.clearAccess();
-			parent.opened = !parent.opened
+
+			if (this.previousParent && this.previousParent.id !== parent.id) {
+				this.previousParent.opened = false;
+			}
+
+			if (this.createParentId !== parent?.id) {
+				parent.opened = !parent.opened;
+			}
+
 			this.showCreate = true;
 			this.createParentId = parent?.id || null;
+			this.previousParent = parent;
 		},
 
 		async onPage(page) {
@@ -1098,8 +1120,10 @@ export default {
 				this.activeBook.canRead = page.canRead;
 				this.editBook = false;
 				// TODO: clear search
-				// if (!init) this.routerPush(`/kb?s=${this.currentBook.id}&b=${page.id}`); - отображает полностью url со страницей
-				this.routerPush(`/kb?s=${this.currentBook.id}&b=${page.id}`);
+
+				// if (!init) this.routerPush(`/kb?s=${this.currentBook.id}&b=${page.id}`) - сейчас почему-то это тоже не правильно работает;
+
+				// this.routerPush(`/kb?s=${this.currentBook.id}&b=${page.id}`) - отображает полностью url со страницей;
 			} catch (error) {
 				console.error(error);
 			}
@@ -1112,7 +1136,7 @@ export default {
 			if (!root) return;
 			await this.onBook(root);
 			this.$nextTick(async () => {
-				await this.onPage(page);
+				await this.onPage(page, true);
 				this.routerPush(
 					`/kb?s=${this.currentBook.id}&b=${page.id}${
 						search ? '&hl=' + search : ''
