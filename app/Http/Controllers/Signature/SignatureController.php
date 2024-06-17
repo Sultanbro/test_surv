@@ -93,7 +93,7 @@ class SignatureController extends Controller
         $user->signedFiles()->attach($file, [
             'signed_at' => now()
         ]);
-        $sms->delete(); // delete sms verification after using
+        $sms->delete(); // delete sms record after using
         return $this->response('verified');
     }
 

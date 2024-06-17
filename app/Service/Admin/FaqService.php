@@ -114,15 +114,17 @@ class FaqService
         return true;
     }
 
-    public function search($query)
+    public function search($query): array
     {
         if ($query) {
+
             return Faq::query()
                 ->where('title', 'LIKE', '%' . $query . '%')
-                ->where('body', 'LIKE', '%' . $query . '%')
+                ->orWhere('body', 'LIKE', '%' . $query . '%')
                 ->pluck('id')
                 ->toArray();
         }
+
         return [];
     }
 }
