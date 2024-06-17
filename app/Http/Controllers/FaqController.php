@@ -106,6 +106,7 @@ class FaqController extends Controller
      */
     public function search(Request $request): JsonResponse
     {
+        dd($request->get('query'));
         return $this->response(
             message: "Success",
             data: $this->service->search($request->get('query'))

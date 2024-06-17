@@ -123,6 +123,7 @@ class FaqService
                 ->pluck('id')
                 ->toArray();
         }
+
         return [];
     }
 }
