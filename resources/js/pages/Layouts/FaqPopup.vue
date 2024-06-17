@@ -1,7 +1,5 @@
 <template>
-	<div
-		class="popup__con faq-con"
-	>
+	<div class="popup__con faq-con">
 		<div class="faq-list">
 			<div class="faq-search">
 				<b-form-input
@@ -23,7 +21,10 @@
 				@select="onSelect"
 			/>
 		</div>
-		<FaqContent :active="active" />
+		<FaqContent
+			:active="active"
+			:search="search"
+		/>
 	</div>
 </template>
 
@@ -32,8 +33,7 @@ import FaqList from './faq/FaqList';
 import FaqContent from './faq/FaqContent';
 import FaqSearch from './faq/FaqSearch';
 
-const divider = '___'
-
+const divider = '___';
 
 export default {
 	name: 'FaqPopup',
@@ -54,83 +54,87 @@ export default {
 		};
 	},
 	computed: {
-		itemsFlat(){
-			return this.getItems(this.items, [])
+		itemsFlat() {
+			return this.getItems(this.items, []);
 		},
-		itemsSearch(){
-			return this.itemsFlat.filter(item => this.searchResult.includes(item.id))
+		itemsSearch() {
+			return this.itemsFlat.filter((item) =>
+				this.searchResult.includes(item.id)
+			);
 		},
 	},
 	created() {
-		this.fetchFAQ()
+		this.fetchFAQ();
 	},
-	mounted(){},
+	mounted() {},
 	methods: {
-		getItems(items, result){
-			items.forEach(item => {
-				result.push(item)
-				if(item.children?.length) this.getItems(item.children, result)
-			})
-			return result
+		getItems(items, result) {
+			items.forEach((item) => {
+				result.push(item);
+				if (item.children?.length) this.getItems(item.children, result);
+			});
+			return result;
 		},
-		async fetchFAQ(){
+		async fetchFAQ() {
 			try {
-				const {data} = await this.axios.get('/profile/faq')
-				this.items = data.data
-				const path = location.pathname
-				const dialog = ''
-				const item = this.itemsFlat.find(item => {
-					const [itemPath, itemDialog] = item.page.split(divider)
-					return path === itemPath && (itemDialog || '') === dialog
-				})
-				if(item) this.onSelect(item)
-			}
-			catch (error) {
-				this.$onError({error})
+				const { data } = await this.axios.get('/profile/faq');
+				this.items = data.data;
+				const path = location.pathname;
+				const dialog = '';
+				const item = this.itemsFlat.find((item) => {
+					const [itemPath, itemDialog] = item.page.split(divider);
+					return path === itemPath && (itemDialog || '') === dialog;
+				});
+				if (item) this.onSelect(item);
+			} catch (error) {
+				this.$onError({ error });
 			}
 		},
-		async onSelect(item){
+		async onSelect(item) {
 			try {
-				const {data} = await this.axios.get(`/profile/faq/get/${item.id}`)
-				this.active = data.data
+				const { data } = await this.axios.get(`/profile/faq/get/${item.id}`);
+				this.active = data.data;
+			} catch (error) {
+				this.$onError({ error });
 			}
-			catch (error) {
-				this.$onError({error})
-			}
 		},
-		async seachFAQ(){
-			if(!this.search) return
-			const { data } = await this.axios.get('/profile/faq/search', {params: {query: this.search}})
-			this.searchResult = data.data
+		async seachFAQ() {
+			if (!this.search) return;
+
+			const { data } = await this.axios.get('/profile/faq/search', {
+				params: { query: this.search },
+			});
+
+			this.searchResult = data.data;
 		},
-		onSearch(){
-			clearTimeout(this.seachTimeout)
-			this.seachTimeout = setTimeout(this.seachFAQ, 750)
+		onSearch() {
+			clearTimeout(this.seachTimeout);
+			this.seachTimeout = setTimeout(this.seachFAQ, 750);
 		},
-	}
+	},
 };
 </script>
 
 <style lang="scss">
-	.faq-con {
-		margin: 0 -40px;
-		display: flex;
-		border-top: 1px solid #ddd;
-		.faq-search{
-			padding: 16px 20px 17px 0;
-			margin-bottom: 20px;
-			border-bottom: 1px solid #ddd;
-			position: sticky;
-			top: 0;
-			background-color: #ecf0f9;
-			i{
-				position: absolute;
-				top: 25px;
-				right: 35px;
-				z-index: 1;
-				font-size: 16px;
-				color: #999;
-			}
+.faq-con {
+	margin: 0 -40px;
+	display: flex;
+	border-top: 1px solid #ddd;
+	.faq-search {
+		padding: 16px 20px 17px 0;
+		margin-bottom: 20px;
+		border-bottom: 1px solid #ddd;
+		position: sticky;
+		top: 0;
+		background-color: #ecf0f9;
+		i {
+			position: absolute;
+			top: 25px;
+			right: 35px;
+			z-index: 1;
+			font-size: 16px;
+			color: #999;
 		}
 	}
+}
 </style>

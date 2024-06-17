@@ -1,7 +1,7 @@
 <template>
 	<div
 		class="faq-list-content"
-		:class="{'opened' : hasActive || !parentId, 'nest' : nest}"
+		:class="{ opened: hasActive || !parentId, nest: nest }"
 	>
 		<div
 			v-for="item in list"
@@ -10,17 +10,15 @@
 		>
 			<p
 				class="faq-list-item-title"
-				:class="{'active': item.id === activeItemId, 'parent' : item.children}"
+				:class="{ active: item.id === activeItemId, parent: item.children }"
 				@click="onSelect(item)"
 			>
 				{{ item.title }}
 				<i
-					v-if="item.children && item.id !== activeItemId"
-					class="fa fa-chevron-down"
-				/>
-				<i
-					v-if="item.children && item.id === activeItemId"
-					class="fa fa-chevron-up"
+					v-if="item.children.length"
+					:class="
+						item.id === activeItemId ? 'fa fa-chevron-up' : 'fa fa-chevron-down'
+					"
 				/>
 			</p>
 			<FaqList
@@ -41,53 +39,54 @@ export default {
 	props: {
 		list: {
 			type: Array,
-			default: () => []
+			default: () => [],
 		},
 		nest: {
 			type: Boolean,
-			default: false
+			default: false,
 		},
 		active: {
 			type: Object,
-			default: null
+			default: null,
 		},
 		parentId: {
 			type: Number,
-			default: 0
+			default: 0,
 		},
 		isOpen: {
 			type: Boolean,
-			default: false
-		}
+			default: false,
+		},
 	},
 	data() {
 		return {
 			itemId: null,
 			openedIndex: null,
-		}
+		};
 	},
 	computed: {
-		activeItemId(){
-			return this.active?.id || 0
+		activeItemId() {
+			return this.active?.id || 0;
 		},
-		hasActive(){
-			if(!this.active) return false
-			if(this.active.id === this.parentId) return true
-			return this.findActive(this.list)
-		}
+		hasActive() {
+			if (!this.active) return false;
+			if (this.active.id === this.parentId) return true;
+			return this.findActive(this.list);
+		},
 	},
 	methods: {
-		findActive(list){
-			for(let i = 0; i < list.length; ++i){
-				if(list[i].id === this.active.id || this.findActive(list[i].children)) return true
+		findActive(list) {
+			for (let i = 0; i < list.length; ++i) {
+				if (list[i].id === this.active.id || this.findActive(list[i].children))
+					return true;
 			}
-			return false
+			return false;
 		},
-		onSelect(item){
-			this.$emit('select', item)
+		onSelect(item) {
+			this.$emit('select', item);
 		},
 	},
-}
+};
 </script>
 
 <style lang="scss">
@@ -98,12 +97,12 @@ export default {
 	overflow: auto;
 	background-color: #ecf0f9;
 	padding: 0 0 0 20px;
-	&-content{
+	&-content {
 		display: none;
-		&.opened{
+		&.opened {
 			display: block;
 		}
-		&.nest{
+		&.nest {
 			padding-left: 20px;
 		}
 	}
@@ -118,7 +117,7 @@ export default {
 			cursor: pointer;
 			font-size: 16px;
 			border-radius: 20px 0 0 20px;
-			i{
+			i {
 				color: #999;
 				font-size: 12px;
 			}
@@ -126,14 +125,14 @@ export default {
 			&:hover {
 				background-color: #e2e5ee;
 			}
-			&.active{
+			&.active {
 				background-color: rgba(96, 142, 233, 0.2);
 				color: #333333;
-				i{
+				i {
 					color: #fff;
 				}
-				&.parent{
-					background-color: #608EE9;
+				&.parent {
+					background-color: #608ee9;
 					color: #fff;
 				}
 			}
