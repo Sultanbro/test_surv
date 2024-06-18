@@ -64,7 +64,7 @@
 		class="workshop"
 	>
 		<img
-			:src="require('../assets/img/qr-code.png').default"
+			:src="require('../assets/img/qr-codee.png').default"
 			alt=""
 		>
 	</div>
