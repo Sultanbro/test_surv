@@ -32,17 +32,17 @@ class AppServiceProvider extends ServiceProvider
         // наверное нужно удалить если перешли на layouts.spa
         View::composer('layouts.app', function ($view) {
             $view->with([
-                'laravelToVue' => []
+                'laravelToVue' => $this->dataToVue()
             ]);
         });
         View::composer('layouts.spa', function ($view) {
             $view->with([
-                'laravelToVue' => []
+                'laravelToVue' => $this->dataToVue()
             ]);
         });
         View::composer('home', function ($view) {
             $view->with([
-                'laravelToVue' => []
+                'laravelToVue' => $this->dataToHomeVue()
             ]);
         });
     }
@@ -79,15 +79,15 @@ class AppServiceProvider extends ServiceProvider
     {
         if (\Auth::guest()) return ['csrfToken' => csrf_token()];
 
-        dd_if(request()->ip() == '217.76.14.113', auth()->getProvider());
+//        dd_if(request()->ip() == '217.76.14.113', auth()->getProvider());
 
         return [
-            'csrfToken' => csrf_token(),
-            'userId' => auth()->id(),
-            'fullname' => auth()->user()->last_name . ' ' . auth()->user()->name,
-            'avatar' => 'https://cp.callibro.org/files/img/8.png',
-            'email' => auth()->user()->email,
-            'cabinets' => auth()->user()->cabinets()->toArray()
+//            'csrfToken' => csrf_token(),
+//            'userId' => auth()->id(),
+//            'fullname' => auth()->user()->last_name . ' ' . auth()->user()->name,
+//            'avatar' => 'https://cp.callibro.org/files/img/8.png',
+//            'email' => auth()->user()->email,
+//            'cabinets' => auth()->user()->cabinets()->toArray()
         ];
     }
 
