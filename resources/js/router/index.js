@@ -24,8 +24,11 @@ import QualityControlView from '@/views/QualityControlView';
 import MapView from '@/views/MapView';
 import PromotionalMaterialView from '@/views/PromotionalMaterialView';
 import ReferralPrsentationView from '@/views/ReferralPrsentationView';
+
 import WorkshopPage from '../pages/workshop/WorkshopPage.vue';
 import WorkshopForm from '../pages/workshop/WorkShopForm.vue';
+
+import MkKnowBase from '../pages/mkKnowBase/MkKnowBase.vue';
 
 // Cтраницу настроек наверное тоже разделим если нужно
 import SettingsView from '@/views/SettingsView';
@@ -343,6 +346,14 @@ const router = new VueRouter({
 			component: WorkshopForm,
 			meta: {
 				title: 'Форма перед оплатой',
+			},
+		},
+		{
+			path: '/mkKnowBase',
+			name: 'MkKnowBase',
+			component: MkKnowBase,
+			meta: {
+				title: 'МК База знаний',
 			},
 		},
 	],
