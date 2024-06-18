@@ -104,10 +104,10 @@ class AppServiceProvider extends ServiceProvider
     private function dataToVue(): array
     {
         if (Auth::guest()) return ['csrfToken' => csrf_token()];
-//
-//        if (auth()->user()->id == 1 && tenant('id') == null) {
-//            tenancy()->initialize('bp');
-//        }
+
+        if (auth()->user()->id == 1 && tenant('id') == null) {
+            tenancy()->initialize('bp');
+        }
 
         $user = User::query()->where('email', auth()->user()?->email)?->first() ?? auth()->user();
         $permissions = $user->getAllPermissions()->pluck('name')->toArray();
