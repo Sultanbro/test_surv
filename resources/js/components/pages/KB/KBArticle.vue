@@ -167,32 +167,31 @@ export default {
 		this.isFavoriteBook();
 	},
 	methods: {
-		async toggleFavorite() {
+		toggleFavorite() {
 			this.isFavorite = !this.isFavorite;
-			try {
-				if (this.isFavorite) {
-					await KBAPI.addFavorite(this.activeBook.id);
-				} else {
-					await KBAPI.removeFavorite(this.activeBook.id);
-				}
-				this.$emit('favorite', this.activeBook);
-			} catch (error) {
-				console.error('Error updating favorite status:', error);
-				this.isFavorite = !this.isFavorite; // Revert the change on error
-			}
+			this.$emit('favorite', this.activeBook);
+			// try {
+			// 	if (this.isFavorite) {
+			// 		await KBAPI.toggleKBPageFavorite(this.activeBook.id);
+			// 	}
+
+			// 	// await KBAPI.toggleKBPageFavorite(this.activeBook.id, {
+			// 	//   toggle: true
+			// 	// }); - По какой-то причине это работает не правильно
+
+			// 	this.$emit("favorite", this.activeBook);
+			// } catch (error) {
+			// 	console.error("Error updating favorite status:", error);
+			// 	this.isFavorite = !this.isFavorite;
+			// }
 		},
 		async isFavoriteBook() {
-			try {
-				const favoritesBooks = await KBAPI.fetchKBFavorites();
-				const currentBook = favoritesBooks.items.some((book) => book.id === this.activeBook.id);
+			const favoritesBooks = await KBAPI.fetchKBFavorites();
+			const currentBook = favoritesBooks.items.find((book) => {
+				return book.id === this.activeBook.id;
+			});
 
-				this.isFavorite = currentBook;
-				return this.isFavorite;
-			} catch (error) {
-				console.error('Error fetching favorite books:', error);
-				this.isFavorite = false;
-				return this.isFavorite;
-			}
+			return currentBook ? (this.isFavorite = true) : (this.isFavorite = false);
 		},
 		passed() {
 			if (!this.activeBook.item_model) {
