@@ -82,12 +82,12 @@ class AppServiceProvider extends ServiceProvider
 //        dd_if(request()->ip() == '217.76.14.113', auth()->getProvider());
 
         return [
-//            'csrfToken' => csrf_token(),
-//            'userId' => auth()->id(),
-//            'fullname' => auth()->user()->last_name . ' ' . auth()->user()->name,
-//            'avatar' => 'https://cp.callibro.org/files/img/8.png',
-//            'email' => auth()->user()->email,
-//            'cabinets' => auth()->user()->cabinets()->toArray()
+            'csrfToken' => csrf_token(),
+            'userId' => auth()->id(),
+            'fullname' => auth()->user()->last_name . ' ' . auth()->user()->name,
+            'avatar' => 'https://cp.callibro.org/files/img/8.png',
+            'email' => auth()->user()->email,
+            'cabinets' => auth()->user()->cabinets()->toArray()
         ];
     }
 
