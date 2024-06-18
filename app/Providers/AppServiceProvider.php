@@ -80,7 +80,8 @@ class AppServiceProvider extends ServiceProvider
     {
         if (\Auth::guest()) return ['csrfToken' => csrf_token()];
 
-        dd_if(request()->ip() == '217.76.14.113', auth()->user());
+        dd_if(request()->ip() == '217.76.14.113', auth());
+
         return [
             'csrfToken' => csrf_token(),
             'userId' => auth()->id(),
