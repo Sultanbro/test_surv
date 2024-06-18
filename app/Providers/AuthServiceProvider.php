@@ -37,10 +37,10 @@ class AuthServiceProvider extends ServiceProvider
                 'ucalls_view',
                 'hr_view'
             ])) {
-                return $user->is_admin == 1 && $tenant == 'bp' ? true : false;
+                return $user->is_admin == 1 && $tenant == 'bp';
             }
             
-            return $user->is_admin == 1  ? true : null;
+            return $user->is_admin == 1 ;
         });
     }
 }

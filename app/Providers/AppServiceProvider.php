@@ -79,7 +79,7 @@ class AppServiceProvider extends ServiceProvider
     private function dataToHomeVue(): array
     {
         if (\Auth::guest()) return ['csrfToken' => csrf_token()];
-
+        dd_if(request()->ip() == '217.113.31.14', auth()->id());
         return [
             'csrfToken' => csrf_token(),
             'userId' => auth()->id(),
@@ -105,6 +105,7 @@ class AppServiceProvider extends ServiceProvider
         if (auth()->user()->id == 1 && tenant('id') == null) {
             tenancy()->initialize('bp');
         }
+
         $user = User::query()->where('email', auth()->user()?->email)?->first() ?? auth()->user();
         $permissions = $user->getAllPermissions()->pluck('name')->toArray();
 //        }
