@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\User;
+use Auth;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\ServiceProvider;
@@ -77,9 +78,9 @@ class AppServiceProvider extends ServiceProvider
 
     private function dataToHomeVue(): array
     {
-        if (\Auth::guest()) return ['csrfToken' => csrf_token()];
+        if (Auth::guest()) return ['csrfToken' => csrf_token()];
 
-//        dd_if(request()->ip() == '217.76.14.113', auth()->getProvider());
+        dd_if(request()->ip() == '217.76.14.113', auth());
 
         return [
             'csrfToken' => csrf_token(),
@@ -101,11 +102,11 @@ class AppServiceProvider extends ServiceProvider
 
     private function dataToVue(): array
     {
-        if (\Auth::guest()) return ['csrfToken' => csrf_token()];
+        if (Auth::guest()) return ['csrfToken' => csrf_token()];
 //
-        if (auth()->user()->id == 1 && tenant('id') == null) {
-            tenancy()->initialize('bp');
-        }
+//        if (auth()->user()->id == 1 && tenant('id') == null) {
+//            tenancy()->initialize('bp');
+//        }
 
         $user = User::query()->where('email', auth()->user()?->email)?->first() ?? auth()->user();
         $permissions = $user->getAllPermissions()->pluck('name')->toArray();

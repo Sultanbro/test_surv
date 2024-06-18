@@ -57,7 +57,7 @@ class LoginController extends Controller
      *
      * @throws ValidationException
      */
-    protected function sendFailedLoginResponse(Request $request)
+    protected function sendFailedLoginResponse(Request $request): Response
     {
         throw ValidationException::withMessages([
             'username' => [trans('auth.failed')],
@@ -141,7 +141,6 @@ class LoginController extends Controller
 
         // login was success
         $request->session()->regenerate();
-
         // redirect to - admin.jobtron.org
         if (request()->getHost() == 'admin.' . config('app.domain')) {
             return [
