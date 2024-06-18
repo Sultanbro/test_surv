@@ -79,8 +79,9 @@ class AppServiceProvider extends ServiceProvider
     private function dataToHomeVue(): array
     {
         if (Auth::guest()) return ['csrfToken' => csrf_token()];
+        if (!tenant()) return ['csrfToken' => csrf_token()];
 
-        dd_if(request()->ip() == '217.76.14.113', tenant());
+//        dd_if(request()->ip() == '217.76.14.113', tenant());
 
         return [
             'csrfToken' => csrf_token(),
