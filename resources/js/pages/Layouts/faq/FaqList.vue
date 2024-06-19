@@ -91,6 +91,8 @@ export default {
 
 <style lang="scss">
 .faq-list {
+	scrollbar-width: none;
+	-ms-overflow-style: none;
 	width: 350px;
 	min-width: 350px;
 	height: calc(100vh - 130px);
