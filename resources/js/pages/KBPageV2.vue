@@ -1068,10 +1068,12 @@ export default {
 			parent.children.push(book);
 			this.booksMap[book.id] = book;
 
-			// Если есть предыдущий родитель и он не совпадает с текущим, закрываем его
-			if (this.previousParent && this.previousParent.id !== parent.id) {
-				this.previousParent.opened = false;
-			}
+			// Комментарий: Убираем логику закрытия предыдущего родителя
+			/*
+	if (this.previousParent && this.previousParent.id !== parent.id) {
+		this.previousParent.opened = false;
+	}
+	*/
 
 			// Открываем текущего родителя, если это новая секция или первый вызов
 			if (this.createParentId !== parent?.id) {
@@ -1091,13 +1093,15 @@ export default {
 		onCreate(parent) {
 			this.clearAccess();
 
-			if (this.previousParent && this.previousParent.id !== parent.id) {
-				this.previousParent.opened = false;
-			}
+			// Убираем логику закрытия предыдущего родителя
+			/*
+	if (this.previousParent && this.previousParent.id !== parent.id) {
+		this.previousParent.opened = false;
+	}
+	*/
 
-			if (this.createParentId !== parent?.id) {
-				parent.opened = !parent.opened;
-			}
+			// Открываем текущего родителя, если это новая секция или первый вызов
+			parent.opened = true;
 
 			this.showCreate = true;
 			this.createParentId = parent?.id || null;

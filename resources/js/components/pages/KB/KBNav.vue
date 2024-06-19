@@ -339,10 +339,13 @@ export default {
 		updateKeys() {
 			++this.listsKey;
 		},
+		/* eslint-disable vue/no-mutating-props */
 		onBack() {
+			this.currentBook.opened = false
 			this.$emit('back');
 			this.clearSearch();
 		},
+		/* eslint-enable vue/no-mutating-props */
 		getPages(map, pages) {
 			pages.map((page) => {
 				map[page.id] = page;

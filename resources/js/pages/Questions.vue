@@ -56,7 +56,7 @@
 							<textarea
 								v-model="q.text"
 								placeholder="Напишите текст тестового вопроса"
-								class="form-control"
+								class="form-control mt-4"
 								@keyup="changed = true"
 							/>
 							<div class="btns aic ml-auto">
