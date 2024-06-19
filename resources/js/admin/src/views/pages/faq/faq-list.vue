@@ -46,7 +46,7 @@
           />
         </div>
         <FaqList
-          v-if="level < 3 && (faqEdit || (isOpen(element) && element.children.length > 0))"
+          v-if="faqEdit || (isOpen(element) && element.children.length > 0)"
           :activeQuestion="activeQuestion"
           :questions="element.children"
           :faqEdit="faqEdit"
