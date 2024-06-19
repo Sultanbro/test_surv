@@ -52,6 +52,7 @@
 					<span class="mk-know-base__main-subtitle">
 						На мастер-классе мы разберем:
 					</span>
+					<div class="line" />
 					<div class="mk-know-base__main-services">
 						<div class="mk-know-base__main-service">
 							<section>
@@ -350,7 +351,14 @@ $defaultColor: #ffd500;
 				.mk-know-base__main-subtitle {
 					font-size: 45px;
 					font-weight: 700;
-					@extend %border-bottom;
+          @extend %border-bottom
+				}
+
+				.line {
+          display: none;
+					height: 3px;
+					width: auto;
+					background-color: $defaultColor;
 				}
 
 				.mk-know-base__main-services {
@@ -537,7 +545,12 @@ $defaultColor: #ffd500;
 					padding-top: 15%;
 					.mk-know-base__main-subtitle {
 						font-size: 24px;
+            border: none;
 					}
+
+          .line {
+            display: block;
+          }
 
 					.mk-know-base__main-services {
 						flex-direction: column;
