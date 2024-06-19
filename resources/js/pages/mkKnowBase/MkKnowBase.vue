@@ -35,7 +35,7 @@
 						</p>
 					</div>
 					<div class="mk-know-base__main-timetracker">
-						<p>0 : 0</p>
+						<p>{{ formattedTime }}</p>
 						<img
 							src="https://optim.tildacdn.one/tild3433-3036-4264-b363-663938333336/-/resize/255x/-/format/webp/___1.png"
 							width="170"
@@ -172,10 +172,30 @@ export default {
 		StaffTurnoverIcon,
 		ProgressIcon,
 	},
+	data() {
+		return {
+			time: 7 * 60,
+		};
+	},
+	computed: {
+		formattedTime() {
+			const minutes = Math.floor(this.time / 60);
+			const seconds = this.time % 60;
+			return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(
+				2,
+				'0'
+			)}`;
+		},
+	},
 	mounted() {
 		this.$nextTick(() => {
 			this.setMetaViewport();
 		});
+
+		this.startTimer();
+	},
+	beforeDestroy() {
+		this.stopTimer();
 	},
 	updated() {
 		this.setMetaViewport();
@@ -186,6 +206,22 @@ export default {
 			meta.setAttribute('name', 'viewport');
 			meta.setAttribute('content', 'width=device-width, initial-scale=1.0');
 			document.head.appendChild(meta);
+		},
+		startTimer() {
+			if (!this.timerRunning) {
+				this.timerRunning = true;
+				this.interval = setInterval(() => {
+					if (this.time > 0) {
+						this.time--;
+					} else {
+						this.stopTimer();
+					}
+				}, 1000);
+			}
+		},
+		stopTimer() {
+			clearInterval(this.interval);
+			this.timerRunning = false;
 		},
 	},
 };
