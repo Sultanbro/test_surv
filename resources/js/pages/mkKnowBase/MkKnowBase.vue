@@ -314,7 +314,6 @@ $defaultColor: #ffd500;
 				font-weight: 700;
 				max-width: 671px;
 				line-height: 1.4;
-				text-align: justify;
 				span {
 					@extend %border-bottom;
 				}
