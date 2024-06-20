@@ -521,6 +521,8 @@ $defaultColor: #ffd500;
 					.mk-know-base__main-timetracker {
 						display: flex;
 						flex-direction: column-reverse;
+            justify-content: center;
+            align-items: center;
 						p {
 							padding-top: 3%;
 						}
@@ -529,11 +531,12 @@ $defaultColor: #ffd500;
 							width: 70px;
 							height: 70px;
 							top: 15px;
-							left: 130px;
+							left: 10px;
 						}
 					}
 					.mk-know-base__main-free-reg {
 						p {
+              text-align: center;
 							margin-top: 5%;
 							font-size: 15px;
 							max-width: 100%;
