@@ -2,7 +2,7 @@
 	<div class="mk-know-base">
 		<div class="mk-know-base__wrapper">
 			<header class="mk-know-base__header">
-				<button>18 июня в 17:00 по мск</button>
+				<button>25 июня в 17:00 по мск</button>
 				<p>
 					Бесплатный доступ к онлайн мастер-классу для руководителей бизнеса
 				</p>
@@ -25,10 +25,8 @@
 				</div>
 				<div class="mk-know-base__main-registration">
 					<div class="mk-know-base__main-button">
-						<button>
-							<a href="https://chat.whatsapp.com/GcDRBdJRlzWFFSeqMngY4Z">
-								Зарегистрироваться
-							</a>
+						<button @click="locationGroup">
+							<a> Зарегистрироваться </a>
 						</button>
 						<p>
 							Нажмите на кнопку и <span>подпишитесь в WhatsApp-группу</span>
@@ -91,10 +89,8 @@
 
 				<div class="mk-know-base__main-reg-button">
 					<div>
-						<button>
-							<a href="https://chat.whatsapp.com/GcDRBdJRlzWFFSeqMngY4Z">
-								Успейте зарегистрироваться бесплатно
-							</a>
+						<button @click="locationGroup">
+							<a> Успейте зарегистрироваться бесплатно </a>
 						</button>
 						<p>
 							Нажмите на кнопку и <span>подпишитесь в WhatsApp-группу</span>
@@ -147,10 +143,8 @@
 				</div>
 
 				<div class="mk-know-base__main-reg">
-					<button>
-						<a href="https://chat.whatsapp.com/GcDRBdJRlzWFFSeqMngY4Z">
-							Зарегистрироваться
-						</a>
+					<button @click="locationGroup">
+						<a> Зарегистрироваться </a>
 					</button>
 					<p>Нажмите на кнопку и <span>подпишитесь в WhatsApp-группу</span></p>
 				</div>
@@ -175,7 +169,9 @@ export default {
 	},
 	data() {
 		return {
-			time: 7 * 60,
+			time: 5 * 60,
+			timerRunning: false,
+			interval: null,
 		};
 	},
 	computed: {
@@ -188,11 +184,14 @@ export default {
 			)}`;
 		},
 	},
+	time(newValue) {
+		this.saveTime(newValue);
+	},
 	mounted() {
 		this.$nextTick(() => {
 			this.setMetaViewport();
 		});
-
+		this.loadTime();
 		this.startTimer();
 	},
 	beforeDestroy() {
@@ -214,8 +213,10 @@ export default {
 				this.interval = setInterval(() => {
 					if (this.time > 0) {
 						this.time--;
+						this.saveTime();
 					} else {
 						this.stopTimer();
+						localStorage.setItem('remainingTime', '0');
 					}
 				}, 1000);
 			}
@@ -224,6 +225,25 @@ export default {
 			clearInterval(this.interval);
 			this.timerRunning = false;
 		},
+		saveTime() {
+			localStorage.setItem('remainingTime', this.time);
+		},
+		loadTime() {
+			const savedTime = localStorage.getItem('remainingTime');
+			if (savedTime !== null) {
+				const storedTime = parseInt(savedTime, 10);
+				if (storedTime !== this.time && this.time === 10 * 60) {
+					this.time = storedTime;
+				} else {
+					this.saveTime(this.time);
+				}
+			} else {
+				this.saveTime(this.time);
+			}
+		},
+		locationGroup() {
+			window.location.href = 'https://chat.whatsapp.com/GZ8FSwFy5XU3gExCXMTQo8';
+		},
 	},
 };
 </script>
@@ -231,7 +251,7 @@ export default {
 <style scoped lang="scss">
 $defaultColor: #ffd500;
 
-@mixin mainButton($padding, $fz) {
+@mixin mainButton($padding, $fz, $paddingLeft) {
 	button {
 		border-radius: 30px;
 		background-color: $defaultColor;
@@ -245,6 +265,7 @@ $defaultColor: #ffd500;
 	}
 	p {
 		padding-top: 1%;
+		padding-left: $paddingLeft;
 		font-size: 17.5px;
 		font-weight: 700;
 		span {
@@ -288,18 +309,17 @@ $defaultColor: #ffd500;
 		}
 		.mk-know-base__main {
 			.mk-know-base__main-title {
-				padding-top: 7%;
+				padding-top: 3%;
 				font-size: 45px;
 				font-weight: 700;
-				// max-width: 671px;
-				line-height: 1.6;
-        text-align: justify;
+				max-width: 671px;
+				line-height: 1.4;
+				text-align: justify;
 				span {
 					@extend %border-bottom;
 				}
 			}
 			.mk-know-base__main-bonus {
-        padding-top: 5%;
 				display: flex;
 				align-items: center;
 				gap: 4%;
@@ -310,9 +330,8 @@ $defaultColor: #ffd500;
 				}
 				.mk-know-base__main-text {
 					max-width: 575px;
-					text-align: justify;
 					font-size: 25px;
-          line-height: 1.6;
+					line-height: 1.6;
 					span {
 						font-weight: 800;
 						background-color: rgb(28, 28, 30);
@@ -320,11 +339,11 @@ $defaultColor: #ffd500;
 				}
 			}
 			.mk-know-base__main-registration {
-				padding-top: 10%;
+				padding-top: 1%;
 				display: flex;
 				gap: 5%;
 				.mk-know-base__main-button {
-					@include mainButton(6%, 40px);
+					@include mainButton(6%, 40px, 0%);
 				}
 				.mk-know-base__main-timetracker {
 					p {
@@ -350,29 +369,29 @@ $defaultColor: #ffd500;
 			}
 
 			.mk-know-base__main-master-class {
-				padding-top: 12%;
+				padding-top: 6%;
 				.mk-know-base__main-subtitle {
 					font-size: 45px;
 					font-weight: 700;
-          @extend %border-bottom
+					@extend %border-bottom;
 				}
 
 				.line {
-          display: none;
+					display: none;
 					height: 3px;
 					width: auto;
 					background-color: $defaultColor;
 				}
 
 				.mk-know-base__main-services {
-					padding-top: 9%;
+					padding-top: 5%;
 					display: flex;
 					gap: 3%;
 					.mk-know-base__main-service {
 						section {
 							display: flex;
 							align-items: center;
-							gap: 3%;
+							gap: 2%;
 							p {
 								font-size: 25px;
 								span {
@@ -386,11 +405,11 @@ $defaultColor: #ffd500;
 
 			.mk-know-base__main-reg-button {
 				margin-top: 2%;
-				@include mainButton(3%, 27px);
+				@include mainButton(3%, 27px, 4.5%);
 			}
 
 			.mk-know-base__main-profile {
-				margin-top: 12%;
+				margin-top: 9%;
 				display: flex;
 				align-items: center;
 				gap: 10%;
@@ -418,7 +437,6 @@ $defaultColor: #ffd500;
 						padding-left: 20px;
 
 						li {
-              text-align: justify;
 							font-size: 25px;
 							margin-top: 4%;
 							line-height: 1.55;
@@ -440,30 +458,31 @@ $defaultColor: #ffd500;
 			}
 
 			.mk-know-base__main-root {
-				margin-top: 10%;
+				margin-top: 11%;
 				display: flex;
 				align-items: center;
-        text-align: justify;
-        gap: 8%;
+				gap: 2%;
 				h3 {
 					font-weight: bold;
 					font-size: 40px;
 					line-height: 1.4;
+					max-width: 573px;
 				}
 				p {
-          margin-top: 8%;
+					margin-top: 8%;
 					font-size: 28px;
 					line-height: 1.4;
+					max-width: 725px;
 				}
 
 				img {
-					transform: rotate(7deg);
+					transform: rotate(5deg);
 				}
 			}
 
 			.mk-know-base__main-reg {
 				margin-top: 9%;
-				@include mainButton(3% 6%, 40px);
+				@include mainButton(3% 6%, 40px, 2%);
 			}
 		}
 	}
@@ -490,7 +509,7 @@ $defaultColor: #ffd500;
 			}
 			.mk-know-base__main {
 				.mk-know-base__main-title {
-					margin-top: 10%;
+					margin-top: 3%;
 					font-size: 24px;
 					font-weight: bold;
 					span {
@@ -527,8 +546,8 @@ $defaultColor: #ffd500;
 					.mk-know-base__main-timetracker {
 						display: flex;
 						flex-direction: column-reverse;
-            justify-content: center;
-            align-items: center;
+						justify-content: center;
+						align-items: center;
 						p {
 							padding-top: 3%;
 						}
@@ -542,7 +561,7 @@ $defaultColor: #ffd500;
 					}
 					.mk-know-base__main-free-reg {
 						p {
-              text-align: center;
+							text-align: center;
 							margin-top: 5%;
 							font-size: 15px;
 							max-width: 100%;
@@ -554,19 +573,18 @@ $defaultColor: #ffd500;
 					padding-top: 15%;
 					.mk-know-base__main-subtitle {
 						font-size: 24px;
-            border: none;
+						border: none;
 					}
 
-          .line {
-            display: block;
-          }
+					.line {
+						display: block;
+					}
 
 					.mk-know-base__main-services {
 						flex-direction: column;
 						.mk-know-base__main-service {
 							section {
 								p {
-                  text-align: justify;
 									font-size: 15px;
 								}
 								svg {
@@ -581,7 +599,7 @@ $defaultColor: #ffd500;
 				.mk-know-base__main-reg-button {
 					margin-top: 5%;
 					button {
-            width: 100%;
+						width: 100%;
 						a {
 							font-size: 15px;
 						}
@@ -589,11 +607,12 @@ $defaultColor: #ffd500;
 					p {
 						font-size: 15px;
 						text-align: center;
+						padding-left: 1%;
 					}
 				}
 
 				.mk-know-base__main-profile {
-          margin-top: 15%;
+					margin-top: 15%;
 					flex-direction: column-reverse;
 					.mk-know-base__main-img {
 						margin-top: 7%;
@@ -605,17 +624,17 @@ $defaultColor: #ffd500;
 							font-size: 15px;
 						}
 						h1 {
-              margin-top: 2%;
+							margin-top: 2%;
 							span {
 								font-size: 24px;
 							}
 						}
 						h2 {
-              margin-top: 6%;
+							margin-top: 6%;
 							font-size: 18px;
 						}
 						ul {
-              margin-top: 6%;
+							margin-top: 6%;
 							li {
 								font-size: 15px;
 
@@ -635,7 +654,7 @@ $defaultColor: #ffd500;
 				}
 
 				.mk-know-base__main-root {
-          padding-top: 13%;
+					padding-top: 5%;
 					flex-direction: column;
 					h3 {
 						font-weight: bold;
@@ -643,13 +662,13 @@ $defaultColor: #ffd500;
 						line-height: 1.4;
 					}
 					p {
-						margin-top: 10%;
+						margin-top: 4%;
 						font-size: 15px;
-            line-height: 1.7;
+						line-height: 1.7;
 					}
 
 					img {
-						margin-top: 3%;
+						margin-top: 1%;
 						transform: rotate(4deg);
 						width: 313px;
 						height: 313px;
@@ -657,7 +676,7 @@ $defaultColor: #ffd500;
 				}
 
 				.mk-know-base__main-reg {
-					margin-top: 4%;
+					margin-top: 3%;
 					button {
 						width: 100%;
 						padding: 5%;
@@ -669,6 +688,7 @@ $defaultColor: #ffd500;
 					p {
 						font-size: 15px;
 						text-align: center;
+						padding-left: 0%;
 					}
 				}
 			}
