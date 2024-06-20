@@ -288,16 +288,18 @@ $defaultColor: #ffd500;
 		}
 		.mk-know-base__main {
 			.mk-know-base__main-title {
-				padding-top: 2%;
+				padding-top: 7%;
 				font-size: 45px;
 				font-weight: 700;
-				max-width: 671px;
-				line-height: 1.4;
+				// max-width: 671px;
+				line-height: 1.6;
+        text-align: justify;
 				span {
 					@extend %border-bottom;
 				}
 			}
 			.mk-know-base__main-bonus {
+        padding-top: 5%;
 				display: flex;
 				align-items: center;
 				gap: 4%;
@@ -310,6 +312,7 @@ $defaultColor: #ffd500;
 					max-width: 575px;
 					text-align: justify;
 					font-size: 25px;
+          line-height: 1.6;
 					span {
 						font-weight: 800;
 						background-color: rgb(28, 28, 30);
@@ -317,7 +320,7 @@ $defaultColor: #ffd500;
 				}
 			}
 			.mk-know-base__main-registration {
-				padding-top: 2%;
+				padding-top: 10%;
 				display: flex;
 				gap: 5%;
 				.mk-know-base__main-button {
@@ -347,7 +350,7 @@ $defaultColor: #ffd500;
 			}
 
 			.mk-know-base__main-master-class {
-				padding-top: 5%;
+				padding-top: 12%;
 				.mk-know-base__main-subtitle {
 					font-size: 45px;
 					font-weight: 700;
@@ -387,7 +390,7 @@ $defaultColor: #ffd500;
 			}
 
 			.mk-know-base__main-profile {
-				margin-top: 8%;
+				margin-top: 12%;
 				display: flex;
 				align-items: center;
 				gap: 10%;
@@ -415,6 +418,7 @@ $defaultColor: #ffd500;
 						padding-left: 20px;
 
 						li {
+              text-align: justify;
 							font-size: 25px;
 							margin-top: 4%;
 							line-height: 1.55;
@@ -439,13 +443,15 @@ $defaultColor: #ffd500;
 				margin-top: 10%;
 				display: flex;
 				align-items: center;
+        text-align: justify;
+        gap: 8%;
 				h3 {
 					font-weight: bold;
 					font-size: 40px;
 					line-height: 1.4;
 				}
 				p {
-					margin-top: 4%;
+          margin-top: 8%;
 					font-size: 28px;
 					line-height: 1.4;
 				}
@@ -456,7 +462,7 @@ $defaultColor: #ffd500;
 			}
 
 			.mk-know-base__main-reg {
-				margin-top: 3%;
+				margin-top: 9%;
 				@include mainButton(3% 6%, 40px);
 			}
 		}
@@ -560,6 +566,7 @@ $defaultColor: #ffd500;
 						.mk-know-base__main-service {
 							section {
 								p {
+                  text-align: justify;
 									font-size: 15px;
 								}
 								svg {
@@ -572,7 +579,7 @@ $defaultColor: #ffd500;
 				}
 
 				.mk-know-base__main-reg-button {
-					margin-top: 2%;
+					margin-top: 5%;
 					button {
             width: 100%;
 						a {
@@ -586,9 +593,10 @@ $defaultColor: #ffd500;
 				}
 
 				.mk-know-base__main-profile {
+          margin-top: 15%;
 					flex-direction: column-reverse;
 					.mk-know-base__main-img {
-						margin-top: 4%;
+						margin-top: 7%;
 						width: 191px;
 						height: 191px;
 					}
@@ -597,14 +605,17 @@ $defaultColor: #ffd500;
 							font-size: 15px;
 						}
 						h1 {
+              margin-top: 2%;
 							span {
 								font-size: 24px;
 							}
 						}
 						h2 {
+              margin-top: 6%;
 							font-size: 18px;
 						}
 						ul {
+              margin-top: 6%;
 							li {
 								font-size: 15px;
 
@@ -624,6 +635,7 @@ $defaultColor: #ffd500;
 				}
 
 				.mk-know-base__main-root {
+          padding-top: 13%;
 					flex-direction: column;
 					h3 {
 						font-weight: bold;
@@ -631,8 +643,9 @@ $defaultColor: #ffd500;
 						line-height: 1.4;
 					}
 					p {
-						margin-top: 2%;
+						margin-top: 10%;
 						font-size: 15px;
+            line-height: 1.7;
 					}
 
 					img {
