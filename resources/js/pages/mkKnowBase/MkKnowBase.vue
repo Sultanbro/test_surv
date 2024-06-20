@@ -463,10 +463,10 @@ $defaultColor: #ffd500;
 	}
 }
 
-@media (max-width: 405px) {
+@media (max-width: 1000px) {
 	.mk-know-base {
 		&__wrapper {
-			max-width: 405px;
+			max-width: 800px;
 			margin: auto;
 			margin: 0% 12%;
 			.mk-know-base__header {
@@ -571,6 +571,7 @@ $defaultColor: #ffd500;
 				.mk-know-base__main-reg-button {
 					margin-top: 2%;
 					button {
+            width: 100%;
 						a {
 							font-size: 15px;
 						}

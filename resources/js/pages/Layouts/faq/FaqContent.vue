@@ -132,7 +132,7 @@ export default {
 	z-index: 1;
 	position: relative;
 	scrollbar-width: none;
-	-ms-overflow-style: none;
+	// -ms-overflow-style: none;
 	&-title {
 		font-size: 20px;
 		font-weight: 700;

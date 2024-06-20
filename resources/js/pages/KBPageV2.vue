@@ -1092,15 +1092,7 @@ export default {
 
 		onCreate(parent) {
 			this.clearAccess();
-
-			// Убираем логику закрытия предыдущего родителя
-			/*
-	if (this.previousParent && this.previousParent.id !== parent.id) {
-		this.previousParent.opened = false;
-	}
-	*/
-
-			// Открываем текущего родителя, если это новая секция или первый вызов
+      
 			parent.opened = true;
 
 			this.showCreate = true;
