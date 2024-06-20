@@ -8,6 +8,7 @@ use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\ServiceProvider;
 use Schema;
+use Stancl\Tenancy\Exceptions\TenantCouldNotBeIdentifiedById;
 use Symfony\Component\HttpFoundation\Response as HttpFoundation;
 use Validator;
 use View;
@@ -19,7 +20,7 @@ class AppServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         Paginator::useBootstrap();
 
@@ -79,7 +80,6 @@ class AppServiceProvider extends ServiceProvider
     private function dataToHomeVue(): array
     {
         if (Auth::guest()) return ['csrfToken' => csrf_token()];
-        if (!tenant()) return ['csrfToken' => csrf_token()];
 
 //        dd_if(request()->ip() == '217.76.14.113', tenant());
 
@@ -101,11 +101,14 @@ class AppServiceProvider extends ServiceProvider
         }
     }
 
+    /**
+     * @throws TenantCouldNotBeIdentifiedById
+     */
     private function dataToVue(): array
     {
         if (Auth::guest()) return ['csrfToken' => csrf_token()];
 
-        if (auth()->user()->id == 1 && tenant('id') == null) {
+        if (auth()->id() == 1 && tenant('id') == null) {
             tenancy()->initialize('bp');
         }
 
