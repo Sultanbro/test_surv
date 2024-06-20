@@ -34,6 +34,7 @@
 					</div>
 					<div class="mk-know-base__main-timetracker">
 						<p>{{ formattedTime }}</p>
+						<!-- <input type="text" v-model="whatsAppUrl" /> -->
 						<img
 							src="https://optim.tildacdn.one/tild3433-3036-4264-b363-663938333336/-/resize/255x/-/format/webp/___1.png"
 							width="170"
@@ -141,7 +142,6 @@
 						alt=""
 					>
 				</div>
-
 				<div class="mk-know-base__main-reg">
 					<button @click="locationGroup">
 						<a> Зарегистрироваться </a>
@@ -169,9 +169,10 @@ export default {
 	},
 	data() {
 		return {
-			time: 5 * 60,
+			time: 6 * 60,
 			timerRunning: false,
 			interval: null,
+			whatsAppUrl: 'https://chat.whatsapp.com/GZ8FSwFy5XU3gExCXMTQo8', // Измените это значение в коде для обновления таймера
 		};
 	},
 	computed: {
@@ -184,18 +185,18 @@ export default {
 			)}`;
 		},
 	},
-	time(newValue) {
-		this.saveTime(newValue);
-	},
 	mounted() {
 		this.$nextTick(() => {
 			this.setMetaViewport();
 		});
-		this.loadTime();
-		this.startTimer();
+		this.checkUrlChange(); // Проверяем изменения ссылки при монтировании
+		this.loadTime(); // Загружаем сохраненное время
+		if (this.time > 0) {
+			this.startTimer(); // Запускаем таймер, если время больше нуля
+		}
 	},
 	beforeDestroy() {
-		this.stopTimer();
+		this.stopTimer(); // Останавливаем таймер при уничтожении компонента
 	},
 	updated() {
 		this.setMetaViewport();
@@ -213,7 +214,7 @@ export default {
 				this.interval = setInterval(() => {
 					if (this.time > 0) {
 						this.time--;
-						this.saveTime();
+						this.saveTime(); // Сохраняем текущее время в localStorage
 					} else {
 						this.stopTimer();
 						localStorage.setItem('remainingTime', '0');
@@ -226,23 +227,32 @@ export default {
 			this.timerRunning = false;
 		},
 		saveTime() {
-			localStorage.setItem('remainingTime', this.time);
+			localStorage.setItem('remainingTime', this.time.toString());
 		},
 		loadTime() {
 			const savedTime = localStorage.getItem('remainingTime');
 			if (savedTime !== null) {
 				const storedTime = parseInt(savedTime, 10);
-				if (storedTime !== this.time && this.time === 10 * 60) {
-					this.time = storedTime;
-				} else {
-					this.saveTime(this.time);
+				if (!isNaN(storedTime)) {
+					this.time = storedTime; // Устанавливаем время из localStorage
 				}
-			} else {
-				this.saveTime(this.time);
 			}
 		},
+		resetTimer() {
+			this.stopTimer();
+			this.time = 7 * 60; // Сбрасываем время обратно на 5 минут (или любое другое начальное значение)
+			this.saveTime();
+			this.startTimer();
+		},
 		locationGroup() {
-			window.location.href = 'https://chat.whatsapp.com/GZ8FSwFy5XU3gExCXMTQo8';
+			window.location.href = this.whatsAppUrl; // Используем переменную whatsAppUrl
+		},
+		checkUrlChange() {
+			const savedUrl = localStorage.getItem('savedWhatsAppUrl');
+			if (savedUrl !== this.whatsAppUrl) {
+				localStorage.setItem('savedWhatsAppUrl', this.whatsAppUrl);
+				this.resetTimer();
+			}
 		},
 	},
 };
