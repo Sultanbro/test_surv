@@ -1,4 +1,10 @@
 <template>
+  <v-btn
+    @click="toggleEditTable"
+    class="deep-purple-accent-1 mb-4"
+  >
+    {{ titleButton }}
+  </v-btn>
   <VTable>
     <thead>
       <tr>
@@ -22,21 +28,25 @@
         <td>{{ payer.payer_name }}</td>
         <td>{{ payer.payer_phone }}</td>
         <td>
-          <v-menu location="bottom">
+          <v-menu
+            location="bottom"
+            v-if="isEdit"
+          >
             <template v-slot:activator="{ props }">
-              <div
-                class="payers__edit"
-                v-bind="props"
-                v-if="payer.status === 'pending'"
-              >
-                В ожидании
-              </div>
-              <div
-                class="payers__edit"
-                v-bind="props"
-                v-else
-              >
-                Оплатил
+              <div class="d-flex align-center gap-1 payers__edit">
+                <div
+                  v-bind="props"
+                  v-if="payer.status === 'pending'"
+                >
+                  В ожидании
+                </div>
+                <div
+                  v-bind="props"
+                  v-else
+                >
+                  Оплатил
+                </div>
+                <EditIcon v-bind="props" />
               </div>
             </template>
 
@@ -54,6 +64,11 @@
               </v-list-item>
             </v-list>
           </v-menu>
+
+          <div v-else>
+            <div v-if="payer.status === 'pending'">В ожидании</div>
+            <div v-else>Оплатил</div>
+          </div>
         </td>
         <td>{{ payer.amount }}</td>
         <td>
@@ -75,25 +90,36 @@ import { type TPayersUsers } from '@/types/payersUsers'
 import { sortedByDatePayersUsers } from '@/utils/sortedPayersUsers'
 import { fetchPayersUsers } from '@/api/payers/getPayers'
 import { updatePayerStatus } from '@/api/payers/updatePayer'
-
-const sortedPayersUsers = computed(() => {
-  return sortedByDatePayersUsers(payersUsers.value)
-})
+import EditIcon from '../../assets/icons/EditIcon.vue'
 
 type TStatuses = {
   id: number
   title: string
 }
 
+const isEdit = ref<boolean>(false)
+
+const payersUsers = ref<TPayersUsers[]>([])
+
 const statuses: TStatuses[] = reactive([
   { id: 1, title: 'Оплачено' },
   { id: 2, title: 'В ожидании' },
 ])
 
-const payersUsers = ref<TPayersUsers[]>([])
+const sortedPayersUsers = computed(() => {
+  return sortedByDatePayersUsers(payersUsers.value)
+})
 
 fetchPayersUsers().then(res => {
   return (payersUsers.value = res.data)
+})
+
+const toggleEditTable = () => {
+  isEdit.value = !isEdit.value
+}
+
+const titleButton = computed(() => {
+  return isEdit.value ? 'Сохранить' : 'Редактировать'
 })
 </script>
 
