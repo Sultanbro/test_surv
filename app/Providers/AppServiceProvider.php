@@ -35,6 +35,7 @@ class AppServiceProvider extends ServiceProvider
         // наверное нужно удалить если перешли на layouts.spa
 
         View::composer('layouts.app', function ($view) {
+            dd($view);
             $view->with(['laravelToVue' => $this->dataToVue()]);
         });
         View::composer('layouts.spa', function ($view) {
@@ -100,8 +101,6 @@ class AppServiceProvider extends ServiceProvider
      */
     private function dataToVue(): array
     {
-        dd(Auth::user());
-
         if (Auth::guest()) return ['csrfToken' => csrf_token()];
         if (auth()->id() == 1 && tenant('id') == null) {
             tenancy()->initialize('bp');
