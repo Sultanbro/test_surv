@@ -33,17 +33,16 @@ class AppServiceProvider extends ServiceProvider
         $this->registerMacros();
 
         // наверное нужно удалить если перешли на layouts.spa
-
+        View::composer('home', function ($view) {
+            $view->with(['laravelToVue' => $this->dataToHomeVue()]);
+        });
         View::composer('layouts.app', function ($view) {
-            dd($view);
             $view->with(['laravelToVue' => $this->dataToVue()]);
         });
         View::composer('layouts.spa', function ($view) {
             $view->with(['laravelToVue' => $this->dataToVue()]);
         });
-        View::composer('home', function ($view) {
-            $view->with(['laravelToVue' => $this->dataToHomeVue()]);
-        });
+        dd(Auth::user());
     }
 
     /**
