@@ -32,7 +32,7 @@ class AppServiceProvider extends ServiceProvider
 
         $this->registerMacros();
         // наверное нужно удалить если перешли на layouts.spa
-        dd(auth()->id() == 1 && tenant('id') == null);
+        dd(auth()->user());
 
         View::composer('layouts.app', function ($view) {
             $view->with([
