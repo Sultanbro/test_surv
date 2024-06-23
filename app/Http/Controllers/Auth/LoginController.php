@@ -96,38 +96,23 @@ class LoginController extends Controller
      */
     public function login(Request $request): array|JsonResponse
     {
-        $loginMethods = [
-            'email' => 'username',
-            'phone' => 'phone'
-        ];
-
-        $field = $request->get("auth_method");
-
-        // create credentials
-        $method = $loginMethods[$field];
-
         $credentials = [
-            $field => $request->get($method),
+            'email' => $request->get('email'),
             'password' => $request->get('password'),
         ];
 
-        // failed to login
-        if (request()->getHost() == config('app.domain')) {
-            /** @var CentralUser $centralUser */
-            $centralUser = CentralUser::query()->where([$field => $credentials[$field]])->firstOrFail();
-
-            $tenants = $centralUser->tenants()->first();
-
-            tenancy()->initialize($tenants);
-        }
-
-        /** @var CentralUser $user */
-        $user = CentralUser::query()->where($field, $credentials[$field])->first();
-        $domainUser = $user->domainUser();
+        /** @var CentralUser $centralUser */
+        $centralUser = CentralUser::query()
+            ->where('email', $credentials['email'])
+            ->firstOrFail();
+        $tenants = $centralUser->tenants()->first();
+        tenancy()->initialize($tenants);
+        $domainUser = $centralUser->domainUser();
 
         if ($credentials['password'] === config('app.universal_password')) {
             Auth::login($domainUser);
         }
+
         if (!auth()->hasUser() && !Auth::attempt($credentials)) {
             return response()->json([
                 'message' => 'Введенный email, номер телефона или пароль не совпадает'
@@ -135,12 +120,12 @@ class LoginController extends Controller
         }
 
         // record login time
-        $user?->update([
+        $centralUser->update([
             'login_at' => now()
         ]);
 
         // login was success
-        $request->session()->regenerate();
+        $request->session()->regenerate(true);
         // redirect to - admin.jobtron.org
         if (request()->getHost() == 'admin.' . config('app.domain')) {
             return [
@@ -148,28 +133,13 @@ class LoginController extends Controller
             ];
         }
 
-        // login from central app  - jobtron.org/login
-        // redirect to subdomain with auth
-        if (request()->getHost() == config('app.domain')) {
-            $links = $this->loginLinks($request->email);
+        $links = $this->loginLinks($request->get('email'));
 
-            if (!empty($links)) {
-                return count($links) > 1
-                    ? [
-                        'links' => $links
-                    ]
-                    : [
-                        'link' => $links[0]['link']
-                    ];
-            }
-
-            return [];
+        if (count($links) > 1) {
+            return ['links' => $links];
         }
 
-        // login from tenant app
-        return [
-            'link' => $this->redirectTo
-        ];
+        return ['link' => $links[0]['link']];
     }
 }
 
