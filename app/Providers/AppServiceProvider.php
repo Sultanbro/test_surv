@@ -32,8 +32,6 @@ class AppServiceProvider extends ServiceProvider
 
         $this->registerMacros();
         // наверное нужно удалить если перешли на layouts.spa
-        dd(auth()->user());
-
         View::composer('layouts.app', function ($view) {
             $view->with([
                 'laravelToVue' => $this->dataToVue()
@@ -81,6 +79,7 @@ class AppServiceProvider extends ServiceProvider
 
     private function dataToHomeVue(): array
     {
+        dd(Auth::guest());
         if (Auth::guest()) return ['csrfToken' => csrf_token()];
 
 //        dd_if(request()->ip() == '217.76.14.113', tenant());
