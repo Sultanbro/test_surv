@@ -31,7 +31,6 @@ class AppServiceProvider extends ServiceProvider
         $this->setS3DiskForTenant();
 
         $this->registerMacros();
-        dd(Auth::user());
 
         // наверное нужно удалить если перешли на layouts.spa
         View::composer('layouts.app', function ($view) {
@@ -110,7 +109,7 @@ class AppServiceProvider extends ServiceProvider
         if (auth()->id() == 1 && tenant('id') == null) {
             tenancy()->initialize('bp');
         }
-
+        dd(Auth::user());
         $user = User::query()->where('email', auth()->user()?->email)?->first() ?? auth()->user();
         $permissions = $user->getAllPermissions()->pluck('name')->toArray();
 //        }
