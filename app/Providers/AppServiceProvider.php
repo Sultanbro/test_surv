@@ -32,6 +32,8 @@ class AppServiceProvider extends ServiceProvider
 
         $this->registerMacros();
         // наверное нужно удалить если перешли на layouts.spa
+        dd(auth()->id() == 1 && tenant('id') == null);
+
         View::composer('layouts.app', function ($view) {
             $view->with([
                 'laravelToVue' => $this->dataToVue()
@@ -107,7 +109,6 @@ class AppServiceProvider extends ServiceProvider
     private function dataToVue(): array
     {
         if (Auth::guest()) return ['csrfToken' => csrf_token()];
-        dd(auth()->id() == 1 && tenant('id') == null);
         if (auth()->id() == 1 && tenant('id') == null) {
             tenancy()->initialize('bp');
         }
