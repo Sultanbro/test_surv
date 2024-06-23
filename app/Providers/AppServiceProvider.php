@@ -74,6 +74,7 @@ class AppServiceProvider extends ServiceProvider
 
     private function dataToHomeVue(): array
     {
+        dd(Auth::user()->getConnectionName());
         if (Auth::guest()) return ['csrfToken' => csrf_token()];
 
         return [
