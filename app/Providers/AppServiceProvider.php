@@ -33,22 +33,15 @@ class AppServiceProvider extends ServiceProvider
         $this->registerMacros();
 
         // наверное нужно удалить если перешли на layouts.spa
-        dd(Auth::user());
 
         View::composer('layouts.app', function ($view) {
-            $view->with([
-                'laravelToVue' => $this->dataToVue()
-            ]);
+            $view->with(['laravelToVue' => $this->dataToVue()]);
         });
         View::composer('layouts.spa', function ($view) {
-            $view->with([
-                'laravelToVue' => $this->dataToVue()
-            ]);
+            $view->with(['laravelToVue' => $this->dataToVue()]);
         });
         View::composer('home', function ($view) {
-            $view->with([
-                'laravelToVue' => $this->dataToHomeVue()
-            ]);
+            $view->with(['laravelToVue' => $this->dataToHomeVue()]);
         });
     }
 
@@ -107,6 +100,8 @@ class AppServiceProvider extends ServiceProvider
      */
     private function dataToVue(): array
     {
+        dd(Auth::user());
+
         if (Auth::guest()) return ['csrfToken' => csrf_token()];
         if (auth()->id() == 1 && tenant('id') == null) {
             tenancy()->initialize('bp');
