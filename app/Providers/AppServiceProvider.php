@@ -22,7 +22,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        dd(Auth::user());
         Paginator::useBootstrap();
 
         Validator::extend('recaptcha', 'App\\Validators\\ReCaptcha@validate');
@@ -32,6 +31,8 @@ class AppServiceProvider extends ServiceProvider
         $this->setS3DiskForTenant();
 
         $this->registerMacros();
+        dd(Auth::user());
+
         // наверное нужно удалить если перешли на layouts.spa
         View::composer('layouts.app', function ($view) {
             $view->with([
