@@ -74,8 +74,9 @@ class AppServiceProvider extends ServiceProvider
 
     private function dataToHomeVue(): array
     {
-        dd(Auth::user()->getConnectionName());
+
         if (Auth::guest()) return ['csrfToken' => csrf_token()];
+        if (Auth::user()->getConnectionName() === 'mysql') return ['csrfToken' => csrf_token()];
 
         return [
             'csrfToken' => csrf_token(),
