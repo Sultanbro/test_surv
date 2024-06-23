@@ -42,7 +42,6 @@ class AppServiceProvider extends ServiceProvider
         View::composer('layouts.spa', function ($view) {
             $view->with(['laravelToVue' => $this->dataToVue()]);
         });
-        dd(Auth::user());
     }
 
     /**
