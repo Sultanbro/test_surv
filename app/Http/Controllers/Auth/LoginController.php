@@ -97,7 +97,7 @@ class LoginController extends Controller
     public function login(Request $request): array|JsonResponse
     {
         $credentials = [
-            'email' => $request->get('email'),
+            'email' => $request->get('username'),
             'password' => $request->get('password'),
         ];
 
