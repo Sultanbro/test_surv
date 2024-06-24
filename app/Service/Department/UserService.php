@@ -362,7 +362,7 @@ class UserService
 
         $endOfMonth = Carbon::parse($startOfMonth)->endOfMonth()->format('Y-m-d');
         $data = User::withTrashed()
-            ->whereDoesntHave('group_users', function (Builder $q) use ($groupId, $startOfMonth) {
+            ->whereDoesntHave('group_users', function (Builder $q) use ($groupId, $startOfMonth,$endOfMonth) {
                 $q->whereIn('status', [GroupUser::STATUS_ACTIVE]);
                 $q->where('group_id', $groupId);
                 $q->whereDate('to', '<=', $endOfMonth);
