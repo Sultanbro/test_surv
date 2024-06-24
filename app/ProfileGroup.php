@@ -675,7 +675,8 @@ class ProfileGroup extends Model
                 'p.status'
             ])
             ->orderBy('last_name')
-            ->orderBy('name');
+            ->orderBy('name')
+            ->distinct();
     }
 
     /**
