@@ -360,12 +360,12 @@ class UserService
     public function getFiredEmployeesForSalaries(int $groupId, string $startOfMonth): array
     {
 
-//        $endOfMonth = Carbon::parse($startOfMonth)->endOfMonth()->format('Y-m-d');
+        $endOfMonth = Carbon::parse($startOfMonth)->endOfMonth()->format('Y-m-d');
         $data = User::withTrashed()
             ->whereDoesntHave('group_users', function (Builder $q) use ($groupId, $startOfMonth) {
                 $q->whereIn('status', [GroupUser::STATUS_ACTIVE]);
                 $q->where('group_id', $groupId);
-                $q->whereDate('from', '>=', $startOfMonth);
+                $q->whereDate('to', '<=', $endOfMonth);
             })
             ->with('groups')
             ->whereHas('group_users', function (Builder $q) use ($groupId, $startOfMonth) {
