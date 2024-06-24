@@ -652,12 +652,12 @@ class ProfileGroup extends Model
             ->where(function (Builder $query) use ($dateFrom, $dateTo) {
                 $query->where(function (Builder $query) use ($dateFrom, $dateTo) {
                     $query->whereDate('p.to', '>=', $dateFrom);
-                    $query->orWhereNull('p.to');
                     $query->whereDoesntHave('group_users', function (Builder $q) use ($dateFrom, $dateTo) {
                         $q->whereIn('status', [GroupUser::STATUS_ACTIVE]);
 //                        $q->whereColumn('group_id', 'p.group_id');
                         $q->whereDate('p.from', '<=', $dateTo);
                     });
+                    $query->orWhereNull('p.to');
                 });
                 $query->OrWhere(function (Builder $query) use ($dateFrom, $dateTo) {
                     $query->whereDate('users.deleted_at', '>=', $dateFrom)
