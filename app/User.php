@@ -462,8 +462,8 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         return DB::table('users')
             ->join('group_user', 'users.id', '=', 'group_user.user_id')
             ->join('user_descriptions', 'users.id', '=', 'user_descriptions.user_id')
-            ->where('users.status', 'active')
-            ->where('users.is_trainee', 0)
+            ->where('group_user.status', 'active')
+            ->where('user_descriptions.is_trainee', 0)
             ->count();
     }
 
