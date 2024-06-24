@@ -642,7 +642,7 @@ class ProfileGroup extends Model
                 'd.is_trainee as is_trainee',
                 'g.id as group_id',
                 'g.name as group_name',
-                DB::raw('MAX(p.`from`) as from'),
+                DB::raw('MAX(p.from) as max_from'), // Alias MAX(p.from) as max_from
                 'p.to as to',
                 'p.status as status'
             ])
