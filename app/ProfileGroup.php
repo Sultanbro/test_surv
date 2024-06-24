@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Traits\HasRoles;
 
 /**
@@ -641,7 +642,7 @@ class ProfileGroup extends Model
                 'd.is_trainee as is_trainee',
                 'g.id as group_id',
                 'g.name as group_name',
-                'p.from as from',
+                DB::raw('MAX(p.from) as from'),
                 'p.to as to',
                 'p.status as status'
             ])
@@ -670,13 +671,11 @@ class ProfileGroup extends Model
                 'd.is_trainee',
                 'g.id',
                 'g.name',
-                'p.from',
                 'p.to',
                 'p.status'
             ])
             ->orderBy('last_name')
-            ->orderBy('name')
-            ->distinct();
+            ->orderBy('name');
     }
 
     /**
