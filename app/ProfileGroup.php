@@ -8,6 +8,7 @@ use App\Models\Analytics\ReportCard;
 use App\Models\Analytics\TopValue;
 use App\Models\AnalyticsActivitiesSetting;
 use App\Models\Books\BookGroup;
+use App\Models\GroupUser;
 use App\Models\KnowBaseModel;
 use App\Models\MorphRelations\HasFiles;
 use App\Models\WorkChart\WorkChartModel;
@@ -22,7 +23,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
-use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Traits\HasRoles;
 
 /**
@@ -642,7 +642,7 @@ class ProfileGroup extends Model
                 'd.is_trainee as is_trainee',
                 'g.id as group_id',
                 'g.name as group_name',
-                 DB::raw('MAX(p.from) as `from`'), // Alias MAX(p.from) as max_from
+                'p.from as from',
                 'p.to as to',
                 'p.status as status'
             ])
@@ -655,9 +655,13 @@ class ProfileGroup extends Model
                         ->orWhereNull('users.deleted_at');
                 });
                 $query->orWhere(function (Builder $query) use ($dateFrom, $dateTo) {
-                    $query->whereDate('p.to', '>=', $dateFrom)
-                        ->orWhereNull('p.to');
-
+                    $query->whereDate('p.to', '>=', $dateFrom);
+                    $query->orWhereNull('p.to');
+                    $query->whereDoesntHave('group_users', function (Builder $q) use ($dateFrom, $dateTo) {
+                        $q->whereIn('status', [GroupUser::STATUS_ACTIVE]);
+                        $q->whereColumn('group_id', 'p.group_id');
+                        $q->whereDate('from', '<=', $dateTo);
+                    });
                 });
             })
             ->where('g.id', $this->getKey())
@@ -671,6 +675,7 @@ class ProfileGroup extends Model
                 'd.is_trainee',
                 'g.id',
                 'g.name',
+                'p.from',
                 'p.to',
                 'p.status'
             ])
