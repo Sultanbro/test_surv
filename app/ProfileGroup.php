@@ -649,12 +649,15 @@ class ProfileGroup extends Model
             ->join('profile_groups as g', 'p.group_id', '=', 'g.id')
             ->join('user_descriptions as d', 'd.user_id', '=', 'users.id')
             ->where(function (Builder $query) use ($dateFrom, $dateTo) {
-                $query->where('users.deleted_at', '>=', $dateFrom)
-                    ->orWhereNull('users.deleted_at');
-            })
-            ->where(function (Builder $query) use ($dateFrom, $dateTo) {
-                $query->where('p.to', '>=', $dateFrom)
-                    ->orWhereNull('p.to');
+                $query->where(function (Builder $query) use ($dateFrom, $dateTo) {
+                    $query->whereDate('users.deleted_at', '>=', $dateFrom)
+                        ->orWhereNull('users.deleted_at');
+                });
+                $query->orWhere(function (Builder $query) use ($dateFrom, $dateTo) {
+                    $query->whereDate('p.to', '>=', $dateFrom)
+                        ->orWhereNull('p.to');
+
+                });
             })
             ->where('g.id', $this->getKey())
             ->groupBy([
