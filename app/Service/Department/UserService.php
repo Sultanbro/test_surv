@@ -365,7 +365,7 @@ class UserService
             ->whereDoesntHave('group_users', function (Builder $q) use ($groupId, $startOfMonth,$endOfMonth) {
                 $q->whereIn('status', [GroupUser::STATUS_ACTIVE]);
                 $q->where('group_id', $groupId);
-                $q->whereDate('to', '<=', $endOfMonth);
+                $q->whereDate('from', '<=', $endOfMonth);
             })
             ->with('groups')
             ->whereHas('group_users', function (Builder $q) use ($groupId, $startOfMonth) {
