@@ -3,6 +3,95 @@
 		v-if="!isShowQrCodeKaspi"
 		class="workshop"
 	>
+		<img
+			class="workshop__background"
+			src="/images/bg-workshop.jpg"
+			alt=""
+		>
+		<div class="workshop__wrapper">
+			<div class="workshop__title">
+				<h1>Оплатите практикум</h1>
+				<h2>“Cоздание базы знаний”</h2>
+			</div>
+			<div class="workshop__payment-method">
+				<label class="workshop__payment">
+					<input
+						v-model="payCard"
+						type="checkbox"
+						class="workshop__payment-checkbox"
+					>
+					<div class="workshop__payment-wrapper">
+						<div class="workshop__payment-name">
+							<div class="workshop__payment-title">
+								<div>
+									<PaymentCardIcon />
+									<p>Оплата банковской картой</p>
+								</div>
+								<div>
+									<VisaCardIcon />
+									<MasterCardIcon />
+									<OnionPayCardIcon />
+								</div>
+							</div>
+						</div>
+						<label class="checkbox-container">
+							<input
+								type="checkbox"
+								checked
+							>
+							<span class="checkmark" />
+							<p>Оплачивая картой, вы соглащаетесь с условиями оферты</p>
+						</label>
+					</div>
+				</label>
+			</div>
+			<div class="workshop__payment-method">
+				<label class="workshop__payment">
+					<input
+						v-model="payKaspi"
+						type="checkbox"
+						class="workshop__payment-checkbox"
+					>
+					<div class="workshop__payment-wrapper">
+						<div class="workshop__payment-name">
+							<div class="workshop__payment-title">
+								<div>
+									<InstallmentIcon />
+									<p>Рассрочка или кредит</p>
+								</div>
+							</div>
+						</div>
+						<div class="workshop__kaspi">
+							<div class="workshop__kaspi-red">
+								<img
+									src="/images/kaspi-red-logo.png"
+									alt=""
+								>
+							</div>
+							<div class="workshop__kaspi-installment">
+								<KaspiLogoIcon />
+								рассрочка
+							</div>
+							<div class="workshop__kaspi-gold">
+								<img
+									src="/images/kaspi-gold-logo.png"
+									alt=""
+								>
+							</div>
+							<div class="workshop__kaspi-info">
+								<InfoIcon />
+								<p>Обязательно указывайте в примечании свой номер</p>
+							</div>
+						</div>
+					</div>
+				</label>
+			</div>
+		</div>
+	</div>
+	<!-- <div
+		v-if="!isShowQrCodeKaspi"
+		class="workshop"
+	>
 		<h1 class="workshop__title">
 			Оплата: Практикума по созданию Базы Знаний
 		</h1>
@@ -20,16 +109,6 @@
 					Картой любого банка
 				</a>
 			</button>
-			<!-- <button>
-				<a href="https://proeducation.kz/e44NQ/">
-					<img
-						class="workshopform__img"
-						src="https://gallery.yopriceville.com/downloadfullsize/send/10186"
-						alt=""
-					>
-					Картой Российского банка
-				</a>
-			</button> -->
 			<p>Оплачивая картой вы соглашаетесь с условями <strong>оферты</strong></p>
 
 			<h2>Купить в рассрочку или в кредит</h2>
@@ -58,25 +137,58 @@
 				{{ isShowQrCodeKaspi }}
 			</p>
 		</div>
-	</div>
+	</div> -->
 	<div
 		v-else
 		class="workshop"
 	>
 		<img
-			:src="require('../assets/img/qr-codee.png').default"
+			src="/images/qr-codee.png"
 			alt=""
 		>
 	</div>
 </template>
 
 <script>
+import PaymentCardIcon from '../assets/icons/PaymentCardIcon.vue';
+import InstallmentIcon from '../assets/icons/InstallmentIcon.vue';
+
+import MasterCardIcon from '../assets/icons/MasterCardIcon.vue';
+import OnionPayCardIcon from '../assets/icons/OnionPayCardIcon.vue';
+import VisaCardIcon from '../assets/icons/VisaCardIcon.vue';
+
+import KaspiLogoIcon from '../assets/icons/KaspiLogoIcon.vue';
+
+import InfoIcon from '../assets/icons/InfoIcon.vue';
+
 export default {
 	name: 'WorkshopPage',
+	components: {
+		PaymentCardIcon,
+		MasterCardIcon,
+		OnionPayCardIcon,
+		VisaCardIcon,
+		InstallmentIcon,
+		KaspiLogoIcon,
+		InfoIcon,
+	},
 	data() {
 		return {
 			isShowQrCodeKaspi: false,
+			payCard: false,
+			payKaspi: false,
 		};
+	},
+	watch: {
+		payCard(newValue) {
+			if (newValue) {
+				this.movedPayForm();
+				this.payCard = false;
+			}
+		},
+		payKaspi(newValue) {
+			if (newValue) this.isShowQrCodeKaspi = true;
+		},
 	},
 	created() {},
 	mounted() {
@@ -97,98 +209,270 @@ export default {
 			meta.setAttribute('content', 'width=device-width, initial-scale=1.0');
 			document.head.appendChild(meta);
 		},
+		movedPayForm() {
+			if (this.payCard) {
+				window.location.href =
+					'https://jobtron.proeducation.kz/?invoice_id=f6c2bfb0a1f94b027f5f9bf88c29f35d&paylink=1';
+				this.payCard = false;
+			}
+		},
 	},
 };
 </script>
 
 <style scoped lang="scss">
+%installmentButton {
+	border: 1px solid #658cda33;
+	border-radius: 4.86px;
+	width: 91.18px;
+	height: 37.08px;
+	background-color: #ffffff;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	overflow: hidden;
+}
+
 .workshop {
-	margin: 2% 4% 0% 4%;
+	min-height: 100vh;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
-	font-size: 20px;
-	.workshop__title {
-		font-weight: bold;
-		font-size: 35px;
+	position: relative;
+
+	&__background {
+		z-index: 1;
+		width: 1735px;
+		height: 832px;
+		opacity: 0.33;
+		border-radius: 60px;
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
 	}
+
 	&__wrapper {
-		min-width: 40%;
-		margin-top: 3%;
-		h2 {
-			margin-top: 3%;
-			font-size: 20px;
-			font-weight: bold;
+		z-index: 2;
+		.workshop__title {
+			text-align: center;
+			font-size: 45px;
+			color: #5d73c2;
+			font-size: 35px;
+			font-weight: 600;
+			h1 {
+				font-size: 45px;
+				font-weight: bold;
+			}
 		}
-		h2:nth-of-type(2) {
-			margin-top: 10%;
-		}
-		button {
-			margin-top: 2%;
-			width: 100%;
-			font-weight: bold;
-			padding: 2%;
-			background-color: #fabf0f;
-			border-radius: 10px;
-			transition: all ease 100ms;
-			.workshopform__img {
-				width: 50px;
-				height: 50px;
-				border-radius: 50%;
-			}
-			.workshopform__kaspi-img {
-				width: 50px;
-				height: 34px;
-			}
-			&:hover {
-				background-color: #e8ae02;
-			}
+
+		.workshop__payment-method {
+			cursor: pointer;
+			margin-top: 4px;
+			background-color: #ffffff;
+			border-radius: 20px;
+			&:active,
 			&:focus {
-				outline: none;
+				outline: 1px solid #156ae8;
 			}
-			a {
-				color: black;
+			.workshop__payment {
+				margin-top: 16px;
 				display: flex;
-				align-items: center;
-				gap: 5px;
+				padding: 4%;
+				width: 569px;
+				.workshop__payment-checkbox {
+					-webkit-appearance: none;
+					width: 25px;
+					min-width: 25px;
+					height: 25px;
+					min-height: 20px;
+					display: inline-flex;
+					align-items: center;
+					justify-content: center;
+					border-radius: 50%;
+					background-color: #eef6ffcc;
+					border: 1px solid #eff5fc;
+					position: relative;
+					cursor: pointer;
+					margin-right: 10px;
+					transition: background-color 0.3s ease;
+				}
+
+				.workshop__payment-checkbox:checked {
+					background-color: #3781ef;
+					border-color: #3781ef;
+				}
+
+				.workshop__payment-checkbox:checked:after {
+					content: "";
+					display: block;
+					position: absolute;
+					top: 6px;
+					left: 9px;
+					width: 5px;
+					height: 11px;
+					border: solid #fff;
+					border-width: 0 2px 2px 0;
+					opacity: 1;
+					transform: rotate(40deg);
+				}
+
+				.workshop__payment-checkbox:hover {
+					border-color: #ccc;
+				}
+				.workshop__payment-wrapper {
+					width: 100%;
+					.workshop__payment-name {
+						background-color: #ffffff;
+						box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;
+						display: flex;
+						justify-content: space-between;
+						flex-direction: column;
+						padding: 3%;
+						border-radius: 8px;
+						width: 100%;
+						.workshop__payment-title {
+							display: flex;
+							justify-content: space-between;
+							div {
+								display: flex;
+								p {
+									font-size: 16px;
+									padding-left: 5px;
+								}
+							}
+						}
+					}
+					label {
+						margin-top: 2%;
+						display: flex;
+						gap: 5px;
+						p {
+							font-size: 12px;
+							padding-left: 5%;
+						}
+					}
+
+					.workshop__kaspi {
+						margin-top: 8px;
+						display: flex;
+						justify-content: space-between;
+						align-items: center;
+						flex-wrap: wrap;
+						.workshop__kaspi-red {
+							@extend %installmentButton;
+							overflow: hidden;
+							img {
+								width: 79px;
+								height: 46px;
+							}
+						}
+
+						.workshop__kaspi-installment {
+							@extend %installmentButton;
+							flex-direction: column;
+						}
+
+						.workshop__kaspi-gold {
+							@extend %installmentButton;
+							img {
+								width: 74.14px;
+								height: 28.7px;
+							}
+						}
+
+						.workshop__kaspi-info {
+							display: flex;
+							align-items: start;
+							gap: 2%;
+							p {
+								width: 157px;
+								font-weight: 400;
+							}
+						}
+					}
+				}
+
+				.checkbox-container {
+					display: inline-block;
+					position: relative;
+				}
+
+				.checkbox-container input {
+					position: absolute;
+					opacity: 0;
+					cursor: pointer;
+					width: 0;
+					height: 0;
+				}
+
+				.checkmark {
+					position: absolute;
+					top: 0px;
+					left: 0px;
+					height: 16px;
+					width: 16px;
+					background-color: #ffffff;
+					border: 1px solid #000;
+					cursor: pointer;
+					border-radius: 3px;
+				}
+
+				.checkbox-container input:checked ~ .checkmark {
+					background-color: white;
+				}
+
+				.checkbox-container input:checked ~ .checkmark:after {
+					display: block;
+				}
+
+				.checkmark:after {
+					content: "";
+					position: absolute;
+					display: none;
+					left: 6px;
+					top: 3px;
+					width: 3px;
+					height: 7px;
+					border: solid #000;
+					border-width: 0 1px 1px 0;
+					transform: rotate(45deg);
+				}
 			}
-		}
-		p {
-			font-size: 12px;
-			margin-top: 1%;
 		}
 	}
 }
 
 @media (max-width: 1000px) {
 	.workshop {
-		margin: 2% 4% 0% 4%;
-		font-size: 20px;
-		.workshop__title {
-			font-size: 35px;
+		background-color: #eeeeee;
+		&__background {
+			width: 100%;
+			height: 100vh;
+			border-radius: 0px;
 		}
 		&__wrapper {
-			h2 {
-				margin-top: 7%;
-				font-size: 20px;
-			}
-			button {
-				margin-top: 4%;
-				width: 100%;
-				font-weight: bold;
-				padding: 2%;
-				&:hover {
-					background-color: #e8ae02;
-				}
-				&:focus {
-					outline: none;
-				}
-				a {
-					color: black;
-					display: flex;
-					align-items: center;
-					gap: 5px;
+			.workshop__payment-method {
+				margin: 3%;
+				.workshop__payment {
+					width: auto;
+					.workshop__payment-wrapper {
+						label {
+							p {
+								margin-left: 3%;
+							}
+						}
+						.workshop__kaspi {
+							.workshop__kaspi-info {
+								margin-top: 1%;
+								p {
+									width: 100%;
+									font-weight: 400;
+								}
+							}
+						}
+					}
 				}
 			}
 		}

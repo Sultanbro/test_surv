@@ -1,31 +1,53 @@
 <template>
-	<form
-		class="workshopform"
-		@submit.prevent.stop="saveUserData"
-	>
-		<h1 class="workshopform__title">
-			Оставить заявку на практикум
-		</h1>
-		<input
-			v-model="name"
-			type="text"
-			placeholder="Ваше имя"
+	<div class="workshop">
+		<img
+			class="workshop__background"
+			src="/images/bg-workshop.jpg"
+			alt=""
 		>
-		<input
-			v-model="phone"
-			type="text"
-			placeholder="Укажите номер телефона"
-		>
-		<button type="submit">
-			Отправить
-		</button>
-	</form>
+		<div class="workshop__wrapper">
+			<h1 class="workshop__title">
+				Оставить заявку на практикум
+			</h1>
+			<form
+				class="workshop__form"
+				@submit.prevent.stop="saveUserData"
+			>
+				<label>
+					<UserNameIcon class="workshop__icon" />
+					<input
+						v-model="name"
+						type="text"
+						placeholder="Ваше имя"
+					>
+				</label>
+				<label>
+					<PhoneIcon class="workshop__icon" />
+					<input
+						v-model="phone"
+						type="text"
+						placeholder="Укажите номер телефона"
+					>
+				</label>
+				<button type="submit">
+					Отправить
+				</button>
+			</form>
+		</div>
+	</div>
 </template>
 
 <script>
 /* eslint-disable camelcase */
+import UserNameIcon from '../assets/icons/UserNameIcon.vue';
+import PhoneIcon from '../assets/icons/PhoneIcon.vue';
+
 export default {
 	name: 'WorkShopForm',
+	components: {
+		UserNameIcon,
+		PhoneIcon,
+	},
 	data() {
 		return {
 			name: '',
@@ -33,9 +55,7 @@ export default {
 		};
 	},
 	mounted() {
-		this.$nextTick(() => {
-			this.setMetaViewport();
-		});
+		this.setMetaViewport();
 	},
 	updated() {
 		this.setMetaViewport();
@@ -67,57 +87,86 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.workshopform {
-	max-width: 500px;
-	margin: 0 auto;
+.workshop {
 	min-height: 100vh;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
-	gap: 20px;
+	align-items: center;
+	position: relative;
 
-	h1 {
-		text-align: center;
-		font-size: 30px;
-		font-weight: bold;
+	&__background {
+		z-index: 1;
+		width: 1735px;
+		height: 832px;
+		opacity: 0.3;
+		border-radius: 60px;
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
 	}
-	input[type="text"],
-	input[type="number"] {
-		border-radius: 10px;
-		font-size: 15px;
-		padding: 3%;
-		border: 1px solid #646464;
-	}
-	button {
-		background-color: rgb(0, 145, 255);
-		color: white;
-		border-radius: 15px;
-		padding: 3%;
-		font-size: 15px;
-		transition: all ease-in 100ms;
-		&:hover {
-			background-color: rgb(0, 122, 215);
+
+	&__wrapper {
+		z-index: 2;
+		background-color: white;
+		border-radius: 40px;
+		padding: 55px;
+		.workshop__title {
+			max-width: 424px;
+			text-align: center;
+			font-size: 45px;
+			font-weight: bold;
+			color: #5d73c2;
+		}
+
+		.workshop__form {
+			display: flex;
+			flex-direction: column;
+			label {
+				position: relative;
+				.workshop__icon {
+					position: absolute;
+					top: 33px;
+					left: 14px;
+				}
+				input {
+					width: 100%;
+					font-size: 16px;
+					margin-top: 16px;
+					border-radius: 8px;
+					padding: 16px 16px 16px 43px;
+					border: 2px solid #eef2f9;
+				}
+			}
+
+			button {
+				font-size: 14px;
+				padding: 8px 16px 8px 16px;
+				border-radius: 4px;
+				font-weight: 600;
+				color: white;
+				height: 60px;
+				margin-top: 32px;
+				border-radius: 16px;
+				background-color: #3b4c84;
+			}
 		}
 	}
 }
 
-@media (max-width: 430px) {
-	.workshopform {
-		margin: 1%;
-		min-height: 100vh;
-		display: flex;
-		justify-content: center;
-		input[type="text"],
-		input[type="number"] {
-			padding: 2% !important;
-			font-size: 23px !important;
+@media (max-width: 600px) {
+	.workshop {
+		&__background {
+			display: none;
 		}
-		button {
-			padding: 5% !important;
-			font-size: 23px !important;
-		}
-		h1 {
-			text-align: center;
+		&__wrapper {
+			border-radius: 0px;
+			width: 100%;
+			height: 100vh;
+			.workshop__title {
+				max-width: 100%;
+			}
 		}
 	}
 }
