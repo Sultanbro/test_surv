@@ -658,8 +658,8 @@ class ProfileGroup extends Model
                     $query->whereDate('p.to', '>=', $dateFrom);
                     $query->orWhereNull('p.to');
                     $query->whereDoesntHave('group_users', function (Builder $q) use ($dateFrom, $dateTo) {
-//                        $q->whereIn('status', [GroupUser::STATUS_ACTIVE]);
-                        $q->whereColumn('group_id', 'p.group_id');
+                        $q->whereIn('status', [GroupUser::STATUS_ACTIVE]);
+//                        $q->whereColumn('group_id', 'p.group_id');
                         $q->whereDate('p.from', '<=', $dateTo);
                     });
                 });
