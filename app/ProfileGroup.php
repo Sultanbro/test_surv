@@ -629,6 +629,7 @@ class ProfileGroup extends Model
         string $dateTo
     ): Builder
     {
+        dd($dateFrom);
         return User::withTrashed()
             ->select([
                 'users.id as id',
