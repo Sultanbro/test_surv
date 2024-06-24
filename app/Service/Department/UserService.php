@@ -354,19 +354,25 @@ class UserService
 
     /**
      * @param int $groupId
-     * @param string $date
+     * @param string $startOfMonth
      * @return array
      */
-    public function getFiredEmployeesForSalaries(int $groupId, string $date): array
+    public function getFiredEmployeesForSalaries(int $groupId, string $startOfMonth): array
     {
 
+//        $endOfMonth = Carbon::parse($startOfMonth)->endOfMonth()->format('Y-m-d');
         $data = User::withTrashed()
+            ->whereDoesntHave('group_users', function (Builder $q) use ($groupId, $startOfMonth) {
+                $q->whereIn('status', [GroupUser::STATUS_ACTIVE]);
+                $q->where('group_id', $groupId);
+                $q->whereDate('from', '>=', $startOfMonth);
+            })
             ->with('groups')
-            ->whereHas('group_users', function (Builder $q) use ($groupId, $date) {
+            ->whereHas('group_users', function (Builder $q) use ($groupId, $startOfMonth) {
                 $q->whereIn('status', [GroupUser::STATUS_FIRED]);
                 $q->where('group_id', $groupId);
-                $q->whereYear('to', Carbon::parse($date)->year);
-                $q->whereMonth('to', Carbon::parse($date)->month);
+                $q->whereYear('to', Carbon::parse($startOfMonth)->year);
+                $q->whereMonth('to', Carbon::parse($startOfMonth)->month);
             })->withWhereHas('user_description', fn($description) => $description->where('is_trainee', 0))
             ->get();
 
