@@ -708,7 +708,10 @@ class Salary extends Model
                         $hours[$i] = round(($total_hours / 60), 1);
                     } else if ($y->count() > 0) { // отработанное врея есть до принятия на работу
                         $total_hours = $y->sum('total_hours');
-                        $earning = $total_hours / 60 * $hourly_pay * 0.5;
+                        $earning = $total_hours / 60 * $hourly_pay; // (* 0.5)
+                        // TODO: here need another solution,
+                        // to prevent earning dividing to 2 because
+                        // that true only for trainees who works part time
                         $earnings[$i] = round($earning);
                         $hours[$i] = round(($total_hours / 60), 1);
                     } else if ($r) { // переобучение
