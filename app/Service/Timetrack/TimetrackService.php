@@ -214,7 +214,8 @@ class TimetrackService
                 $data['salaries'][$day]['training'] = true;
             } else if ($timeTrackingBeforeApply->where('date', $day)->first()) {
                 $hour = $timeTrackingBeforeApply->where('date', $day)->first()->total_hours / 60;
-                $data['salaries'][$day]['value'] = number_format(round($hour * $hourlyPay * $currencyRate  * 0.5), 0, '.', '');
+                $data['salaries'][$day]['value'] = number_format(round($hour * $hourlyPay * $currencyRate), //  * 0.5),
+                    0, '.', '');
             }
 
             $data['hours'][$day]['value'] = round($hour, 2);
