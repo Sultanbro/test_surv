@@ -23,7 +23,7 @@
 							<div class="workshop__payment-title">
 								<div>
 									<PaymentCardIcon />
-									<p>Оплата банковской картой</p>
+									<p>Оплата картой любой страны</p>
 								</div>
 								<div>
 									<VisaCardIcon />
