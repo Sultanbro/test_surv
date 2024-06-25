@@ -863,6 +863,8 @@ export default {
 .header__nav-link-settings,
 .header__nav-link-more {
 	.header__menu {
+		z-index: 1000;
+		background-color: white;
 		transform: translateY(calc(-100% + 5rem));
 	}
 }
