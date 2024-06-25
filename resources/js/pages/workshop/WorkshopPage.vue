@@ -14,12 +14,10 @@
 				<h2>“Cоздание базы знаний”</h2>
 			</div>
 			<div class="workshop__payment-method">
-				<label class="workshop__payment">
-					<input
-						v-model="payCard"
-						type="checkbox"
-						class="workshop__payment-checkbox"
-					>
+				<div
+					class="workshop__payment"
+					@click="movedPayForm"
+				>
 					<div class="workshop__payment-wrapper">
 						<div class="workshop__payment-name">
 							<div class="workshop__payment-title">
@@ -43,15 +41,13 @@
 							<p>Оплачивая картой, вы соглащаетесь с условиями оферты</p>
 						</label>
 					</div>
-				</label>
+				</div>
 			</div>
-			<div class="workshop__payment-method">
+			<div
+				class="workshop__payment-method"
+				@click="toggleQrCode"
+			>
 				<label class="workshop__payment">
-					<input
-						v-model="payKaspi"
-						type="checkbox"
-						class="workshop__payment-checkbox"
-					>
 					<div class="workshop__payment-wrapper">
 						<div class="workshop__payment-name">
 							<div class="workshop__payment-title">
@@ -88,56 +84,6 @@
 			</div>
 		</div>
 	</div>
-	<!-- <div
-		v-if="!isShowQrCodeKaspi"
-		class="workshop"
-	>
-		<h1 class="workshop__title">
-			Оплата: Практикума по созданию Базы Знаний
-		</h1>
-		<div class="workshop__wrapper">
-			<h2>Оплатить картой</h2>
-			<button>
-				<a
-					href="https://jobtron.proeducation.kz/?invoice_id=f6c2bfb0a1f94b027f5f9bf88c29f35d&paylink=1"
-				>
-					<img
-						class="workshopform__img"
-						src="https://cdn-icons-png.flaticon.com/512/5352/5352016.png"
-						alt=""
-					>
-					Картой любого банка
-				</a>
-			</button>
-			<p>Оплачивая картой вы соглашаетесь с условями <strong>оферты</strong></p>
-
-			<h2>Купить в рассрочку или в кредит</h2>
-			<button @click="toggleQrCode">
-				<a>
-					Оплата Каспи
-					<img
-						class="workshopform__kaspi-img"
-						src="https://static.cdn-kaspi.kz/kkz/mainmvc/reswp/img/start/myBank/Red.png"
-						alt=""
-					>
-					<img
-						class="workshopform__kaspi-img"
-						src="https://static.cdn-kaspi.kz/kkz/mainmvc/reswp/img/start/myBank/Kredit.png"
-						alt=""
-					>
-					<img
-						class="workshopform__kaspi-img"
-						src="https://papik.pro/grafic/uploads/posts/2023-04/thumbs/1681564231_papik-pro-p-kaspi-logotip-vektor-30.png"
-						alt=""
-					>
-				</a>
-			</button>
-			<p>
-				Обязательно указывайте в примечании свой <strong>номер телефона</strong>
-				{{ isShowQrCodeKaspi }}
-			</p>
-		</div>
-	</div> -->
 	<div
 		v-else
 		class="workshop"
@@ -175,20 +121,7 @@ export default {
 	data() {
 		return {
 			isShowQrCodeKaspi: false,
-			payCard: false,
-			payKaspi: false,
 		};
-	},
-	watch: {
-		payCard(newValue) {
-			if (newValue) {
-				this.movedPayForm();
-				this.payCard = false;
-			}
-		},
-		payKaspi(newValue) {
-			if (newValue) this.isShowQrCodeKaspi = true;
-		},
 	},
 	created() {},
 	mounted() {
@@ -210,11 +143,8 @@ export default {
 			document.head.appendChild(meta);
 		},
 		movedPayForm() {
-			if (this.payCard) {
-				window.location.href =
-					'https://jobtron.proeducation.kz/?invoice_id=f6c2bfb0a1f94b027f5f9bf88c29f35d&paylink=1';
-				this.payCard = false;
-			}
+			window.location.href =
+				'https://jobtron.proeducation.kz/?invoice_id=f6c2bfb0a1f94b027f5f9bf88c29f35d&paylink=1';
 		},
 	},
 };
@@ -268,16 +198,15 @@ export default {
 		}
 
 		.workshop__payment-method {
-			cursor: pointer;
 			margin-top: 4px;
 			background-color: #ffffff;
 			border-radius: 20px;
-			&:active,
-			&:focus {
+			&:hover {
 				outline: 1px solid #156ae8;
 			}
 			.workshop__payment {
 				margin-top: 16px;
+				cursor: pointer;
 				display: flex;
 				padding: 4%;
 				width: 569px;
