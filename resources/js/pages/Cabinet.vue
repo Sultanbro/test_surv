@@ -1295,6 +1295,7 @@ a.lp-link {
 	.content{
 		padding: 15px !important;
 		overflow: visible;
+    z-index: 1;
 	}
 	.iban-info{
 		position: absolute;

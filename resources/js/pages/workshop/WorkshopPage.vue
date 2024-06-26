@@ -144,7 +144,7 @@ export default {
 		},
 		movedPayForm() {
 			window.location.href =
-				'https://jobtron.proeducation.kz/?invoice_id=f6c2bfb0a1f94b027f5f9bf88c29f35d&paylink=1';
+				'https://proeducation.kz/g6a1w/';
 		},
 	},
 };
