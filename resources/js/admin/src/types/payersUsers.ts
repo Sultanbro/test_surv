@@ -9,4 +9,6 @@ export type TPayersUsers = {
   updated_at: string
   name: string
   url: string
+  lead_id: string
+  selectedStatus: string
 }

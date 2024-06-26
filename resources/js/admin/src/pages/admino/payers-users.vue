@@ -32,19 +32,10 @@
             location="bottom"
             v-if="isEdit"
           >
-            <template v-slot:activator="{ props }">
+            <template #activator="{ props }">
               <div class="d-flex align-center gap-1 payers__edit">
-                <div
-                  v-bind="props"
-                  v-if="payer.status === 'pending'"
-                >
-                  В ожидании
-                </div>
-                <div
-                  v-bind="props"
-                  v-else
-                >
-                  Оплатил
+                <div v-bind="props">
+                  {{ getStatusText(payer.status) }}
                 </div>
                 <EditIcon v-bind="props" />
               </div>
@@ -56,8 +47,8 @@
                 :key="status.id"
               >
                 <v-list-item-title
-                  @click="updatePayerStatus(status.title, payer.id)"
-                  class="payers__option"
+                  @click="() => selectStatus(status, payer)"
+                  :class="{ payers__option: true, selected: status.type === payer.status }"
                 >
                   {{ status.title }}
                 </v-list-item-title>
@@ -66,8 +57,7 @@
           </v-menu>
 
           <div v-else>
-            <div v-if="payer.status === 'pending'">В ожидании</div>
-            <div v-else>Оплатил</div>
+            <div>{{ getStatusText(payer.status) }}</div>
           </div>
         </td>
         <td>{{ payer.amount }}</td>
@@ -85,33 +75,34 @@
 </template>
 
 <script setup lang="ts">
+import { ref, reactive, computed } from 'vue'
 import { formatDateTime } from '@/utils/formatDateTime'
-import { type TPayersUsers } from '@/types/payersUsers'
 import { sortedByDatePayersUsers } from '@/utils/sortedPayersUsers'
-import { fetchPayersUsers } from '@/api/payers/getPayers'
 import { updatePayerStatus } from '@/api/payers/updatePayer'
+import { updatePayerStatusBitrix } from '@/api/payers/updatePayerStatusBitrix'
+import { usePayersUsersStore } from '@/stores/usePayersUsersStore'
+import { type TPayersUsers } from '@/types/payersUsers'
 import EditIcon from '../../assets/icons/EditIcon.vue'
 
 type TStatuses = {
   id: number
   title: string
+  type: string
 }
+
+const payersUsersStore = usePayersUsersStore()
 
 const isEdit = ref<boolean>(false)
 
-const payersUsers = ref<TPayersUsers[]>([])
-
 const statuses: TStatuses[] = reactive([
-  { id: 1, title: 'Оплачено' },
-  { id: 2, title: 'В ожидании' },
+  { id: 1, title: 'Оплатил', type: 'success' },
+  { id: 2, title: 'В ожидании', type: 'pending' },
 ])
 
-const sortedPayersUsers = computed(() => {
-  return sortedByDatePayersUsers(payersUsers.value)
-})
+payersUsersStore.getUsers()
 
-fetchPayersUsers().then(res => {
-  return (payersUsers.value = res.data)
+const sortedPayersUsers = computed(() => {
+  return sortedByDatePayersUsers(payersUsersStore.users)
 })
 
 const toggleEditTable = () => {
@@ -121,6 +112,18 @@ const toggleEditTable = () => {
 const titleButton = computed(() => {
   return isEdit.value ? 'Сохранить' : 'Редактировать'
 })
+
+const selectStatus = (status: TStatuses, payer: TPayersUsers) => {
+  payer.status = status.type
+  updatePayerStatus(status.type, payer.id).then(async (res: TPayersUsers) => {
+    await updatePayerStatusBitrix(res.lead_id)
+    payer.status = status.type
+  })
+}
+
+const getStatusText = (status: string) => {
+  return status === 'pending' ? 'В ожидании' : 'Оплатил'
+}
 </script>
 
 <style scoped lang="scss">
