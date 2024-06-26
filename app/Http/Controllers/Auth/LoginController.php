@@ -125,7 +125,7 @@ class LoginController extends Controller
         ]);
 
         // login was success
-        $request->session()->regenerate(true);
+        $request->session()->regenerate();
         // redirect to - admin.jobtron.org
         if (request()->getHost() == 'admin.' . config('app.domain')) {
             return [
