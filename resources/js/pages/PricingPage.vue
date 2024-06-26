@@ -299,7 +299,6 @@ export default {
 	text-transform: uppercase;
 }
 .PricingPage {
-	z-index: 3;
 	line-height: 1.3;
 	&-total,
 	&-users {
