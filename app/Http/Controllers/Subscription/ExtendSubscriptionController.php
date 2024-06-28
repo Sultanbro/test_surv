@@ -33,7 +33,7 @@ class ExtendSubscriptionController extends Controller
 
         $dto = new CreateInvoiceDTO(
             $data->currency,
-            $this->getPrice($data),
+            $this->getPriceForExtraUsers($data),
             'Продление тарифа'
         );
 
