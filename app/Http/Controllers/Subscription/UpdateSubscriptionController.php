@@ -32,14 +32,14 @@ class UpdateSubscriptionController extends Controller
         $gateway = Gateway::provider($data->provider);
         $dto = new CreateInvoiceDTO(
             $data->currency,
-            $this->getPrice($data),
+            $this->getPriceForExtraUsers($data),
             'Рашерение тарифа'
         );
 
         $invoice = $gateway->createNewInvoice($dto, $customer);
-        $subscription->update([
-            'extra_users_limit' => $data->extraUsersLimit + $subscription->extra_user_limit
-        ]);
+
+        $subscription->extra_user_limit = $subscription->extra_user_limit + $data->extraUsersLimit;
+        $subscription->save();
 
         return $this->response(
             message: 'success',

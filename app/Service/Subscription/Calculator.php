@@ -37,4 +37,11 @@ class Calculator
         }
         return $percent;
     }
+
+    public function getPriceForExtraUsers(NewSubscriptionDTO $newInvoiceDTO): float|int
+    {
+       return $this->priceForOnePersonWithCurrencies[$newInvoiceDTO->currency] * $newInvoiceDTO->extraUsersLimit;
+    }
+
+
 }
