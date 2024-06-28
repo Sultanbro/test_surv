@@ -2,14 +2,14 @@
 	<div class="mk-know-base">
 		<div class="mk-know-base__wrapper">
 			<header class="mk-know-base__header">
-				<button>25 июня в 17:00 по мск</button>
+				<button>{{ date }} в 17:00 по мск</button>
 				<p>
 					Бесплатный доступ к онлайн мастер-классу для руководителей бизнеса
 				</p>
 			</header>
 			<main class="mk-know-base__main">
 				<p class="mk-know-base__main-title">
-					<span>Как выйти из операционки</span> и освободить от 3 часов в день с
+					<span>Как ускорить адаптацию</span> новых менеджеров по продажам с
 					помощью Базы Знаний
 				</p>
 				<div class="mk-know-base__main-bonus">
@@ -64,8 +64,8 @@
 							<section>
 								<ProgressIcon />
 								<p>
-									<span>Как</span> выводить новых менеджеров по продажам на
-									рабочие <span>показатели в 5 раз быстрее</span>
+									<span>Как</span> выводить новых менеджеров по продажам
+									<span> на рабочие показатели в 5 раз быстрее</span>
 								</p>
 							</section>
 						</div>
@@ -110,14 +110,15 @@
 						<h1><span>Адиль Каримов</span></h1>
 						<h2>Founder & CEO</h2>
 						<ul>
-							<li>20 лет предпринимательского опыта</li>
-							<li>Опыт управления 10.000 сотрудниками</li>
+							<li><span>20 лет</span> предпринимательского опыта</li>
+							<li><span>Опыт управления</span> 10.000 сотрудниками</li>
 							<li>
-								3 действующих бизнеса, достигающих планы по прибыли без участия
-								Адиля в операционке
+								<span>3 действующих бизнеса,</span> достигающих планы по прибыли
+								без участия Адиля в операционке
 							</li>
 							<li>
-								Обучает и помогает руководителям бизнеса выходу из операционки
+								Обучает и помогает руководителям бизнеса
+								<span>выходу из операционки</span>
 							</li>
 						</ul>
 					</div>
@@ -172,7 +173,9 @@ export default {
 			time: 6 * 60,
 			timerRunning: false,
 			interval: null,
-			whatsAppUrl: 'https://chat.whatsapp.com/GZ8FSwFy5XU3gExCXMTQo8', // Измените это значение в коде для обновления таймера
+			whatsAppUrl: 'https://chat.whatsapp.com/GZ8FSwFy5XU3gExCXMTQo8',
+
+			date: '2 июля',
 		};
 	},
 	computed: {
@@ -189,14 +192,16 @@ export default {
 		this.$nextTick(() => {
 			this.setMetaViewport();
 		});
-		this.checkUrlChange(); // Проверяем изменения ссылки при монтировании
-		this.loadTime(); // Загружаем сохраненное время
+		this.updateDateUrl();
+
+		this.checkUrlChange();
+		this.loadTime();
 		if (this.time > 0) {
-			this.startTimer(); // Запускаем таймер, если время больше нуля
+			this.startTimer();
 		}
 	},
 	beforeDestroy() {
-		this.stopTimer(); // Останавливаем таймер при уничтожении компонента
+		this.stopTimer();
 	},
 	updated() {
 		this.setMetaViewport();
@@ -214,7 +219,7 @@ export default {
 				this.interval = setInterval(() => {
 					if (this.time > 0) {
 						this.time--;
-						this.saveTime(); // Сохраняем текущее время в localStorage
+						this.saveTime();
 					} else {
 						this.stopTimer();
 						localStorage.setItem('remainingTime', '0');
@@ -234,24 +239,73 @@ export default {
 			if (savedTime !== null) {
 				const storedTime = parseInt(savedTime, 10);
 				if (!isNaN(storedTime)) {
-					this.time = storedTime; // Устанавливаем время из localStorage
+					this.time = storedTime;
 				}
 			}
 		},
 		resetTimer() {
 			this.stopTimer();
-			this.time = 7 * 60; // Сбрасываем время обратно на 5 минут (или любое другое начальное значение)
+			this.time = 7 * 60;
 			this.saveTime();
 			this.startTimer();
 		},
 		locationGroup() {
-			window.location.href = this.whatsAppUrl; // Используем переменную whatsAppUrl
+			window.location.href = this.whatsAppUrl;
 		},
 		checkUrlChange() {
 			const savedUrl = localStorage.getItem('savedWhatsAppUrl');
 			if (savedUrl !== this.whatsAppUrl) {
 				localStorage.setItem('savedWhatsAppUrl', this.whatsAppUrl);
 				this.resetTimer();
+			}
+		},
+		updateDateUrl() {
+			const months = {
+				0: 'Января',
+				1: 'Февраля',
+				2: 'Марта',
+				3: 'Апреля',
+				4: 'Мая',
+				5: 'Июня',
+				6: 'Июля',
+				7: 'Августа',
+				8: 'Сентября',
+				9: 'Октября',
+				10: 'Ноября',
+				11: 'Декабря',
+			};
+
+			const scheduledDates = [
+				{
+					date: '6-4',
+					url: 'https://chat.whatsapp.com/BEw8kjWjHSlATo8VIXeKrq',
+				},
+				{ date: '6-9' },
+				{ date: '6-11' },
+				{ date: '6-16' },
+				{ date: '6-18' },
+				{ date: '6-23' },
+				{ date: '6-25' },
+				{ date: '6-30' },
+			];
+
+			const currentDate = new Date();
+
+			const currentDateMounth = `${currentDate.getMonth()}-${currentDate.getDate()}`;
+			const currentHours = currentDate.getHours();
+
+			if (currentHours >= 18) {
+				for (const scheduledDate of scheduledDates) {
+					if (scheduledDate.date >= currentDateMounth) {
+						const [mounthKey, day] = scheduledDate.date.split('-');
+
+						this.date = `${day} ${months[mounthKey]}`;
+						this.whatsAppUrl = scheduledDate.url;
+
+						break;
+					}
+				}
+				this.checkUrlChange();
 			}
 		},
 	},
@@ -382,6 +436,7 @@ $defaultColor: #ffd500;
 				.mk-know-base__main-subtitle {
 					font-size: 45px;
 					font-weight: 700;
+					line-height: 27px;
 					@extend %border-bottom;
 				}
 
@@ -450,6 +505,9 @@ $defaultColor: #ffd500;
 							margin-top: 4%;
 							line-height: 1.55;
 							position: relative;
+							span {
+								font-weight: 800;
+							}
 
 							&::before {
 								content: "";
@@ -532,7 +590,7 @@ $defaultColor: #ffd500;
 						height: 136px;
 					}
 					.mk-know-base__main-text {
-						font-size: 15px;
+						font-size: 13px;
 					}
 				}
 				.mk-know-base__main-registration {
@@ -549,7 +607,7 @@ $defaultColor: #ffd500;
 							}
 						}
 						p {
-							font-size: 13px;
+							font-size: 14px;
 						}
 					}
 					.mk-know-base__main-timetracker {
@@ -597,8 +655,8 @@ $defaultColor: #ffd500;
 									font-size: 15px;
 								}
 								svg {
-									width: 150px;
-									height: 150px;
+									width: 99px;
+									height: 86px;
 								}
 							}
 						}
@@ -639,7 +697,6 @@ $defaultColor: #ffd500;
 							}
 						}
 						h2 {
-							margin-top: 6%;
 							font-size: 18px;
 						}
 						ul {
@@ -666,13 +723,13 @@ $defaultColor: #ffd500;
 					padding-top: 5%;
 					flex-direction: column;
 					h3 {
-						font-weight: bold;
-						font-size: 25px;
+						font-weight: 800;
+						font-size: 28px;
 						line-height: 1.4;
 					}
 					p {
 						margin-top: 4%;
-						font-size: 15px;
+						font-size: 16px;
 						line-height: 1.7;
 					}
 
