@@ -76,7 +76,10 @@ class AppServiceProvider extends ServiceProvider
     {
 
         if (Auth::guest()) return ['csrfToken' => csrf_token()];
-        if (Auth::user()->getConnectionName() === 'mysql') return ['csrfToken' => csrf_token()];
+        if (Auth::user()->getConnectionName() === 'mysql') {
+            Auth::logout();
+            return ['csrfToken' => csrf_token()];
+        }
 
         return [
             'csrfToken' => csrf_token(),
