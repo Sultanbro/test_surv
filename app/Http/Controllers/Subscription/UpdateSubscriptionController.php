@@ -32,7 +32,7 @@ class UpdateSubscriptionController extends Controller
         $gateway = Gateway::provider($data->provider);
         $dto = new CreateInvoiceDTO(
             $data->currency,
-            $this->getPrice($data),
+            $this->getPriceForExtraUsers($data),
             'Рашерение тарифа'
         );
 
