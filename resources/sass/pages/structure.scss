@@ -413,7 +413,7 @@
 				top: 20px;
 				left: var(--start-line);
 				right: var(--end-line);
-				z-index: 12;
+				// z-index: 12;
 			}
 
 			.structure-item .structure-card .structure-card-body{
@@ -657,7 +657,7 @@
 				top: -20px;
 				left: 50%;
 				transform: translateX(-50%);
-				z-index: 12;
+				// z-index: 12;
 			}
 
 			&:after {
@@ -669,7 +669,7 @@
 				bottom: -21px;
 				left: 50%;
 				transform: translateX(-50%);
-				z-index: 12;
+				// z-index: 12;
 			}
 
 			&.no-result {
