@@ -37,9 +37,9 @@ class UpdateSubscriptionController extends Controller
         );
 
         $invoice = $gateway->createNewInvoice($dto, $customer);
-        $subscription->update([
-            'extra_users_limit' => $data->extraUsersLimit + $subscription->extra_user_limit
-        ]);
+
+        $subscription->extra_user_limit = $subscription->extra_user_limit + $data->extraUsersLimit;
+        $subscription->save();
 
         return $this->response(
             message: 'success',
