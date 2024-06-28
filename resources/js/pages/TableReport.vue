@@ -2226,7 +2226,7 @@ hr {
 	.b-table-sticky-column{
 		&:nth-child(1){
 			width: 290px;
-			z-index: 3;
+			// z-index: 3;
 			> div{
 				display: flex;
 				align-items: center;
