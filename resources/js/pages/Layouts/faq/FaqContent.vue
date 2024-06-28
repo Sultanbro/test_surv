@@ -129,7 +129,7 @@ export default {
 	height: calc(100vh - 130px);
 	padding: 20px;
 	overflow: auto;
-	z-index: 1;
+	z-index: 100;
 	position: relative;
 	scrollbar-width: none;
 	// -ms-overflow-style: none;
@@ -179,8 +179,8 @@ export default {
 	display: none;
 }
 
-.b24-widget-button-shadow,
-.b24-widget-button-shadow * {
-	z-index: 9999 !important;
-}
+// .b24-widget-button-shadow,
+// .b24-widget-button-shadow * {
+// 	z-index: 9999 !important;
+// }
 </style>

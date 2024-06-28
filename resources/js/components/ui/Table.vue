@@ -153,7 +153,7 @@ export default {
 	&-head{
 		position: relative;
 		overflow: hidden;
-		z-index: 5;
+		// z-index: 5;
 		.JobtronTable-row{
 			&:first-child{
 				.JobtronTable-th{
