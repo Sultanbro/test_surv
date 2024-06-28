@@ -185,7 +185,7 @@ export default {
 		},
 		submitWalletOne(){
 			try{
-				if (this.info.tariff) this.axios.post(`/tariff/subscriptions/${this.info.tariff.id}`, {
+				if (this.info.tariff) this.axios.post(`/tariff/subscriptions/${this.info.tariff.subscriptions_id}`, {
 					currency: this.currencyCode,
 					// eslint-disable-next-line camelcase
 					extra_users_limit: this.count > 0 ? this.count : 0,
