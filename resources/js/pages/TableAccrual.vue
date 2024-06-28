@@ -2556,7 +2556,7 @@ hr {
 		&:nth-child(1) {
 			width: 290px;
 			left:0 !important;
-			z-index: 5;
+			// z-index: 5;
 			> div {
 				width: 288px;
 				white-space: normal;
