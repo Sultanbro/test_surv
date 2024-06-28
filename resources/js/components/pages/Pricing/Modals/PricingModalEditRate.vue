@@ -165,7 +165,7 @@ export default {
 		editToBuyRate(){
 			try{
 				if(this.currency !== '₽') return this.submitWalletOne()
-				if (this.info.tariff) this.axios.post(`/tariff/subscriptions/${this.info.tariff.tariff_id}`, {
+				if (this.info.tariff) this.axios.post(`/tariff/subscriptions/${this.info.tariff.subscriptions_id}`, {
 					currency: this.currencyCode,
 					// eslint-disable-next-line camelcase
 					extra_users_limit: this.count > 0 ? this.count : 0,
