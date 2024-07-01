@@ -39,7 +39,7 @@ class UpdateSubscriptionController extends Controller
             'Рашерение тарифа'
         );
         $invoiceResponse = $gateway->createNewInvoice($dto, $customer);
-
+        dd($invoiceResponse);
         Invoice::query()->create([
             'payer_name' => auth()->user()->name,
             'payer_phone' => auth()->user()->phone,
