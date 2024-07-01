@@ -38,7 +38,7 @@ class WalletOneConnector implements PaymentConnector
             "WMI_PAYMENT_NO" => $idempotenceKey,
             "WMI_CURRENCY_ID" => self::CURRENCIES[$invoice->currency],
             "WMI_PAYMENT_AMOUNT" => $invoice->price,
-            "WMI_DESCRIPTION" => "BASE64:" . base64_encode('Заказ №' . time()),
+            "WMI_DESCRIPTION" => "BASE64:" . base64_encode($invoice->description),
             "WMI_CUSTOMER_EMAIL" => $customer->email,
             "WMI_ORDER_ITEMS" => json_encode([[
                 "Title" => urlencode($invoice->description),
@@ -53,7 +53,7 @@ class WalletOneConnector implements PaymentConnector
         ]);
 
         $signature = new WalletOneSignature($this->shopKey);
-        //Добавление параметра WMI_SIGNATURE в словарь параметров формы
+        //Добавление параметра WMI_SIGNATURE в параметров формы
         $body["WMI_SIGNATURE"] = $signature->make($body);
         return new Invoice(
             $this->paymentUrl,
