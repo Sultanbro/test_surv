@@ -16,6 +16,7 @@ class UpdateSubscriptionRequest extends FormRequest
         return [
             'tenant_id' => ['nullable', 'string'],
             'extra_users_limit' => ['required', 'integer', 'min:0'],
+            'currency' => ['nullable', 'string'],
         ];
     }
 
@@ -35,7 +36,7 @@ class UpdateSubscriptionRequest extends FormRequest
             $subscription->tariff_id,
             $tenant,
             $extraUsersLimit,
-            Gateway::provider($subscription->getCurrency())->name()
+            Gateway::provider($validated['currency'] ?? $subscription->getCurrency())->name()
         );
     }
 }
