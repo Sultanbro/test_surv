@@ -127,9 +127,9 @@
 								:class="{
 									'connectionBtn': info.tariff === null && item.name==='Бесплатный',
 									'selectedBtn': info.tariff && item.name !== names[info.tariff.kind],
-									'disabledBtn': info.tariff && info.tariff.payment_id !=='trial' &&countRate[info.tariff.kind] > countRate[item.connectionPack]
+									'disabledBtn': info.tariff && info.tariff.payment_id ==='trial' &&countRate[info.tariff.kind] > countRate[item.connectionPack]
 								}"
-								:disabled="info.tariff && info.tariff.payment_id !=='trial' && countRate[info.tariff.kind] > countRate[item.connectionPack]"
+								:disabled="info.tariff && info.tariff.payment_id ==='trial' && countRate[info.tariff.kind] > countRate[item.connectionPack]"
 								@click="pricingModal(item)"
 							>
 								{{ info.tariff ? (names[info.tariff.kind] === item.name ? 'Продлить' : 'Перейти'): '' }}

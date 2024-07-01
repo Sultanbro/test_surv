@@ -297,7 +297,7 @@ export default  {
 			word:'asdasdasd',
 			options: [],
 			sumPeople: 0,
-			promo: '',
+			promo: 'bp',
 			promoData: {},
 			isPromoLoading: false,
 			selectedRate: null,
@@ -306,7 +306,7 @@ export default  {
 			data: [],
 			selectedOption: null,
 			promoFetch: [],
-			promoRate: '',
+			promoRate: [],
 			promoDiscount: 0,
 			isLoading: false,
 		}
@@ -326,14 +326,14 @@ export default  {
 		},
 		total(){
 			if (!this.activeOption) return 0;
-
-			let price = Number(this.getPrice(this.activeOption));
+			let price = Number(this.getPrice(this.activeOption)) ;
 			let discount = 0
-			if (this.promoRate) {
-				discount = (Number(this.promoRate[0].rate) / 100) * price;
+
+			if (this.promoRate[0].code) {
+				discount = (Number(this.promoRate[0].rate) / 100) * price + this.sumPeople * Math.round(this.priceForOnePerson[this.currencyCode]);
 				// eslint-disable-next-line vue/no-side-effects-in-computed-properties
 				this.promoDiscount= discount
-				price -= discount;
+				price -= this.promoDiscount;
 			}
 
 			return price +=   this.sumPeople * Math.round( this.priceForOnePerson[this.currencyCode]) ;
@@ -509,7 +509,7 @@ export default  {
 		activatePromo(){
 			try {
 				this.promoRate = this.promoFetch.data.filter(item => item.code === this.promo)
-				if (this.promoRate) 	this.$toast.success('промокод успешно введен')
+				if (this.promoRate[0].code) 	this.$toast.success('промокод успешно введен')
 
 				this.isPromoLoading = true;
 
@@ -533,6 +533,8 @@ export default  {
 		cancelPromo(){
 			this.activePromo=false
 			this.isPromoLoading= false
+			this.promoRate = []
+			this.promoDiscount = 0
 			this.promo = ''
 		}
 	}
