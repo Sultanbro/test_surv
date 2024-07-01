@@ -77,14 +77,13 @@ class Kernel extends HttpKernel
      */
     protected $routeMiddleware = [
         'auth' => \Illuminate\Auth\Middleware\Authenticate::class,
-        'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
+        'auth.basic' => \App\Http\Middleware\BasicAuthMiddleware::class,
         'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,
         'can' => \Illuminate\Auth\Middleware\Authorize::class,
         'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'admin' => \App\Http\Middleware\Admin::class,
         'adminbook' => \App\Http\Middleware\AdminBook::class,
-        'admin.basic.auth' => \App\Http\Middleware\BasicAuth::class,
         'partner' => \App\Http\Middleware\Partner::class,
         'referral' => \App\Http\Middleware\Referral::class,
         'timezone' => \App\Http\Middleware\Timezone::class,

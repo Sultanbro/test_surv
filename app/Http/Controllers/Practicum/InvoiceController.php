@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Payment;
+namespace App\Http\Controllers\Practicum;
 
 use App\Classes\Helpers\Phone;
+use App\Enums\Invoice\InvoiceType;
 use App\Http\Requests\Payment\NewInvoiceRequest;
 use App\Jobs\ProcessCreatePracticumInvoiceLead;
 use App\Models\Invoice;
@@ -27,6 +28,7 @@ class InvoiceController
             'url' => $data['url'],
             'provider' => $data['provider'],
             'status' => 'pending',
+            'type' => InvoiceType::PRACTICUM
         ]);
 
         $job = new ProcessCreatePracticumInvoiceLead($invoice);

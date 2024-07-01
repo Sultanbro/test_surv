@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Payment\InvoiceController;
+use App\Http\Controllers\Practicum\InvoiceController;
 use App\Http\Controllers\Tariff\TariffController;
 use Illuminate\Support\Facades\Route;
 

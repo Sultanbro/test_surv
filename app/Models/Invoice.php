@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Classes\Helpers\Phone;
+use App\Enums\Invoice\InvoiceType;
+use App\Enums\Payments\PaymentStatusEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -17,6 +19,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $name
  * @property string $url
  * @property string $provider
+ * @property InvoiceType $type
+ * @property array $payload
  */
 class Invoice extends Model
 {
@@ -33,7 +37,14 @@ class Invoice extends Model
         'status',
         'name',
         'url',
-        'provider'
+        'provider',
+        'type',
+        'payload',
+    ];
+
+    protected $casts = [
+        'type' => InvoiceType::class,
+        'payload' => 'array',
     ];
 
     public static function getByTransactionId(int|string $getTransactionId): ?Invoice
@@ -58,7 +69,7 @@ class Invoice extends Model
     public function updateStatusToSuccess(): void
     {
         static::query()->update([
-            'status' => 'success'
+            'status' => PaymentStatusEnum::STATUS_SUCCESS
         ]);
     }
 

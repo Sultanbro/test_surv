@@ -5,7 +5,7 @@ namespace App\Service\Payment\Core\Base;
 
 use App\DTO\Payment\CreateInvoiceDTO;
 use App\Service\Payment\Core\Customer\CustomerDto;
-use App\Service\Payment\Core\Invoice\Invoice;
+use App\Service\Payment\Core\Invoice\InvoiceResponse;
 use App\Service\Payment\Core\Webhook\BaseWebhookMapper;
 use App\Service\Payment\Core\Webhook\WebhookResponse;
 
@@ -22,9 +22,9 @@ abstract class BasePaymentGateway
     /**
      * @param CreateInvoiceDTO $data
      * @param CustomerDto $customer
-     * @return Invoice
+     * @return InvoiceResponse
      */
-    public function createNewInvoice(CreateInvoiceDTO $data, CustomerDto $customer): Invoice
+    public function createNewInvoice(CreateInvoiceDTO $data, CustomerDto $customer): InvoiceResponse
     {
         return $this->connector()->newInvoice($data, $customer);
     }

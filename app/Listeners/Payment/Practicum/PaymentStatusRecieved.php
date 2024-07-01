@@ -1,15 +1,14 @@
 <?php
 
-namespace App\Listeners\Payment;
+namespace App\Listeners\Payment\Practicum;
 
-use App\Events\Payment\PaymentWebhookTriggeredEvent;
+use App\Events\Payment\NewPracticumInvoiceShipped;
 use App\Facade\Payment\Gateway;
 use App\Models\Invoice;
-use App\Service\Invoice\UpdateDealInBitrix;
 
-class UpdateInvoiceStatusInLeadListener
+class PaymentStatusRecieved
 {
-    public function handle(PaymentWebhookTriggeredEvent $event): void
+    public function handle(NewPracticumInvoiceShipped $event): void
     {
         $dto = $event->dto;
 
@@ -20,7 +19,14 @@ class UpdateInvoiceStatusInLeadListener
         ]);
         if (!$webhookHandler->InvoiceSuccessfullyHandled()) return;
         $invoice = Invoice::getByPayerPhone($webhookHandler->getParams('customer_phone'));
+        if (!$invoice) return;
 
-        $updateLeadService = new UpdateDealInBitrix($invoice);
-        $updateLeadService->send();
-    }}
+        slack(json_encode([
+            'params' => $dto->payload,
+            'currency' => $dto->currency,
+            'invoice_id' => $invoice->id
+        ]));
+
+        $invoice->updateStatusToSuccess();
+    }
+}

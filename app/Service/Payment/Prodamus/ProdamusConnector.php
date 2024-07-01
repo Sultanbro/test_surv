@@ -7,7 +7,7 @@ use App\DTO\Payment\CreateInvoiceDTO;
 use App\Service\Payment\Core\Base\HasIdempotenceKey;
 use App\Service\Payment\Core\Base\PaymentConnector;
 use App\Service\Payment\Core\Customer\CustomerDto;
-use App\Service\Payment\Core\Invoice\Invoice;
+use App\Service\Payment\Core\Invoice\InvoiceResponse;
 use Exception;
 use GuzzleHttp\Promise\PromiseInterface;
 use Illuminate\Http\Client\Response;
@@ -31,7 +31,7 @@ class ProdamusConnector implements PaymentConnector
      *
      * @throws Exception
      */
-    public function newInvoice(CreateInvoiceDTO $invoice, CustomerDto $customer): Invoice
+    public function newInvoice(CreateInvoiceDTO $invoice, CustomerDto $customer): InvoiceResponse
     {
         $paymentId = $this->generateIdempotenceKey();
         $params = [
@@ -65,7 +65,7 @@ class ProdamusConnector implements PaymentConnector
 
         $resp = json_decode($response->body(), true);
 
-        return new Invoice(
+        return new InvoiceResponse(
             url: $resp['payment_link'],
             transaction_id: $paymentId,
             currency: 'rub'

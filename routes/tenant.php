@@ -56,7 +56,7 @@ Route::middleware(['web', 'tenant'])->group(function () {
     });
 
     Route::prefix('invoices')->group(function () {
-        Route::get('/', [Root\Payment\InvoiceController::class, 'list']);
+        Route::get('/', [Root\Practicum\InvoiceController::class, 'list']);
     });
 });
 

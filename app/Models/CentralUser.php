@@ -150,7 +150,7 @@ class CentralUser extends Model implements ICustomer
         return self::query()->where('email', $user_email)->first();
     }
 
-    public function customer(): CustomerDto
+    public function toCustomerDTO(): CustomerDto
     {
         return new CustomerDto(
             $this->id,

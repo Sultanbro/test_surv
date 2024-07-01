@@ -5,7 +5,7 @@ namespace App\Service\Payment\Core\Invoice;
 use App\Models\Tariff\Transaction;
 use JsonSerializable;
 
-class Invoice implements JsonSerializable
+class InvoiceResponse implements JsonSerializable
 {
     public function __construct(
         private readonly string $url,

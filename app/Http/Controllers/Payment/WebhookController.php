@@ -2,9 +2,14 @@
 
 namespace App\Http\Controllers\Payment;
 
-use App\Events\Payment\PaymentWebhookTriggeredEvent;
+use App\Enums\Invoice\InvoiceType;
+use App\Events\Payment\ExtendSubscription;
+use App\Events\Payment\NewSubscription;
+use App\Events\Payment\NewPracticumInvoiceShipped;
+use App\Events\Payment\UpdateSubscription;
 use App\Facade\Payment\Gateway;
 use App\Http\Controllers\Controller;
+use App\Models\Invoice;
 use App\Service\Payment\Core\Webhook\WebhookDto;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -24,14 +29,30 @@ class WebhookController extends Controller
      */
     public function callback(Request $request, string $currency): JsonResponse
     {
-        $dto = new WebhookDto(
-            $currency,
-            $request->all(),
-            $request->header());
+        $provider = Gateway::provider($currency);
+        $webhookHandler = $provider->webhookHandler();
 
-        PaymentWebhookTriggeredEvent::dispatch($dto);
+        $dto = new WebhookDto($currency, $request->all(), $request->header());
 
-        return response()
-            ->json(Gateway::provider($currency)->staticWebhookResponse());
+        $webhookHandler->map([
+            'params' => $dto->payload,
+            'headers' => $dto->headers,
+        ]);
+
+        /** @var Invoice $invoice */
+        $invoice = Invoice::query()->where([
+            'transaction_id' => $webhookHandler->getTransactionId(),
+            'provider' => $provider->name()
+        ])->first();
+
+        match ($invoice->type) {
+            InvoiceType::NEW_SUBSCRIPTION    => NewSubscription::dispatch($dto),
+            InvoiceType::EXTEND_SUBSCRIPTION => ExtendSubscription::dispatch($dto),
+            InvoiceType::UPDATE_SUBSCRIPTION => UpdateSubscription::dispatch($dto),
+            InvoiceType::PRACTICUM           => NewPracticumInvoiceShipped::dispatch($dto),
+            InvoiceType::SWITCH_SUBSCRIPTION => throw new Exception('To be implemented'),
+        };
+
+        return response()->json($provider->staticWebhookResponse()); // to prevent overlapping
     }
 }

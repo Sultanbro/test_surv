@@ -99,4 +99,8 @@ return [
         ],
     ],
 
+    'basic' => [
+        'login' => env('BASIC_AUTH_LOGIN'),
+        'password' => env('BASIC_AUTH_PASSWORD')
+    ]
 ];

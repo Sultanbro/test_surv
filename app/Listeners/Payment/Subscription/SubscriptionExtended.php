@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Listeners\Payment;
+namespace App\Listeners\Payment\Subscription;
 
-use App\Events\Payment\PaymentWebhookTriggeredEvent;
+use App\Events\Payment\NewPracticumInvoiceShipped;
 use App\Facade\Payment\Gateway;
 use App\Models\Invoice;
 
-class ExternalPaymentWebhookListener
+class SubscriptionExtended
 {
-    public function handle(PaymentWebhookTriggeredEvent $event): void
+    public function handle(NewPracticumInvoiceShipped $event): void
     {
         $dto = $event->dto;
 

@@ -6,7 +6,10 @@ use App\Events\{ActivityUpdated,
     BonusUpdated,
     EmailNotificationEvent,
     KpiChangedEvent,
-    Payment\PaymentWebhookTriggeredEvent,
+    Payment\ExtendSubscription,
+    Payment\NewPracticumInvoiceShipped,
+    Payment\NewSubscription,
+    Payment\UpdateSubscription,
     TimeTrack\CreateTimeTrackHistoryEvent,
     TrackCourseItemFinishedEvent,
     TrackGroupChangingEvent,
@@ -25,11 +28,12 @@ use App\Listeners\{ActivityUpdatedListener,
     EmailNotificationListener,
     EventListener,
     KpiChangedListener,
-    Payment\ExternalPaymentWebhookListener,
     Payment\LogPaymentWebhookListener,
-    Payment\PracticumPaymentWebhookListener,
-    Payment\TariffPaymentWebhookListener,
-    Payment\UpdateInvoiceStatusInLeadListener,
+    Payment\Practicum\PaymentStatusRecieved,
+    Payment\Practicum\UpdateLeadStatus,
+    Payment\Subscription\SubscriptionExtended,
+    Payment\Subscription\SubscriptionUpdated,
+    Payment\Subscription\InvoiceStatusReceived,
     TimeTrack\CreateTimeTrackHistoryListener,
     TrackCourseItemFinishedListener,
     TrackGroupChangingListener,
@@ -111,13 +115,25 @@ class EventServiceProvider extends ServiceProvider
         UserUpdatedEvent::class => [
             UserUpdatedListener::class
         ],
-        PaymentWebhookTriggeredEvent::class => [
-            TariffPaymentWebhookListener::class,
-            ExternalPaymentWebhookListener::class,
+        //payment
+        NewPracticumInvoiceShipped::class => [
+            PaymentStatusRecieved::class,
+            UpdateLeadStatus::class,
             LogPaymentWebhookListener::class,
-            PracticumPaymentWebhookListener::class,
-            UpdateInvoiceStatusInLeadListener::class
-        ]
+        ],
+        NewSubscription::class => [
+            InvoiceStatusReceived::class,
+            LogPaymentWebhookListener::class,
+            UpdateLeadStatus::class,
+        ],
+        ExtendSubscription::class => [
+            SubscriptionExtended::class,
+            LogPaymentWebhookListener::class,
+        ],
+        UpdateSubscription::class => [
+            SubscriptionUpdated::class,
+            LogPaymentWebhookListener::class,
+        ],
     ];
 
     /**
