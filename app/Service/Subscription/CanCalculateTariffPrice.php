@@ -12,4 +12,10 @@ trait CanCalculateTariffPrice
 
         return $calculator->calc($data);
     }
+
+    public function getPriceForExtraUsers(NewSubscriptionDTO $data): float|int
+    {
+        $calculator = new Calculator();
+        return $calculator->getPriceForExtraUsers($data);
+    }
 }

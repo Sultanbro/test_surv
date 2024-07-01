@@ -277,6 +277,10 @@ export default {
 
 			const scheduledDates = [
 				{
+					date: '6-2',
+					url: 'https://chat.whatsapp.com/GZ8FSwFy5XU3gExCXMTQo8',
+				},
+				{
 					date: '6-4',
 					url: 'https://chat.whatsapp.com/BEw8kjWjHSlATo8VIXeKrq',
 				},

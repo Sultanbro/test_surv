@@ -44,6 +44,7 @@ final class CabinetService
 
     public function getOwnerByTenantId(string $tenantId): CentralUser
     {
-        return CentralUser::where('id', tenant()->owner()->id)->firstOrFail();
+        /** @var CentralUser */
+        return CentralUser::query()->where('id', $tenantId)->firstOrFail();
     }
 }
