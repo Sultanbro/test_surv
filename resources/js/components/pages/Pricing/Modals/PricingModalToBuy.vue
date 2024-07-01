@@ -329,7 +329,7 @@ export default  {
 			let price = Number(this.getPrice(this.activeOption)) ;
 			let discount = 0
 
-			if (this.promoRate[0].code) {
+			if (this.promoRate) {
 				discount = (Number(this.promoRate[0].rate) / 100) * price + this.sumPeople * Math.round(this.priceForOnePerson[this.currencyCode]);
 				// eslint-disable-next-line vue/no-side-effects-in-computed-properties
 				this.promoDiscount= discount
