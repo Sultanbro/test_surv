@@ -30,13 +30,22 @@ class UpdateSubscriptionRequest extends FormRequest
         $subscription = $this->subscription;
         $extraUsersLimit = (int)Arr::get($validated, 'extra_users_limit');
         $tenant = Arr::get($validated, 'tenant_id', tenant('id'));
-
+        $currency = Arr::get($validated, 'currency', $subscription->getCurrency());
+        dd(
+            new NewSubscriptionDTO(
+                $currency,
+                $subscription->tariff_id,
+                $tenant,
+                $extraUsersLimit,
+                Gateway::provider($currency)->name()
+            )
+        );
         return new NewSubscriptionDTO(
-            $subscription->getCurrency(),
+            $currency,
             $subscription->tariff_id,
             $tenant,
             $extraUsersLimit,
-            Gateway::provider($validated['currency'] ?? $subscription->getCurrency())->name()
+            Gateway::provider($currency)->name()
         );
     }
 }
