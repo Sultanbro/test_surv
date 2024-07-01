@@ -1,5 +1,6 @@
 html{
-    overflow-y: scroll;
+    // overflow-y: scroll; - показывает место для скролла даже если он не нужен (стояло изначально)
+    overflow-y: auto; // - с этим свойством частично пропадают скроллы на некоторых страницах, но не на всех
 }
 .flex-column {
     flex-direction: column;

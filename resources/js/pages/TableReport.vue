@@ -2055,9 +2055,9 @@ $bgAccept: #156AE8;
 }
 
 
-.b-table-sticky-header {
-	max-height: calc(100vh - 250px);
-}
+// .b-table-sticky-header {
+// 	max-height: calc(100vh - 250px);
+// }
 
 .table-day-1 {
 	color: rgb(0, 0, 0);

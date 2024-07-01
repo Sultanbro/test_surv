@@ -64,6 +64,11 @@ ol {
     padding-left: 30px;
 }
 
+.content {
+  scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
 .content p {
     color: #000;
 }
