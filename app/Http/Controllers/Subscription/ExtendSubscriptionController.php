@@ -31,7 +31,7 @@ class ExtendSubscriptionController extends Controller
         $data = $request->toDto();
         $customer = CentralUser::fromAuthUser()->toCustomerDTO();
         $gateway = Gateway::provider($data->provider);
-
+        dd($gateway->name());
         $dto = new CreateInvoiceDTO(
             $data->currency,
             $this->getPrice($data),
