@@ -231,7 +231,7 @@
 				</p>
 			</div>
 			<div
-				v-if="promoRate"
+				v-if="promoRate.length > 0"
 				class="pricing-promo"
 			>
 				<p class="pricing-promo-title">
@@ -297,7 +297,7 @@ export default  {
 			word:'asdasdasd',
 			options: [],
 			sumPeople: 0,
-			promo: 'bp',
+			promo: '',
 			promoData: {},
 			isPromoLoading: false,
 			selectedRate: null,
@@ -330,7 +330,7 @@ export default  {
 			let discount = 0
 
 			if (this.promoRate) {
-				discount = (Number(this.promoRate[0].rate) / 100) * price + this.sumPeople * Math.round(this.priceForOnePerson[this.currencyCode]);
+				discount = (Number(this.promoRate) / 100) * price + this.sumPeople * Math.round(this.priceForOnePerson[this.currencyCode]);
 				// eslint-disable-next-line vue/no-side-effects-in-computed-properties
 				this.promoDiscount= discount
 				price -= this.promoDiscount;
