@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Http\Requests\Subscription;
 
 use App\DTO\Payment\NewSubscriptionDTO;
+use App\Facade\Payment\Gateway;
 use App\Models\Tariff\TariffSubscription;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Arr;
@@ -34,7 +35,7 @@ class UpdateSubscriptionRequest extends FormRequest
             $subscription->tariff_id,
             $tenant,
             $extraUsersLimit,
-            $subscription->payment_provider,
+            Gateway::provider($subscription->getCurrency())->name()
         );
     }
 }
