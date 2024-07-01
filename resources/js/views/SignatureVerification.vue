@@ -457,7 +457,7 @@ export default {
 						class="mr-4"
 						@click="onSignAgain"
 					>
-						Отправить заного
+						Отправить повторно
 					</b-btn>
 				</template>
 

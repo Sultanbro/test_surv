@@ -88,7 +88,7 @@
 				</p>
 			</div>
 			<p class="pricing-buy-added-clue pricing-buy-added-clue_top">
-				{{ count }} пользователя на 24 дня оставшегося тарифа
+				{{ count }} пользователя на 30 дней
 			</p>
 			<div class="pricing-buy-total">
 				<p class="pricing-buy-total-title">

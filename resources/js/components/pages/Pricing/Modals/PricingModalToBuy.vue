@@ -231,7 +231,7 @@
 				</p>
 			</div>
 			<div
-				v-if="promoRate"
+				v-if="promoRate.length > 0"
 				class="pricing-promo"
 			>
 				<p class="pricing-promo-title">
@@ -306,7 +306,7 @@ export default  {
 			data: [],
 			selectedOption: null,
 			promoFetch: [],
-			promoRate: '',
+			promoRate: [],
 			promoDiscount: 0,
 			isLoading: false,
 		}
@@ -326,14 +326,13 @@ export default  {
 		},
 		total(){
 			if (!this.activeOption) return 0;
-
-			let price = Number(this.getPrice(this.activeOption));
+			let price = Number(this.getPrice(this.activeOption)) ;
 			let discount = 0
-			if (this.promoRate) {
-				discount = (Number(this.promoRate[0].rate) / 100) * price;
+			if (this.promoRate[0] && this.promoRate[0].rate) {
+				discount = (Number(this.promoRate[0].rate) / 100) * price + this.sumPeople * Math.round(this.priceForOnePerson[this.currencyCode]);
 				// eslint-disable-next-line vue/no-side-effects-in-computed-properties
 				this.promoDiscount= discount
-				price -= discount;
+				price -= this.promoDiscount;
 			}
 
 			return price +=   this.sumPeople * Math.round( this.priceForOnePerson[this.currencyCode]) ;
@@ -393,7 +392,7 @@ export default  {
 			try{
 				/* eslint-disable camelcase */
 				if (this.tariffStore === this.price && this.tariffId.payment_id !=='trial'){
-					this.axios.post(`/tariff/subscriptions/${this.tariffId.id}/extend`, {
+					this.axios.post(`/tariff/subscriptions/${this.tariffId.subscription_id}/extend`, {
 						currency: this.currencyCode,
 						// eslint-disable-next-line camelcase
 						extra_users_limit: this.count > 0 ? this.count : 0,
@@ -449,7 +448,7 @@ export default  {
 						auto_payment: this.autoPayment,
 						tenant_id: this.selectedOption.id,
 						promo_code: this.promoRate[0]?.code || null,
-					}, this.tariffId.id);
+					}, this.tariffId.subscription_id);
 					const form = document.createElement('form')
 					form.method = 'post'
 					form.action = url
@@ -509,7 +508,7 @@ export default  {
 		activatePromo(){
 			try {
 				this.promoRate = this.promoFetch.data.filter(item => item.code === this.promo)
-				if (this.promoRate) 	this.$toast.success('промокод успешно введен')
+				if (this.promoRate[0].code) 	this.$toast.success('промокод успешно введен')
 
 				this.isPromoLoading = true;
 
@@ -533,6 +532,8 @@ export default  {
 		cancelPromo(){
 			this.activePromo=false
 			this.isPromoLoading= false
+			this.promoRate = []
+			this.promoDiscount = 0
 			this.promo = ''
 		}
 	}
