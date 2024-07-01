@@ -38,7 +38,7 @@ class UpdateSubscriptionController extends Controller
             InvoiceType::UPDATE_SUBSCRIPTION,
             'Рашерение тарифа'
         );
-
+        dd($dto);
         $invoiceResponse = $gateway->createNewInvoice($dto, $customer);
 
         Invoice::query()->create([
