@@ -23,7 +23,7 @@ class SubscriptionUpdated
 
 
         /** @var TariffSubscription $subscription */
-        $subscription = TariffSubscription::query()->find($invoice->payload['subscription_id']);
+        $subscription = TariffSubscription::query()->where('id', $invoice->payload['subscription_id'])->latest()->first();
 
         info('Payment provider callback', [
             'params' => $dto->payload,
