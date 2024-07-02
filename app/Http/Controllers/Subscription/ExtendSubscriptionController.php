@@ -51,11 +51,6 @@ class ExtendSubscriptionController extends Controller
         );
 
         $invoiceResponse = $gateway->createNewInvoice($dto, $customer);
-        dd(
-            $subscription->expire_date,
-            $validates[$tariff->validity],
-            Carbon::create($subscription->expire_date)->addMonths($validates[$tariff->validity])->format('Y-m-d')
-        );
         Invoice::query()->create([
             'payer_name' => auth()->user()->name,
             'payer_phone' => auth()->user()->phone,
@@ -67,7 +62,7 @@ class ExtendSubscriptionController extends Controller
             'payload' => [
                 'subscription_id' => $subscription->id,
                 'extra_user_limit' => $subscription->extra_user_limit + $data->extraUsersLimit,
-                'expired_at' => Carbon::create($subscription->expire_date)->addMonths($tariff->validity)->format('Y-m-d'),
+                'expired_at' => Carbon::create($subscription->expire_date)->addMonths($validates[$tariff->validity])->format('Y-m-d'),
             ],
             'transaction_id' => $invoiceResponse->getTransaction()->id
         ]);
