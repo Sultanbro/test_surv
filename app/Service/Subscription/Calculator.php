@@ -28,14 +28,14 @@ class Calculator
         return subtractPercent($price, $this->promoCodePercent($newInvoiceDTO));
     }
 
-    private function promoCodePercent(NewSubscriptionDTO $newInvoiceDTO): int|string
+    private function promoCodePercent(NewSubscriptionDTO $newInvoiceDTO): float
     {
         $percent = 0;
         if ($newInvoiceDTO->promo_code) {
             $percent = PromoCode::find($newInvoiceDTO->promo_code)->rate;
 
         }
-        return $percent;
+        return (float)$percent;
     }
 
     public function getPriceForExtraUsers(NewSubscriptionDTO $newInvoiceDTO): float|int
