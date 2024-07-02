@@ -8,10 +8,13 @@ use App\Facade\Payment\Gateway;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Subscription\UpdateSubscriptionRequest;
 use App\Models\CentralUser;
+use App\Models\Invoice;
+use App\Models\Tariff\Tariff;
 use App\Models\Tariff\TariffSubscription;
 use App\Service\Subscription\CanCalculateTariffPrice;
 use App\Service\Tariff\TariffListService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Carbon;
 
 class ExtendSubscriptionController extends Controller
 {
@@ -31,6 +34,9 @@ class ExtendSubscriptionController extends Controller
         $data = $request->toDto();
         $customer = CentralUser::fromAuthUser()->toCustomerDTO();
         $gateway = Gateway::provider($data->provider);
+        /** @var Tariff $tariff */
+        $tariff = Tariff::query()->findOrFail($data->tariffId);
+
         $dto = new CreateInvoiceDTO(
             $data->currency,
             $this->getPrice($data),
@@ -38,14 +44,27 @@ class ExtendSubscriptionController extends Controller
             'Продление тарифа'
         );
 
-        $invoice = $gateway->createNewInvoice($dto, $customer);
-        $subscription->update([
-            'expired_at' => $data->extraUsersLimit + $subscription->extra_user_limit
+        $invoiceResponse = $gateway->createNewInvoice($dto, $customer);
+
+        Invoice::query()->create([
+            'payer_name' => auth()->user()->name,
+            'payer_phone' => auth()->user()->phone,
+            'name' => $dto->description,
+            'url' => $invoiceResponse->getUrl(),
+            'provider' => $gateway->name(),
+            'status' => 'pending',
+            'type' => InvoiceType::EXTEND_SUBSCRIPTION,
+            'payload' => [
+                'subscription_id' => $subscription->id,
+                'extra_user_limit' => $subscription->extra_user_limit + $data->extraUsersLimit,
+                'expired_at' => Carbon::create($subscription->expire_date)->addMonths($tariff->validity)->format('Y-m-d'),
+            ],
+            'transaction_id' => $invoiceResponse->getTransaction()->id
         ]);
 
         return $this->response(
             message: 'success',
-            data: $invoice
+            data: $invoiceResponse
         );
     }
 }

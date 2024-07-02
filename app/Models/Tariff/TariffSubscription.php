@@ -281,4 +281,10 @@ class TariffSubscription extends Model
         $this->extra_user_limit = $count;
         $this->save();
     }
+
+    public function setExpiredAt(string $expired_at): void
+    {
+        $this->expire_date = $expired_at;
+        $this->save();
+    }
 }
