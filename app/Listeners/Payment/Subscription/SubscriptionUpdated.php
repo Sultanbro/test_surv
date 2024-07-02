@@ -2,7 +2,7 @@
 
 namespace App\Listeners\Payment\Subscription;
 
-use App\Events\Payment\NewPracticumInvoiceShipped;
+use App\Events\Payment\UpdateSubscription;
 use App\Models\Invoice;
 use App\Models\Tariff\TariffSubscription;
 
@@ -10,7 +10,7 @@ class SubscriptionUpdated
 {
     use HasPaymentWebhookHandler;
 
-    public function handle(NewPracticumInvoiceShipped $event): void
+    public function handle(UpdateSubscription $event): void
     {
         $dto = $event->dto;
         $webhookHandler = $this->handler($dto);
