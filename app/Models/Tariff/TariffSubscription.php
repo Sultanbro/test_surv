@@ -5,6 +5,7 @@ namespace App\Models\Tariff;
 use App\DTO\Payment\NewSubscriptionDTO;
 use App\Enums\Payments\PaymentStatusEnum;
 use App\Facade\Payment\Gateway;
+use App\Models\Invoice;
 use App\Models\Tenant;
 use DB;
 use Exception;
@@ -12,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * @property int $id
@@ -263,5 +265,20 @@ class TariffSubscription extends Model
     public function getCurrency(): string
     {
         return Gateway::provider($this->payment_provider)->currency();
+    }
+
+    public function invoice(): HasOne
+    {
+        return $this->hasOne(
+            Invoice::class,
+            'transaction_id',
+            'payment_id'
+        );
+    }
+
+    public function setExtraUsersLimit(int $count): void
+    {
+        $this->extra_user_limit = $count;
+        $this->save();
     }
 }

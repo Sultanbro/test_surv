@@ -27,7 +27,7 @@
 				class="jNav-menu-lang-wrapper"
 				@click="$emit('change', 'kz')"
 			>
-				<div class="jNav-menu-lang-button">Казак</div>
+				<div class="jNav-menu-lang-button">Қазақ</div>
 				<img
 					:src="require('../../assets/img/kz.png').default"
 					alt="kz"

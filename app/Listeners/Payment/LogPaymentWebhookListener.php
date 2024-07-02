@@ -2,12 +2,12 @@
 
 namespace App\Listeners\Payment;
 
-use App\Events\Payment\PaymentWebhookTriggeredEvent;
+use App\Events\Payment\NewPracticumInvoiceShipped;
 use App\Facade\Payment\Gateway;
 
 class LogPaymentWebhookListener
 {
-    public function handle(PaymentWebhookTriggeredEvent $event): void
+    public function handle($event): void
     {
         $gateway = Gateway::provider($event->dto->currency);
         slack(json_encode([

@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Listeners\Payment;
+namespace App\Listeners\Payment\Practicum;
 
-use App\Events\Payment\PaymentWebhookTriggeredEvent;
+use App\Events\Payment\NewPracticumInvoiceShipped;
 use App\Facade\Payment\Gateway;
 use App\Models\Invoice;
 
-class PracticumPaymentWebhookListener
+class PaymentStatusRecieved
 {
-    public function handle(PaymentWebhookTriggeredEvent $event): void
+    public function handle(NewPracticumInvoiceShipped $event): void
     {
         $dto = $event->dto;
 

@@ -22,7 +22,7 @@ class NewSubscriptionController extends Controller
 
         return $this->response(
             message: 'Success',
-            data: $pipeline->invoice()
+            data: $pipeline->invoiceResponse()
         );
     }
 }

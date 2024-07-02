@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Subscription;
 
 use App\DTO\Payment\CreateInvoiceDTO;
+use App\Enums\Invoice\InvoiceType;
 use App\Facade\Payment\Gateway;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Subscription\UpdateSubscriptionRequest;
@@ -28,12 +29,12 @@ class ExtendSubscriptionController extends Controller
     public function __invoke(UpdateSubscriptionRequest $request, TariffSubscription $subscription): JsonResponse
     {
         $data = $request->toDto();
-        $customer = CentralUser::fromAuthUser()->customer();
+        $customer = CentralUser::fromAuthUser()->toCustomerDTO();
         $gateway = Gateway::provider($data->provider);
-
         $dto = new CreateInvoiceDTO(
             $data->currency,
             $this->getPrice($data),
+            InvoiceType::EXTEND_SUBSCRIPTION,
             'Продление тарифа'
         );
 

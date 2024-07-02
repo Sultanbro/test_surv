@@ -7,7 +7,7 @@ use App\DTO\Payment\CreateInvoiceDTO;
 use App\Service\Payment\Core\Base\HasIdempotenceKey;
 use App\Service\Payment\Core\Base\PaymentConnector;
 use App\Service\Payment\Core\Customer\CustomerDto;
-use App\Service\Payment\Core\Invoice\Invoice;
+use App\Service\Payment\Core\Invoice\InvoiceResponse;
 
 class WalletOneConnector implements PaymentConnector
 {
@@ -27,12 +27,12 @@ class WalletOneConnector implements PaymentConnector
     {
     }
 
-    public function newInvoice(CreateInvoiceDTO $invoice, CustomerDto $customer): Invoice
+    public function newInvoice(CreateInvoiceDTO $invoice, CustomerDto $customer): InvoiceResponse
     {
         $idempotenceKey = $this->generateIdempotenceKey();
         $body = array_filter([
             "WMI_MERCHANT_ID" => $this->merchantId,
-//            "WMI_PTENABLED" => 'W1KZT',
+            "WMI_PTENABLED" => 'W1KZT',
 //            "WMI_PTDISABLED" => 'W1RUB',
             "WMI_CUSTOMER_PHONE" => Phone::normalize($customer->phone),
             "WMI_PAYMENT_NO" => $idempotenceKey,
@@ -55,7 +55,8 @@ class WalletOneConnector implements PaymentConnector
         $signature = new WalletOneSignature($this->shopKey);
         //Добавление параметра WMI_SIGNATURE в параметров формы
         $body["WMI_SIGNATURE"] = $signature->make($body);
-        return new Invoice(
+
+        return new InvoiceResponse(
             $this->paymentUrl,
             $idempotenceKey,
             'rub',

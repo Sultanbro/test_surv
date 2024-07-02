@@ -24,6 +24,8 @@
     .rp{
         width: 100%;
         .rp-content{
+          scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
             padding: 20px 10px 0 10px;
             min-height: calc(100vh - 110px) !important;
             max-height: calc(100vh - 110px) !important;

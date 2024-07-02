@@ -2,14 +2,17 @@
 
 namespace App\Service\Subscription\Pipeline;
 
+use App\Classes\Helpers\Phone;
 use App\DTO\Payment\CreateInvoiceDTO;
 use App\DTO\Payment\NewSubscriptionDTO;
+use App\Enums\Invoice\InvoiceType;
 use App\Facade\Payment\Gateway;
 use App\Jobs\ProcessCreatePaymentInvoiceLead;
 use App\Models\CentralUser;
+use App\Models\Invoice;
 use App\Models\Tariff\TariffSubscription;
 use App\Service\Payment\Core\Customer\CustomerDto;
-use App\Service\Payment\Core\Invoice\Invoice;
+use App\Service\Payment\Core\Invoice\InvoiceResponse;
 use App\Service\Subscription\CanCalculateTariffPrice;
 use App\Service\Subscription\SubscribeService;
 use Exception;
@@ -17,12 +20,14 @@ use Exception;
 class SubscriptionPipeline
 {
     use CanCalculateTariffPrice;
-    private CustomerDto $customer;
-    private TariffSubscription $subscription;
-    private Invoice $invoice;
-    private ?CentralUser $user;
 
-    public function __construct(private readonly NewSubscriptionDTO $data)
+    private CustomerDto $customerDTO;
+    private TariffSubscription $subscription;
+    private InvoiceResponse $invoiceResponse;
+    private ?CentralUser $user;
+    private Invoice $invoice;
+
+    public function __construct(private readonly NewSubscriptionDTO $subscriptionDTO)
     {
     }
 
@@ -32,33 +37,50 @@ class SubscriptionPipeline
     public function apply(): void
     {
         $this->setCustomer();
-        $this->createPaymentInvoice();
+        $this->createInvoice();
         $this->subscribeToTariff();
+        $this->invoice->update([
+            'payload' => [
+                'subscription_id' => $this->subscription->id
+            ]
+        ]); // sync the subscription with invoice for feature using
         $this->createLeadInCrm();
     }
 
-    public function invoice(): Invoice
+    public function invoiceResponse(): InvoiceResponse
     {
-        return $this->invoice;
+        return $this->invoiceResponse;
     }
 
     private function setCustomer(): void
     {
-        $this->user = CentralUser::fromAuthUser();
-        $this->customer = CentralUser::fromAuthUser()->customer();
+        $owner = CentralUser::fromAuthUser();
+        $this->user = $owner;
+        $this->customerDTO = $owner->toCustomerDTO();
     }
 
     /**
      * @throws Exception
      */
-    private function createPaymentInvoice(): void
+    private function createInvoice(): void
     {
-        $invoice = new CreateInvoiceDTO(
-            $this->data->currency,
-            $this->getPrice($this->data)
+        $invoiceDTO = new CreateInvoiceDTO(
+            $this->subscriptionDTO->currency,
+            $this->getPrice($this->subscriptionDTO),
+            InvoiceType::NEW_SUBSCRIPTION
         );
 
-        $this->invoice = Gateway::provider($this->data->provider)->createNewInvoice($invoice, $this->customer);
+        $this->invoiceResponse = Gateway::provider($this->subscriptionDTO->provider)->createNewInvoice($invoiceDTO, $this->customerDTO);
+
+        $this->invoice = Invoice::create([
+            'payer_name' => auth()->user()->name,
+            'payer_phone' => auth()->user()->phone,
+            'name' => $invoiceDTO->description,
+            'url' => $this->invoiceResponse->getUrl(),
+            'provider' => $this->subscriptionDTO->provider,
+            'status' => 'pending',
+            'type' => InvoiceType::NEW_SUBSCRIPTION
+        ]);
     }
 
     /**
@@ -66,7 +88,7 @@ class SubscriptionPipeline
      */
     private function subscribeToTariff(): void
     {
-        $service = new SubscribeService($this->data, $this->invoice->getTransaction());
+        $service = new SubscribeService($this->subscriptionDTO, $this->invoiceResponse->getTransaction());
         $this->subscription = $service->subscribe();
     }
 

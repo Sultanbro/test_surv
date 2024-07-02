@@ -4,7 +4,7 @@ namespace App\Facade\Payment;
 
 use App\DTO\Payment\NewSubscriptionDTO;
 use App\Service\Payment\Core\Base\BasePaymentGateway;
-use App\Service\Payment\Core\Invoice\Invoice;
+use App\Service\Payment\Core\Invoice\InvoiceResponse;
 use App\Service\Payment\Core\Register;
 use Closure;
 use Illuminate\Support\Facades\Facade;
@@ -44,7 +44,7 @@ class Gateway extends Facade
                 4
             ])
             ->once()
-            ->andReturn(new Invoice(
+            ->andReturn(new InvoiceResponse(
                 'some url',
                 'test_id',
                 'some payment token'
