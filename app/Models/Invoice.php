@@ -68,7 +68,7 @@ class Invoice extends Model
 
     public function updateStatusToSuccess(): void
     {
-        static::query()->update([
+        $this->update([
             'status' => PaymentStatusEnum::STATUS_SUCCESS
         ]);
     }
@@ -76,7 +76,7 @@ class Invoice extends Model
     public function setStatusFailed(): Invoice
     {
         /** @var Invoice */
-        return static::query()->update([
+        return $this->update([
             'status' => 'failed'
         ]);
     }
