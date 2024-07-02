@@ -1,13 +1,66 @@
+<template>
+  <button
+    v-if="faqEdit"
+    block
+    @click="addElement(0, questions.length)"
+    class="post-news__button"
+  >
+    Добавить статью
+  </button>
+  <Table title="Добавление статей">
+    <template #header-button>
+      <VBtn
+        v-if="faqEdit && active"
+        variant="text"
+        color="green-darken-2"
+        size="small"
+        @click="saveFAQ"
+      >
+        Сохранить
+      </VBtn>
+      <VBtn
+        variant="text"
+        icon="mdi-pencil"
+        color="blue-darken-2"
+        size="small"
+        @click="faqEdit = !faqEdit"
+      />
+    </template>
+
+    <template #col-1>
+      <div class="scrollable flex-grow-1">
+        <FaqList
+          v-if="questions.length"
+          :active="active"
+          :questions="questions"
+          :faq-edit="faqEdit"
+          :level="1"
+          @select="onSelect"
+          @order="onOrder"
+          @delete="deleteFAQ"
+        />
+        <p
+          v-else
+          class="no-questions"
+        >
+          Добавитьте новый вопрос
+        </p>
+      </div>
+    </template>
+    <template #col-2>
+      <ArticleContent
+        :active="active"
+        :faq-edit="faqEdit"
+      />
+    </template>
+  </Table>
+</template>
+
 <script setup lang="ts">
 import FaqList from '@/views/pages/faq/faq-list.vue'
-import FaqContent from '@/views/pages/faq/faq-content.vue'
+import ArticleContent from '@/views/pages/faq/article-content.vue'
 import Table from '@/components/ui/table/Table.vue'
 import axios from 'axios'
-
-type MoveEvent = {
-  item: HTMLElement
-  to: HTMLElement
-}
 
 type Question = {
   id: number
@@ -23,6 +76,8 @@ type Question = {
 const faqEdit = ref(false)
 const active = ref<null | Question>(null)
 const questions = ref<Array<Question>>([])
+
+const articles = ref<Question[]>([])
 
 const questionsMap = computed(() => {
   return treeToMap(questions.value)
@@ -98,14 +153,15 @@ async function onSelect(item: Question) {
 }
 
 async function addElement(parent_id: number, order: number) {
+
   await createFAQ({
     id: 0,
     parent_id: parent_id || null,
     order,
-    title: 'Новый вопрос',
+    title: 'Новая статья',
     isCollapsed: false,
     page: '___',
-    body: '<h1>Заполните содержимое вопроса</h1>',
+    body: '<h1>Заполните содержимое статьи</h1>',
     children: [],
   })
 }
@@ -162,62 +218,12 @@ function onOrder(item: TItem) {
 }
 </script>
 
-<template>
-  <Table title="Вопросы и ответы">
-    <template #header-button>
-      <VBtn
-        v-if="faqEdit && active"
-        variant="text"
-        color="green-darken-2"
-        size="small"
-        @click="saveFAQ"
-      >
-        Сохранить
-      </VBtn>
-      <VBtn
-        variant="text"
-        icon="mdi-pencil"
-        color="blue-darken-2"
-        size="small"
-        @click="faqEdit = !faqEdit"
-      />
-    </template>
-
-    <template #col-1>
-      <div class="scrollable flex-grow-1">
-        <FaqList
-          v-if="questions.length"
-          :active="active"
-          :questions="questions"
-          :faq-edit="faqEdit"
-          :level="1"
-          @select="onSelect"
-          @order="onOrder"
-          @delete="deleteFAQ"
-        />
-        <p
-          v-else
-          class="no-questions"
-        >
-          Добавитьте новый вопрос
-        </p>
-      </div>
-
-      <div class="faq-list-add">
-        <VBtn
-          v-if="faqEdit"
-          block
-          @click="addElement(0, questions.length)"
-          >Добавить</VBtn
-        >
-      </div>
-    </template>
-
-    <template #col-2>
-      <FaqContent
-        :active="active"
-        :faq-edit="faqEdit"
-      />
-    </template>
-  </Table>
-</template>
+<style scoped lang="scss">
+.post-news__button {
+  background-color: rgb(var(--v-theme-primary)) !important;
+  padding: 0.5%;
+  color: white;
+  border-radius: 8px;
+  font-weight: 600;
+}
+</style>
