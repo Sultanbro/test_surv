@@ -93,6 +93,15 @@ const isAdmin = userInfo.is_admin
         icon: { icon: 'fa-money' },
       }"
     />
+    <VerticalNavLink
+      v-if="isAdmin"
+      key="post-news"
+      :item="{
+        title: 'post-news',
+        to: 'admino-post-news',
+        icon: { icon: 'fa-bullhorn' },
+      }"
+    />
     <!-- 👉 Pages -->
     <!--
       <VerticalNavSectionTitle :item="{ heading: 'Pages' }" />

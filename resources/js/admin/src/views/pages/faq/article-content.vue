@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import Editor from '@tinymce/tinymce-vue'
-import type { Settings } from '@types/tinymce'
-import axios from 'axios'
+import Editor from '@tinymce/tinymce-vue';
+import type {Settings} from '@types/tinymce'
+import axios from 'axios';
 
 type Question = {
   id: number
@@ -247,10 +247,7 @@ const pageVariants = [
   },
 ]
 
-const mceKey =
-  process.env.NODE_ENV === 'production'
-    ? 'iijzasm8i8kh2in9jk178tu9bfl7ud3p5kav9w802sggs11c'
-    : 'pkzfksqtgrm6lo8hkwxq5p1522u96q0vgpnqxh024n3493dt'
+const mceKey = process.env.NODE_ENV === 'production' ? 'iijzasm8i8kh2in9jk178tu9bfl7ud3p5kav9w802sggs11c' : 'pkzfksqtgrm6lo8hkwxq5p1522u96q0vgpnqxh024n3493dt'
 const mceInit: Settings = {
   images_upload_url: '/upload/images/',
   automatic_uploads: true,
@@ -321,47 +318,58 @@ const mceInit: Settings = {
     '.tablerow1 { background-color: #D3D3D3; }',
   formats: {
     lineheight20px: {
-      selector: 'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
+      selector:
+        'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
       classes: 'lineheight20px',
     },
     lineheight22px: {
-      selector: 'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
+      selector:
+        'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
       classes: 'lineheight22px',
     },
     lineheight24px: {
-      selector: 'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
+      selector:
+        'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
       classes: 'lineheight24px',
     },
     lineheight26px: {
-      selector: 'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
+      selector:
+        'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
       classes: 'lineheight26px',
     },
     lineheight28px: {
-      selector: 'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
+      selector:
+        'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
       classes: 'lineheight20px',
     },
     lineheight30px: {
-      selector: 'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
+      selector:
+        'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
       classes: 'lineheight30px',
     },
     lineheight32px: {
-      selector: 'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
+      selector:
+        'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
       classes: 'lineheight32px',
     },
     lineheight34px: {
-      selector: 'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
+      selector:
+        'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
       classes: 'lineheight34px',
     },
     lineheight36px: {
-      selector: 'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
+      selector:
+        'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
       classes: 'lineheight36px',
     },
     lineheight38px: {
-      selector: 'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
+      selector:
+        'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
       classes: 'lineheight38px',
     },
     lineheight40px: {
-      selector: 'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
+      selector:
+        'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
       classes: 'lineheight40px',
     },
   },
@@ -378,29 +386,22 @@ const mceInit: Settings = {
     { title: 'lineheight38px', format: 'lineheight38px' },
     { title: 'lineheight40px', format: 'lineheight40px' },
   ],
-  content_css: ['/static/css/mycontent.css', '//fonts.googleapis.com/css?family=Lato:300,300i,400,400i'],
+  content_css: [
+    '/static/css/mycontent.css',
+    '//fonts.googleapis.com/css?family=Lato:300,300i,400,400i',
+  ],
 
   // media
   media_alt_source: false,
   media_dimensions: false,
   media_poster: false,
-  iframe_template_callback({
-    title,
-    source,
-    width,
-    height,
-  }: {
-    title: string
-    source: string
-    width: string
-    height: string
-  }) {
+  iframe_template_callback({title, source, width, height}: {title: string, source: string, width: string, height: string}){
     return `<iframe title="${title}" src="${source}" allowfullscreen="allowfullscreen" style="aspect-ratio: ${width}/${height}; width: 100%;"></iframe>`
   },
   // media
 }
 
-async function onUploadImage(blobInfo, progress) {
+async function onUploadImage(blobInfo, progress){
   const formData = new FormData()
   formData.append('attachment', blobInfo.blob())
   const onUploadProgress = event => {
@@ -408,9 +409,10 @@ async function onUploadImage(blobInfo, progress) {
   }
   // formData.append('id', 0)
   try {
-    const { data } = await axios.post('/admin/upload/images/', formData, { onUploadProgress })
+    const {data} = await axios.post('/admin/upload/images/', formData, {onUploadProgress})
     return data.location
-  } catch (error) {
+  }
+  catch (error) {
     console.error(error)
   }
 }
@@ -424,14 +426,13 @@ async function onUploadImage(blobInfo, progress) {
     <div v-if="faqEdit">
       <VRow>
         <VCol cols="9">
-          <VTextField v-model="active.title">
+          <VTextField
+            v-model="active.title"
+          >
             <template v-slot:append-inner>
               <v-tooltip location="bottom">
                 <template v-slot:activator="{ props }">
-                  <v-icon
-                    v-bind="props"
-                    icon="mdi-help-circle-outline"
-                  />
+                  <v-icon v-bind="props" icon="mdi-help-circle-outline"/>
                 </template>
                 Название пункта меню в попапе FAQ
               </v-tooltip>
@@ -446,31 +447,29 @@ async function onUploadImage(blobInfo, progress) {
             <template v-slot:append>
               <v-tooltip location="bottom">
                 <template v-slot:activator="{ props }">
-                  <v-icon
-                    v-bind="props"
-                    icon="mdi-help-circle-outline"
-                  />
+                  <v-icon v-bind="props" icon="mdi-help-circle-outline"/>
                 </template>
                 На указанной странице автоматически выберется этот пункт
               </v-tooltip>
             </template>
           </VSelect>
         </VCol>
-        <VCol cols="6">
-          
-        </VCol>
+        <div class="ma-3 w-100">
+          <v-textarea
+            label="Заголовок"
+            variant="outlined"
+          ></v-textarea>
+        </div>
       </VRow>
     </div>
     <h4
       v-else
       class="faq-content-title"
-    >
-      {{ active.title }}
-    </h4>
+    >{{active.title}}</h4>
 
     <div
       v-if="faqEdit"
-      class="faq-content-editor"
+      class="faq-content-editor mt-2"
     >
       <Editor
         v-model="active.body"
@@ -489,9 +488,10 @@ async function onUploadImage(blobInfo, progress) {
 <style lang="scss">
 .faq-content {
   display: flex;
-  flex-flow: column;
-  height: 100%;
+  flex-direction: column;
+  height: 100vh; /* Высота окна браузера */
 }
+
 .faq-content-title {
   text-align: center;
   margin-bottom: 20px;
@@ -502,17 +502,21 @@ async function onUploadImage(blobInfo, progress) {
 .faq-content-input {
   margin-bottom: 20px;
 }
+
 .faq-content-editor {
   display: flex;
-  flex-flow: column;
+  flex-direction: column;
   flex: 1;
   .tox-tinymce {
     height: 100% !important;
   }
 }
-.faq-content-body {
+
+.faq-content-body.scrollable {
   flex: 1;
   max-width: 960px;
   margin: 0 auto;
+  overflow-y: auto;
+  height: calc(100vh - 80px);
 }
 </style>
