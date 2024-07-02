@@ -56,7 +56,6 @@ class WalletOneConnector implements PaymentConnector
         //Добавление параметра WMI_SIGNATURE в параметров формы
         $body["WMI_SIGNATURE"] = $signature->make($body);
 
-        dd($body);
         return new InvoiceResponse(
             $this->paymentUrl,
             $idempotenceKey,
