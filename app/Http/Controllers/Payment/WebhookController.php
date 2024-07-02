@@ -44,7 +44,6 @@ class WebhookController extends Controller
             'transaction_id' => $webhookHandler->getTransactionId(),
             'provider' => $provider->name()
         ])->first();
-        dd($invoice);
 
         match ($invoice->type) {
             InvoiceType::NEW_SUBSCRIPTION    => NewSubscription::dispatch($dto),
