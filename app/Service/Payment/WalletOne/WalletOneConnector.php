@@ -32,7 +32,7 @@ class WalletOneConnector implements PaymentConnector
         $idempotenceKey = $this->generateIdempotenceKey();
         $body = array_filter([
             "WMI_MERCHANT_ID" => $this->merchantId,
-//            "WMI_PTENABLED" => 'W1KZT',
+            "WMI_PTENABLED" => 'W1KZT',
 //            "WMI_PTDISABLED" => 'W1RUB',
             "WMI_CUSTOMER_PHONE" => Phone::normalize($customer->phone),
             "WMI_PAYMENT_NO" => $idempotenceKey,
