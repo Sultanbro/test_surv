@@ -33,7 +33,7 @@ class UpdateSubscriptionRequest extends FormRequest
         $tenant = Arr::get($validated, 'tenant_id', tenant('id'));
         $currency = Arr::get($validated, 'currency', $subscription->getCurrency());
         $promoCode = Arr::get($validated, 'promo_code');
-
+        dd($promoCode);
         return new NewSubscriptionDTO(
             $currency,
             $subscription->tariff_id,
