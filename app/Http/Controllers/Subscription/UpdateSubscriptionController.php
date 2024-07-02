@@ -51,7 +51,8 @@ class UpdateSubscriptionController extends Controller
             'payload' => [
                 'subscription_id' => $subscription->id,
                 'extra_user_limit' => $subscription->extra_user_limit + $data->extraUsersLimit
-            ]
+            ],
+            'transaction_id' => $invoiceResponse->getTransaction()->id
         ]);
 
         return $this->response(

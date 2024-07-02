@@ -75,6 +75,70 @@
 				+{{ count * Math.round(priceForOnePerson[currencyCode]) }} {{ currency }}  к оплате
 			</p>
 		</div>
+		<p
+			v-if="!activePromo"
+			class="pricing-buy-link-promo"
+			@click="isActivePromo"
+		>
+			У меня есть промокод
+		</p>
+		<div
+			v-if="activePromo"
+			class="pricing-buy-promo-content"
+		>
+			<input
+				v-model="promo"
+				placeholder="Введите промокод"
+				class="pricing-buy-promo-input"
+				:class="{'inpput-promo-active': isPromoLoading}"
+			>
+			<button
+				v-if="!isPromoLoading"
+				class="pricing-buy-promo-button"
+				@click="activatePromo"
+			>
+				Применить
+			</button>
+			<button
+				v-else
+				class="pricing-modal-promo-button"
+				@click="cancelPromo"
+			>
+				<svg
+					width="24"
+					height="24"
+					viewBox="0 0 24 24"
+					fill="none"
+					xmlns="http://www.w3.org/2000/svg"
+				>
+					<g clip-path="url(#clip0_88_2747)">
+						<path
+							d="M18.75 5.25L5.25 18.75"
+							stroke="black"
+							stroke-width="1.5"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+						/>
+						<path
+							d="M18.75 18.75L5.25 5.25"
+							stroke="black"
+							stroke-width="1.5"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+						/>
+					</g>
+					<defs>
+						<clipPath id="clip0_88_2747">
+							<rect
+								width="24"
+								height="24"
+								fill="white"
+							/>
+						</clipPath>
+					</defs>
+				</svg>
+			</button>
+		</div>
 		<div class="pricing-buy-promo-content" />
 		<div class="pricing-buy-total-content">
 			<div class="pricing-buy-total-count">
@@ -90,6 +154,17 @@
 			<p class="pricing-buy-added-clue pricing-buy-added-clue_top">
 				{{ count }} пользователя на 30 дней
 			</p>
+			<div
+				v-if="promoRate.length > 0"
+				class="pricing-promo"
+			>
+				<p class="pricing-promo-title">
+					Скидка по промокоду
+				</p>
+				<p class="pricing-promo-text">
+					{{ $separateThousands(Math.round(promoDiscount)) }} {{ currency }}
+				</p>
+			</div>
 			<div class="pricing-buy-total">
 				<p class="pricing-buy-total-title">
 					Итого
@@ -129,15 +204,36 @@ export default {
 		return {
 			count: 0,
 			info: [],
+			word:'asdasdasd',
+			options: [],
+			sumPeople: 0,
+			promo: '',
+			promoData: {},
+			isPromoLoading: false,
+			selectedRate: null,
+			autoPayment: true,
+			activePromo: false,
+			data: [],
+			selectedOption: null,
+			promoFetch: [],
+			promoRate: [],
+			promoDiscount: 0,
+			isLoading: false,
 		}
 	},
 	computed:{
 		...mapState(usePricingStore, ['priceForOnePerson']),
 		total(){
-			// if (this.promoData?.value) {
-			// 	price -= this.promoData.value;
-			// }
-			return  this.count * Math.round( this.priceForOnePerson[this.currencyCode]) ;
+			let price = this.count * Math.round( this.priceForOnePerson[this.currencyCode]);
+			let discount = 0
+			if (this.promoRate[0] && this.promoRate[0].rate) {
+				discount = (Number(this.promoRate[0].rate) / 100) * price;
+				// eslint-disable-next-line vue/no-side-effects-in-computed-properties
+				this.promoDiscount= discount
+				price -= this.promoDiscount;
+			}
+
+			return  price  ;
 		},
 		currencyCode(){
 			return ({
@@ -162,6 +258,36 @@ export default {
 				this.managerPlainPhone()
 			})
 		},
+		getPromo(){
+			this.axios('promo-codes').then(res=> {
+				this.promoFetch = res.data
+			})
+		},
+		isActivePromo(){
+			this.activePromo = true
+			this.getPromo()
+		},
+		activatePromo(){
+			try {
+				this.promoRate = this.promoFetch.data.filter(item => item.code === this.promo)
+				if (this.promoRate[0].code) 	this.$toast.success('промокод успешно введен')
+
+				this.isPromoLoading = true;
+
+			} catch (error) {
+				console.error('Error fetching promo:', error);
+				this.$toast.error('Ошибка при ввода промокода')
+				this.activePromo = false
+				this.promo = ''
+			}
+		},
+		cancelPromo(){
+			this.activePromo=false
+			this.isPromoLoading= false
+			this.promoRate = []
+			this.promoDiscount = 0
+			this.promo = ''
+		},
 		editToBuyRate(){
 			try{
 				if(this.currency !== '₽') return this.submitWalletOne()
@@ -169,6 +295,8 @@ export default {
 					currency: this.currencyCode,
 					// eslint-disable-next-line camelcase
 					extra_users_limit: this.count > 0 ? this.count : 0,
+					// eslint-disable-next-line camelcase
+					promo_code: this.promoRate[0]?.code || null,
 				}).then(res => {
 					if (res && res.data.data) {
 						window.location.assign(res.data.data.url);
@@ -189,6 +317,8 @@ export default {
 					currency: this.currencyCode,
 					// eslint-disable-next-line camelcase
 					extra_users_limit: this.count > 0 ? this.count : 0,
+					// eslint-disable-next-line camelcase
+					promo_code: this.promoRate[0]?.code || null,
 				}).then(res => {
 					if (res && res.data.data) {
 						window.location.assign(res.data.data.url);
@@ -506,7 +636,18 @@ export default {
 	outline: none;
 	background-color: #f2f2f2;
 }
-
+.pricing-promo{
+	display: flex;
+	justify-content: space-between;
+	margin-bottom: 10px;
+}
+.pricing-promo-title{
+	font-size: 13px;
+}
+.pricing-promo-text{
+	font-size: 13px;
+	color:#FF5E5C;
+}
 .inpput-promo-active {
 	background-color: #f2f2f2;
 	outline: none;

@@ -13,7 +13,10 @@ class InvoiceController
 {
     public function list(): JsonResponse
     {
-        return response()->json(Invoice::query()->get());
+        return response()->json(Invoice::query()
+            ->where('type', InvoiceType::PRACTICUM)
+            ->orWhereNull('type')
+            ->get());
     }
 
     public function store(NewInvoiceRequest $request): JsonResponse

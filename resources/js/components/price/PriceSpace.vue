@@ -55,8 +55,9 @@
 							{{ info.tariff.expire_date }}
 						</p>
 					</div>
+					<!--						v-if="info.tariff && info.tariff.payment_id !=='trial'"-->
 					<div
-						v-if="info.tariff && info.tariff.payment_id !=='trial'"
+
 						class="price-space-buttons"
 					>
 						<button @click="connectedToBuy">

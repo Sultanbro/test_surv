@@ -40,16 +40,22 @@ class WebhookController extends Controller
         ]);
 
         /** @var Invoice $invoice */
-        $invoice = Invoice::query()->where([
-            'transaction_id' => $webhookHandler->getTransactionId(),
-            'provider' => $provider->name()
-        ])->first();
+        $invoice = Invoice::query()
+            ->where(function ($query) use ($webhookHandler) {
+                $query->where('transaction_id', $webhookHandler->getTransactionId());
+                $query->orWhere('payer_phone', $webhookHandler->getParams('customer_phone'));
+            })
+            ->where('provider', $provider->name())
+            ->where('status', 'pending')
+            ->first();
+
+        if (!$invoice) return response()->json(['message' => 'invoice not found']);
 
         match ($invoice->type) {
-            InvoiceType::NEW_SUBSCRIPTION    => NewSubscription::dispatch($dto),
+            InvoiceType::NEW_SUBSCRIPTION => NewSubscription::dispatch($dto),
             InvoiceType::EXTEND_SUBSCRIPTION => ExtendSubscription::dispatch($dto),
             InvoiceType::UPDATE_SUBSCRIPTION => UpdateSubscription::dispatch($dto),
-            InvoiceType::PRACTICUM           => NewPracticumInvoiceShipped::dispatch($dto),
+            InvoiceType::PRACTICUM => NewPracticumInvoiceShipped::dispatch($dto),
             InvoiceType::SWITCH_SUBSCRIPTION => throw new Exception('To be implemented'),
         };
 
