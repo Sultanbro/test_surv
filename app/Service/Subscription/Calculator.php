@@ -40,8 +40,6 @@ class Calculator
 
     public function getPriceForExtraUsers(NewSubscriptionDTO $newInvoiceDTO): float|int
     {
-       return $this->priceForOnePersonWithCurrencies[$newInvoiceDTO->currency] * $newInvoiceDTO->extraUsersLimit;
+        return subtractPercent($this->priceForOnePersonWithCurrencies[$newInvoiceDTO->currency] * $newInvoiceDTO->extraUsersLimit, $this->promoCodePercent($newInvoiceDTO));
     }
-
-
 }
