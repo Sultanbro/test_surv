@@ -45,7 +45,11 @@ class ExtendSubscriptionController extends Controller
         );
 
         $invoiceResponse = $gateway->createNewInvoice($dto, $customer);
-
+        dd(
+            $subscription->expire_date,
+            $tariff->validity,
+            Carbon::create($subscription->expire_date)->addMonths($tariff->validity)->format('Y-m-d')
+        );
         Invoice::query()->create([
             'payer_name' => auth()->user()->name,
             'payer_phone' => auth()->user()->phone,
