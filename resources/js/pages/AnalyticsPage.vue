@@ -1084,9 +1084,11 @@ export default {
 }
 .wrap {
   background: #f3f7f9;
-  margin-bottom: 15px;
-  padding-top: 15px;
   border: 1px solid #dde8ee;
   border-radius: 5px;
+  margin-bottom: 15px;
+  padding-top: 15px;
+  display: flex;
+  align-items: center;
 }
 </style>
