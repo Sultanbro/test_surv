@@ -31,6 +31,12 @@ class ExtendSubscriptionController extends Controller
 
     public function __invoke(UpdateSubscriptionRequest $request, TariffSubscription $subscription): JsonResponse
     {
+        $validates = [
+            'monthly' => 1,
+            'threeMonthly' => 3,
+            'yearly' => 12,
+        ];
+
         $data = $request->toDto();
         $customer = CentralUser::fromAuthUser()->toCustomerDTO();
         $gateway = Gateway::provider($data->provider);
@@ -47,8 +53,8 @@ class ExtendSubscriptionController extends Controller
         $invoiceResponse = $gateway->createNewInvoice($dto, $customer);
         dd(
             $subscription->expire_date,
-            $tariff->validity,
-            Carbon::create($subscription->expire_date)->addMonths($tariff->validity)->format('Y-m-d')
+            $validates[$tariff->validity],
+            Carbon::create($subscription->expire_date)->addMonths($validates[$tariff->validity])->format('Y-m-d')
         );
         Invoice::query()->create([
             'payer_name' => auth()->user()->name,
