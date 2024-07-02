@@ -295,6 +295,8 @@ export default {
 					currency: this.currencyCode,
 					// eslint-disable-next-line camelcase
 					extra_users_limit: this.count > 0 ? this.count : 0,
+					// eslint-disable-next-line camelcase
+					promo_code: this.promoRate[0]?.code || null,
 				}).then(res => {
 					if (res && res.data.data) {
 						window.location.assign(res.data.data.url);
@@ -315,6 +317,8 @@ export default {
 					currency: this.currencyCode,
 					// eslint-disable-next-line camelcase
 					extra_users_limit: this.count > 0 ? this.count : 0,
+					// eslint-disable-next-line camelcase
+					promo_code: this.promoRate[0]?.code || null,
 				}).then(res => {
 					if (res && res.data.data) {
 						window.location.assign(res.data.data.url);
