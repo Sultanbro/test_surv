@@ -22,12 +22,12 @@
 			>
 				<div class="jTariffs-valute-button">₸</div>
 			</div>
-			<div
+			<!-- <div
 				class="jTariffs-valute-wrapper"
 				@click="onSelectValute('$')"
 			>
 				<div class="jTariffs-valute-button">$</div>
-			</div>
+			</div> -->
 		</div>
 	</a>
 </template>

@@ -1,5 +1,6 @@
 export default {
 	prices: 'Prices',
+	articles: 'Articles',
 	reviews: 'Reviews',
 	features: 'Platform Features',
 	auth: 'Login',

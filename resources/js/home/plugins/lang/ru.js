@@ -1,5 +1,6 @@
 export default {
 	prices: 'Цены',
+	articles: 'Статьи',
 	reviews: 'Отзывы',
 	features: 'Особенности платформы',
 	auth: 'Вход',
