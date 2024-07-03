@@ -1,5 +1,5 @@
 <template>
 	<main>
-		123
+		Articles
 	</main>
 </template>

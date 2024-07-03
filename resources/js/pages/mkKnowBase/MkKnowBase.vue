@@ -9,8 +9,7 @@
 			</header>
 			<main class="mk-know-base__main">
 				<p class="mk-know-base__main-title">
-					<span>Как ускорить адаптацию</span> новых менеджеров по продажам с
-					помощью Базы Знаний
+					<span>Как выйти из операционки</span> и освободить от 3 часов в день с помощью Базы Знаний
 				</p>
 				<div class="mk-know-base__main-bonus">
 					<img
@@ -173,9 +172,9 @@ export default {
 			time: 6 * 60,
 			timerRunning: false,
 			interval: null,
-			whatsAppUrl: 'https://chat.whatsapp.com/GZ8FSwFy5XU3gExCXMTQo8',
+			whatsAppUrl: 'https://chat.whatsapp.com/BEw8kjWjHSlATo8VIXeKrq',
 
-			date: '2 июля',
+			date: '4 июля',
 		};
 	},
 	computed: {
@@ -260,6 +259,7 @@ export default {
 			}
 		},
 		updateDateUrl() {
+
 			const months = {
 				0: 'Января',
 				1: 'Февраля',
@@ -276,10 +276,10 @@ export default {
 			};
 
 			const scheduledDates = [
-				{
-					date: '6-2',
-					url: 'https://chat.whatsapp.com/GZ8FSwFy5XU3gExCXMTQo8',
-				},
+				// {
+				// 	date: '6-2',
+				// 	url: 'https://chat.whatsapp.com/GZ8FSwFy5XU3gExCXMTQo8',
+				// },
 				{
 					date: '6-4',
 					url: 'https://chat.whatsapp.com/BEw8kjWjHSlATo8VIXeKrq',
@@ -581,7 +581,7 @@ $defaultColor: #ffd500;
 			.mk-know-base__main {
 				.mk-know-base__main-title {
 					margin-top: 3%;
-					font-size: 24px;
+					font-size: 20px;
 					font-weight: bold;
 					span {
 						@extend %border-bottom;
@@ -590,15 +590,15 @@ $defaultColor: #ffd500;
 				.mk-know-base__main-bonus {
 					margin-top: 10%;
 					.mk-know-base__main-preview {
-						width: 136px;
-						height: 136px;
+            width: 110px;
+            height: 110px;
 					}
 					.mk-know-base__main-text {
-						font-size: 13px;
+						font-size: 11px;
 					}
 				}
 				.mk-know-base__main-registration {
-					margin-top: 10%;
+					margin-top: 2%;
 					flex-direction: column;
 					.mk-know-base__main-button {
 						text-align: center;
@@ -624,10 +624,10 @@ $defaultColor: #ffd500;
 						}
 						img {
 							transform: rotate(90deg);
-							width: 70px;
-							height: 70px;
-							top: 15px;
-							left: 10px;
+							width: 55px;
+              height: 55px;
+              top: 15px;
+              left: 6px;
 						}
 					}
 					.mk-know-base__main-free-reg {

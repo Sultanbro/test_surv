@@ -38,7 +38,7 @@
 							</li>
 							<li class="jNav-menu-item jNav-menu-item-md">
 								<a
-									href="https://www.youtube.com/watch?v=zP5l1ge6ITg&t=414s&ab_channel=BusinessPartner"
+									href="https://jobtron.org/articles"
 									class="jNav-menu-link"
 								>
 									{{ $lang(lang, "articles") }}
