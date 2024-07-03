@@ -185,10 +185,12 @@ export default {
 }
 
 .jSec3-block-2 {
+  margin-top: 5%;
   background: url("../../assets/img/s3-bg2.svg") center no-repeat;
 }
 
 .jSec3-block-3 {
+  margin-top: 5%;
   background: url("../../assets/img/s3-bg3.svg") center no-repeat;
 }
 

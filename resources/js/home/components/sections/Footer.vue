@@ -69,7 +69,7 @@
 						<a
 							class="jFooter-link"
 							href="tel:84951364282"
-						>8 495 136 42 82</a>
+						>8 (495) 136-42-82</a>
 					</p>
 					<p class="jFooter-contact">
 						<a
