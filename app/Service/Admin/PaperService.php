@@ -22,7 +22,8 @@ class PaperService
      */
     public function store(PaperDTO $dto)
     {
-        dd($dto);
+        // Save image
+
         return Paper::query()->create([
             'title' => $dto->title,
             'description' => $dto->description,
@@ -36,17 +37,17 @@ class PaperService
      */
     public function update($id, PaperDTO $dto)
     {
-        $faq = Paper::query()->find($id);
+        $paper = Paper::query()->find($id);
 
-        if ($faq) {
-            $faq->update([
+        if ($paper) {
+            $paper->update([
                 'title' => $dto->title,
                 'description' => $dto->description,
                 'body' => $dto->body,
                 'publish' => $dto->publish,
             ]);
 
-            return $faq;
+            return $paper;
         } else {
             throw new \Exception('Not found');
         }

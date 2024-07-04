@@ -32,7 +32,7 @@ class PaperRequest extends FormRequest
             title: $this->get('title'),
             description: $this->get('description'),
             body: $this->get('body'),
-            image: $this->get('image'),
+            image: $this->file('image'),
             publish: $this->get('publish')
         );
     }
