@@ -8,7 +8,7 @@ return new class extends Migration {
 
     public function up(): void
     {
-        Schema::table('invoices', function (Blueprint $table) {
+        Schema::connection('mysql')->table('invoices', function (Blueprint $table) {
             $table->string('type')->nullable();
             $table->json('payload')->nullable();
         });
@@ -16,7 +16,7 @@ return new class extends Migration {
 
     public function down(): void
     {
-        Schema::table('invoices', function (Blueprint $table) {
+        Schema::connection('mysql')->table('invoices', function (Blueprint $table) {
             $table->dropColumn('type');
             $table->dropColumn('json');
         });
