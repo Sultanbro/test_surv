@@ -740,13 +740,13 @@ export default {
 				id="workingDays"
 				type="hidden"
 				name="working_days"
-				:value="user ? user.working_day_id : 1"
+				:value="user && user.working_day_id ? user.working_day_id : 1"
 			>
 			<input
 				id="workingTimes"
 				type="hidden"
 				name="working_times"
-				:value="user ? user.working_time_id : 1"
+				:value="user && user.working_time_id  ? user.working_time_id : 1"
 			>
 			<!--			<input-->
 			<!--				type="hidden"-->
