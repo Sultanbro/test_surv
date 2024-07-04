@@ -47,6 +47,7 @@
 			>
 				<!-- v-if="(type === 'book' && $laravel.is_admin) || sectionsMode" - убрал чтобы можно было добавлять страницу на главной, и внутри секций -->
 				<div
+					class="KBNavItem-action"
 					title="Добавить страницу"
 					@click.stop="$emit('add-page', item)"
 				>
@@ -54,6 +55,7 @@
 				</div>
 				<div
 					v-if="type === 'book' && $laravel.is_admin"
+					class="KBNavItem-action"
 					title="Добавить базу знаний"
 					@click.stop="$emit('add-book', item)"
 				>
@@ -61,6 +63,7 @@
 				</div>
 				<div
 					v-if="type === 'book' && (parent ? parent.canEdit : true)"
+					class="KBNavItem-action"
 					title="Удалить базу знаний"
 					@click.stop="$emit('remove-book', item)"
 				>
@@ -68,6 +71,7 @@
 				</div>
 				<div
 					v-if="type === 'book' && (parent ? parent.canEdit : true)"
+					class="KBNavItem-action"
 					title="Настройки"
 					@click.stop="$emit('settings', item)"
 				>
@@ -170,6 +174,7 @@ export default {
 				&-actions {
 					margin-top: 2%;
 					display: flex;
+          padding: 2px;
 				}
 			}
 		}
@@ -231,17 +236,9 @@ export default {
 		transform: translateY(-50%);
 	}
 	&-action {
-		width: 27px;
-		padding: 5px;
-		margin-left: 5px;
-
-		color: #333;
-		background: #ddd;
-		border-radius: 4px;
-		cursor: pointer;
-
+    transition: all ease 100ms;
 		&:hover {
-			color: #007bff;
+			outline: 1px solid #435c8dc5;
 		}
 	}
 

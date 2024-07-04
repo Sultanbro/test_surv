@@ -1,6 +1,6 @@
 <template>
 	<div
-		class="questions mt-5"
+		class="questions"
 		:class="{
 			hide:
 				mode == 'read' && (questions === undefined || questions.length == 0),
@@ -730,6 +730,7 @@ export default {
 
 <style scoped lang="scss">
 .questions {
+  margin-bottom: 1%;
 	background-color: #ffffff;
 	.title {
 		color: #8da0c1;

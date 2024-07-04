@@ -36,7 +36,7 @@
 								<DownloadImageIcon />Загрузить картинку
 							</label>
 							<label @click="triggerAudioInput">
-								<DownloadAudioIcon />Загрузить аудио
+								<DownloadAudioIcon />Загрузить mp3
 							</label>
 							<label @click="triggerFileInput">
 								<DownloadFileIcon />Загрузить файл
@@ -44,7 +44,7 @@
 						</ul>
 					</div>
 					<button
-						class="KBToolbar-action KBToolbar-button-dropdown"
+						class="KBToolbar-action KBToolbar-action_info"
 						@mouseenter="showDropdown"
 						@mouseleave="unShowDropdown"
 					>
@@ -61,7 +61,7 @@
 
 					<button
 						v-if="!isActiveCategory"
-						class="KBToolbar-action KBToolbar-action_info"
+						class="KBToolbar-action KBToolbar-action_remove"
 						title="Удалить"
 						@click="$emit('delete-page', activeBook)"
 					>
@@ -70,7 +70,7 @@
 
 					<button
 						v-if="!isActiveCategory"
-						class="KBToolbar-action KBToolbar-action_info"
+						class="KBToolbar-action KBToolbar-action_save"
 						title="Сохранить изменения"
 						@click="$emit('save-page')"
 					>
@@ -81,7 +81,7 @@
 					<button
 						v-if="isEdit && !isActiveCategory"
 						v-b-popover.hover.top="'Редактировать'"
-						class="KBToolbar-action KBToolbar-action_save"
+						class="KBToolbar-action KBToolbar-action_info"
 						@click="$emit('edit-page')"
 					>
 						<EditIcon />
@@ -445,6 +445,18 @@ input:checked + .switch:after {
 			background-color: white;
 			box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;
 			ul {
+        label {
+          display: flex;
+          gap: 3px;
+          align-items: center;
+          margin-top: 5%;
+          padding: 6px;
+          cursor: pointer;
+          &:hover {
+            background-color: #608ee94d;;
+            border-radius: 10px;
+          }
+        }
 				li {
 					cursor: pointer;
 				}
@@ -474,13 +486,19 @@ input:checked + .switch:after {
 		border-radius: 5px;
 		cursor: pointer;
 		&_info {
-			border-color: $iconColor;
+			&:hover {
+        background-color: #608ee98b;
+      }
 		}
 		&_remove {
-			border-color: $iconColor;
+      &:hover {
+        background-color: #e9606078;
+      }
 		}
 		&_save {
-			border-color: $iconColor;
+      &:hover {
+        background-color: #00af208f;
+      }
 		}
 		&_active {
 			background: #bbd6ff;
