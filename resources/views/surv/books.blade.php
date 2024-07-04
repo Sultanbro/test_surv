@@ -8,7 +8,7 @@
     </div>      
 @endsection
 @section('scripts')
-<script src="https://cdn.tiny.cloud/1/dexbevckx3qi9h3r21bk8e8bypxuef909ox6o1kr91be6uv1/tinymce/5/tinymce.min.js">
+<script src="https://cdn.tiny.cloud/1/jv0h9szrpjbnrx2g3pftvxsd4lcdaaiacb96dvzabbkzszff/tinymce/5/tinymce.min.js">
 </script>
 <script>
     var demoBaseConfig = {
