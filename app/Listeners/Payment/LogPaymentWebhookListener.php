@@ -2,7 +2,6 @@
 
 namespace App\Listeners\Payment;
 
-use App\Events\Payment\NewPracticumInvoiceShipped;
 use App\Facade\Payment\Gateway;
 
 class LogPaymentWebhookListener

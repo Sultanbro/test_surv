@@ -3,36 +3,27 @@
 namespace App\Listeners\Payment\Subscription;
 
 use App\Events\Payment\ExtendSubscription;
-use App\Facade\Payment\Gateway;
 use App\Models\Invoice;
 use App\Models\Tariff\TariffSubscription;
 
 class SubscriptionExtended
 {
-    use HasPaymentWebhookHandler;
 
     public function handle(ExtendSubscription $event): void
     {
         $dto = $event->dto;
-        $webhookHandler = $this->handler($dto);
 
-        if (!$webhookHandler->InvoiceSuccessfullyHandled()) return;
-        $invoice = Invoice::getByTransactionId($webhookHandler->getTransactionId());
+        if (!$dto->successStatus) return;
+
+        /** @var Invoice $invoice */
+        $invoice = Invoice::query()->find($dto->id);
 
         if (!$invoice) return;
-        if (!$invoice->type->isSubscriptionExtend()) return;
+        if (!$dto->eventType->isSubscriptionExtend()) return;
 
 
         /** @var TariffSubscription $subscription */
-        $subscription = TariffSubscription::query()->where('id', $invoice->payload['subscription_id'])
-            ->latest()
-            ->first();
-
-        info('Payment provider callback', [
-            'params' => $dto->payload,
-            'currency' => $dto->currency,
-            'invoice_id' => $invoice->id
-        ]);
+        $subscription = TariffSubscription::query()->find($invoice->payload['subscription_id']);
 
         $invoice->updateStatusToSuccess();
         $subscription->setExtraUsersLimit($invoice->payload['extra_user_limit']);

@@ -2,7 +2,7 @@
 
 namespace App\Listeners\Payment\Practicum;
 
-use App\Facade\Payment\Gateway;
+use App\DTO\PaymentEventDTO;
 use App\Models\Invoice;
 use App\Service\Invoice\UpdateDealInBitrix;
 
@@ -10,16 +10,11 @@ class UpdateLeadStatus
 {
     public function handle($event): void
     {
+        /** @var PaymentEventDTO $dto */
         $dto = $event->dto;
 
-        $webhookHandler = Gateway::provider('prodamus')->webhookHandler();
-        $webhookHandler->map([
-            'params' => $dto->payload,
-            'headers' => $dto->headers
-        ]);
-
-        if (!$webhookHandler->InvoiceSuccessfullyHandled()) return;
-        $invoice = Invoice::getByPayerPhone($webhookHandler->getParams('customer_phone'));
+        if (!$dto->successStatus) return;
+        $invoice = Invoice::getByPayerPhone($dto->id);
 
         $updateLeadService = new UpdateDealInBitrix($invoice);
         $updateLeadService->send();

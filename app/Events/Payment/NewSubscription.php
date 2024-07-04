@@ -2,7 +2,7 @@
 
 namespace App\Events\Payment;
 
-use App\Service\Payment\Core\Webhook\WebhookDto;
+use App\DTO\PaymentEventDTO;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
@@ -11,7 +11,7 @@ class NewSubscription
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public function __construct(public WebhookDto $dto)
+    public function __construct(public PaymentEventDTO $dto)
     {
     }
 }

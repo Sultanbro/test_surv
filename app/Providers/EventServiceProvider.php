@@ -29,7 +29,7 @@ use App\Listeners\{ActivityUpdatedListener,
     EventListener,
     KpiChangedListener,
     Payment\LogPaymentWebhookListener,
-    Payment\Practicum\PaymentStatusRecieved,
+    Payment\Practicum\PaymentStatusReceived,
     Payment\Practicum\UpdateLeadStatus,
     Payment\Subscription\SubscriptionExtended,
     Payment\Subscription\SubscriptionUpdated,
@@ -117,7 +117,7 @@ class EventServiceProvider extends ServiceProvider
         ],
         //payment
         NewPracticumInvoiceShipped::class => [
-            PaymentStatusRecieved::class,
+            PaymentStatusReceived::class,
             UpdateLeadStatus::class,
             LogPaymentWebhookListener::class,
         ],

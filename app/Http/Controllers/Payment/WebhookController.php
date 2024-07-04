@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Payment;
 
+use App\DTO\PaymentEventDTO;
 use App\Enums\Invoice\InvoiceType;
 use App\Events\Payment\ExtendSubscription;
 use App\Events\Payment\NewSubscription;
@@ -51,11 +52,18 @@ class WebhookController extends Controller
 
         if (!$invoice) return response()->json(['message' => 'invoice not found']);
 
+        $eventDTO = new PaymentEventDTO(
+            $invoice->id,
+            $webhookHandler->InvoiceSuccessfullyHandled(),
+            $provider->name(),
+            $invoice->type
+        );
+
         match ($invoice->type) {
-            InvoiceType::NEW_SUBSCRIPTION    => NewSubscription::dispatch($dto),
-            InvoiceType::EXTEND_SUBSCRIPTION => ExtendSubscription::dispatch($dto),
-            InvoiceType::UPDATE_SUBSCRIPTION => UpdateSubscription::dispatch($dto),
-            InvoiceType::PRACTICUM           => NewPracticumInvoiceShipped::dispatch($dto),
+            InvoiceType::NEW_SUBSCRIPTION => NewSubscription::dispatch($eventDTO),
+            InvoiceType::EXTEND_SUBSCRIPTION => ExtendSubscription::dispatch($eventDTO),
+            InvoiceType::UPDATE_SUBSCRIPTION => UpdateSubscription::dispatch($eventDTO),
+            InvoiceType::PRACTICUM => NewPracticumInvoiceShipped::dispatch($eventDTO),
             InvoiceType::SWITCH_SUBSCRIPTION => throw new Exception('To be implemented'),
         };
 

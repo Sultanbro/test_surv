@@ -6,6 +6,7 @@ namespace App\Service\Payment\Core\Base;
 use App\DTO\Payment\CreateInvoiceDTO;
 use App\Service\Payment\Core\Customer\CustomerDto;
 use App\Service\Payment\Core\Invoice\InvoiceResponse;
+use App\Service\Payment\Core\Status\BasePaymentStatus;
 use App\Service\Payment\Core\Webhook\BaseWebhookMapper;
 use App\Service\Payment\Core\Webhook\WebhookResponse;
 
@@ -30,4 +31,6 @@ abstract class BasePaymentGateway
     }
 
     abstract public function staticWebhookResponse(): WebhookResponse;
+
+    abstract public function statusManager(): BasePaymentStatus;
 }
