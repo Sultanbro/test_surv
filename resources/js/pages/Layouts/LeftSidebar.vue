@@ -499,14 +499,16 @@ export default {
 				closeButton: false,
 				icon: true
 			})
-			this.axios.post('/projects/create', {}).then(response => {
-				if (response.data) location.assign(response.data.link)
-			}).catch(error => {
-				loader.hide()
-				this.isCreatingProject = false
-				this.$toast.error(error.error || error.message || 'Ошибка при создании кабинета')
-				console.error(error)
-			})
+			this.axios.post('/projects/create', {})
+			loader.hide()
+			// this.axios.post('/projects/create', {}).then(response => {
+			// 	if (response.data) location.assign(response.data.link)
+			// }).catch(error => {
+			// 	loader.hide()
+			// 	this.isCreatingProject = false
+			// 	this.$toast.error(error.error || error.message || 'Ошибка при создании кабинета')
+			// 	console.error(error)
+			// })
 		},
 		updateAvatar(avatar) {
 			this.avatar = avatar
