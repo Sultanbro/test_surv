@@ -55,7 +55,7 @@ class TrialSubscriptionController extends Controller
         return $this->response(
             message: 'Success',
             data: [
-                'has_trial' => TariffSubscription::hasValidTariffPayment() ?? TariffSubscription::hasTrial($tenant),
+                'has_trial' =>  TariffSubscription::hasTrial($tenant),
             ]
         );
     }
