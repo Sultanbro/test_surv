@@ -19,6 +19,15 @@
         Сохранить
       </VBtn>
       <VBtn
+        v-if="faqEdit && active"
+        variant="text"
+        color="green-darken-2"
+        size="small"
+        @click="saveFAQ"
+      >
+        Опубликовать
+      </VBtn>
+      <VBtn
         variant="text"
         icon="mdi-pencil"
         color="blue-darken-2"
@@ -153,7 +162,6 @@ async function onSelect(item: Question) {
 }
 
 async function addElement(parent_id: number, order: number) {
-
   await createFAQ({
     id: 0,
     parent_id: parent_id || null,

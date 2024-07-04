@@ -42,6 +42,8 @@ Route::get('/contract-offer', [PageController::class, 'home'])->name('contract-o
 Route::get('/payworkshopknowledgebase', [PageController::class, 'newprofile']);
 Route::get('/payworkshopknowledgebaseform', [PageController::class, 'newprofile']);
 Route::get('/mkKnowBase', [PageController::class, 'newprofile']);
+Route::get('/articles', [PageController::class, 'newprofile']);
+Route::get('/article/{id}', [PageController::class, 'newprofile']);
 Route::get('/site-use-agreement', [PageController::class, 'home'])->name('site-use-agreement');
 Route::get('/personal-data', [PageController::class, 'home'])->name('personal-data');
 Route::get('/privacy-policy', [PageController::class, 'home'])->name('privacy-policy');

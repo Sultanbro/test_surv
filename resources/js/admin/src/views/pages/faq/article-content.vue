@@ -487,36 +487,36 @@ async function onUploadImage(blobInfo, progress){
 
 <style lang="scss">
 .faq-content {
-  display: flex;
-  flex-direction: column;
-  height: 100vh; /* Высота окна браузера */
+  // display: flex;
+  // flex-direction: column;
+  // height: 100%;
 }
 
 .faq-content-title {
   text-align: center;
-  margin-bottom: 20px;
-  padding-bottom: 15px;
   border-bottom: 1px solid #ddd;
 }
 
-.faq-content-input {
-  margin-bottom: 20px;
-}
+// .faq-content-input {
+//   margin-bottom: 20px;
+// }
 
-.faq-content-editor {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  .tox-tinymce {
-    height: 100% !important;
-  }
-}
+// .faq-content-editor {
+//   display: flex;
+//   flex-direction: column;
+//   flex: 1;
+//   .tox-tinymce {
+//     height: 100% !important;
+//   }
+// }
 
-.faq-content-body.scrollable {
+.faq-content-body {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
   flex: 1;
-  max-width: 960px;
+  max-width: 1225px;
   margin: 0 auto;
   overflow-y: auto;
-  height: calc(100vh - 80px);
+  height: calc(100vh - 80px); /* Регулируем высоту для скроллинга */
 }
 </style>

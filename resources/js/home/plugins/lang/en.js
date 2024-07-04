@@ -1,5 +1,6 @@
 export default {
 	prices: 'Prices',
+	articles: 'Articles',
 	reviews: 'Reviews',
 	features: 'Platform Features',
 	auth: 'Login',
@@ -136,7 +137,7 @@ export default {
 		['Support', '+', '+', '+', '+'],
 		['Client\'s individual domain', '-', '+', '+', '+'],
 		['Payment per month', '0', '1 200 ₽', '3 850 ₽', '14 250 ₽'],
-		['Payment per year', '0', '15 500 ₽', '37 000 ₽', '137 000 ₽'],
+		['Payment per year', '0', '15 500 ₸', '37 000 ₸', '137 000 ₸'],
 		['Discount', '0', '0', '20%', '20%']
 	],
 

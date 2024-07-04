@@ -48,7 +48,7 @@ export default {
 
 .jSec3-block-img {
 	display: block;
-  width: 70%;
+  width: 35%;
 	margin: 0 auto;
   // box-shadow: 0 0 1rem rgba(0, 0, 0, 0.1);
 }
@@ -58,7 +58,7 @@ export default {
     display: flex;
     flex-flow: row nowrap;
     align-items: center;
-    padding: 5rem 0;
+    padding: 4rem 0;
   }
 }
 

@@ -36,7 +36,8 @@ defineProps<TTable>()
 .faq-card {
   display: flex;
   flex-flow: column;
-  height: calc(100vh - (48px + var(--v-layout-top) + var(--v-layout-bottom)));
+  height: 100vh;
+  // height: calc(100vh - (48px + var(--v-layout-top) + var(--v-layout-bottom)));
   ul {
     list-style: none;
   }

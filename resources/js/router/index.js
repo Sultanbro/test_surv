@@ -30,6 +30,9 @@ import WorkshopForm from '../pages/workshop/WorkShopForm.vue';
 
 import MkKnowBase from '../pages/mkKnowBase/MkKnowBase.vue';
 
+import Articles from '../pages/articles/ArticlesView.vue';
+import ArticlesContent from '../pages/articles/ArticlesContent.vue';
+
 // Cтраницу настроек наверное тоже разделим если нужно
 import SettingsView from '@/views/SettingsView';
 // import StructureView from '@/views/StructureView'
@@ -354,6 +357,23 @@ const router = new VueRouter({
 			component: MkKnowBase,
 			meta: {
 				title: 'МК База знаний',
+			},
+		},
+		{
+			path: '/articles',
+			name: 'Articles',
+			component: Articles,
+			meta: {
+				title: 'Статьи',
+			},
+		},
+		{
+			path: '/article/:id',
+			name: 'Article',
+			alias: ['/article/:id'],
+			component: ArticlesContent,
+			meta: {
+				title: 'Статья',
 			},
 		},
 	],
