@@ -19,4 +19,9 @@ enum InvoiceType: string
     {
         return $this === self::UPDATE_SUBSCRIPTION;
     }
+
+    public function isSubscriptionExtend(): bool
+    {
+        return $this === self::EXTEND_SUBSCRIPTION;
+    }
 }

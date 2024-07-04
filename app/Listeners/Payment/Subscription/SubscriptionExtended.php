@@ -20,7 +20,7 @@ class SubscriptionExtended
         $invoice = Invoice::getByTransactionId($webhookHandler->getTransactionId());
 
         if (!$invoice) return;
-        if (!$invoice->type->isSubscriptionUpdate()) return;
+        if (!$invoice->type->isSubscriptionExtend()) return;
 
 
         /** @var TariffSubscription $subscription */
