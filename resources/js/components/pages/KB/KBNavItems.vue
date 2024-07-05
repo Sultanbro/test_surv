@@ -119,6 +119,14 @@ export default {
 		toggleOpen(item) {
 			this.$emit('update-input');
 			item.opened = !item.opened;
+
+			// Закрываем все остальные элементы
+			this.items.forEach(i => {
+				if (i.id !== item.id) {
+					i.opened = false;
+				}
+			});
+
 			this.showPage(item, false, true);
 			++this.key;
 		},

@@ -262,7 +262,6 @@ export default {
 		padding: 15px 0 !important;
 		margin: 0 auto;
 		border: none;
-
 		font-size: 20px;
 		font-weight: 600;
 		line-height: 20px;
@@ -271,6 +270,7 @@ export default {
 		outline: 0;
 	}
 	.questions{
+    padding: 1%;
 		max-width: 960px;
 		margin: 0 auto;
 	}
