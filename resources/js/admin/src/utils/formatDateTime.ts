@@ -3,12 +3,12 @@ function o(n: number) {
   return '' + n
 }
 
-export function formatDate(dateZ: string) {
+export function formatDate(dateZ: string | Date) {
   const date = new Date(dateZ)
   return `${o(date.getDate())}.${o(date.getMonth() + 1)}.${date.getFullYear()}`
 }
 
-export function formatDateTime(dateZ: string) {
-  const date = new Date(dateZ)
-  return `${formatDate(dateZ)} ${o(date.getHours())}:${o(date.getMinutes())}`
+export function formatDateTime(dateZ: string | undefined) {
+  const date = dateZ ? new Date(dateZ) : new Date();
+  return `${formatDate(date)} ${o(date.getHours())}:${o(date.getMinutes())}`;
 }

@@ -2,7 +2,7 @@
   <button
     v-if="faqEdit"
     block
-    @click="addElement(0, questions.length)"
+    @click="addPaper"
     class="post-news__button"
   >
     Добавить статью
@@ -14,7 +14,7 @@
         variant="text"
         color="green-darken-2"
         size="small"
-        @click="saveFAQ"
+        @click="updatePaper"
       >
         Сохранить
       </VBtn>
@@ -23,7 +23,6 @@
         variant="text"
         color="green-darken-2"
         size="small"
-        @click="saveFAQ"
       >
         Опубликовать
       </VBtn>
@@ -38,22 +37,25 @@
 
     <template #col-1>
       <div class="scrollable flex-grow-1">
-        <FaqList
-          v-if="questions.length"
-          :active="active"
-          :questions="questions"
-          :faq-edit="faqEdit"
-          :level="1"
-          @select="onSelect"
-          @order="onOrder"
-          @delete="deleteFAQ"
-        />
-        <p
-          v-else
-          class="no-questions"
+        <div
+          class="paper-item d-flex align-center justify-space-between"
+          v-if="papers.length"
+          v-for="paper in papers"
+          :key="paper.id"
+          
         >
-          Добавитьте новый вопрос
-        </p>
+          <div @click="getPaper(paper)">
+            {{ formatDateTime(paper.created_at) }}
+            {{ paper.title }}
+          </div>
+          <v-icon
+            v-if="faqEdit"
+            @click="deletePaper(paper)"
+            icon="mdi-trash"
+            color="red"
+            class="remove-icon"
+          />
+        </div>
       </div>
     </template>
     <template #col-2>
@@ -66,9 +68,9 @@
 </template>
 
 <script setup lang="ts">
-import FaqList from '@/views/pages/faq/faq-list.vue'
 import ArticleContent from '@/views/pages/faq/article-content.vue'
 import Table from '@/components/ui/table/Table.vue'
+import { formatDateTime } from '@/utils/formatDateTime'
 import axios from 'axios'
 
 type Question = {
@@ -82,148 +84,77 @@ type Question = {
   children: Array<Question>
 }
 
+type TPaper = {
+  id?: string | number
+  title: string
+  body: string
+  description: string
+  image?: string | number
+  publish: string | number
+  created_at?: string
+  updated_at?: string
+}
+
 const faqEdit = ref(false)
-const active = ref<null | Question>(null)
-const questions = ref<Array<Question>>([])
+const active = ref<null | TPaper>(null)
 
-const articles = ref<Question[]>([])
+const papers = ref<TPaper[]>([])
 
-const questionsMap = computed(() => {
-  return treeToMap(questions.value)
-})
-
-onMounted(() => {
-  fetchFAQ()
-})
-
-function treeToMap(items: Array<Question>, result: { [key: string]: Question } = {}) {
-  return items.reduce((result, item) => {
-    result[`${item.id}`] = item
-    if (item.children?.length) treeToMap(item.children, result)
-    return result
-  }, result)
+const getNews = async () => {
+  papers.value = (await axios.get('/paper')).data.data
+  console.log(papers.value)
 }
 
-async function fetchFAQ() {
+getNews()
+
+const addPaper = async () => {
+  const defaultImageFile = new File([""], "default-image.jpg", { type: "image/jpeg" });
+  const formData = new FormData();
+  formData.append('title', 'Новая статья');
+  formData.append('description', 'Заполните заголовок');
+  formData.append('body', '<h1>Заполните содержимое статьи</h1>');
+  formData.append('publish', "1");
+  formData.append('image', defaultImageFile);
+
+  const paper = (await axios.post('/paper', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  })).data;
+
+  papers.value.push(paper.data);
+}
+
+const getPaper = async (paper: TPaper) => {
   try {
-    const { data } = await axios.get<{ data: Array<Question> }>('/faq')
-    questions.value = data.data.map(item => ({ ...item, isCollapsed: false }))
-  } catch (error) {
-    console.error(error)
-  }
-}
-async function createFAQ(item: Question) {
-  try {
-    const { data } = await axios.post('/faq', item)
-    questions.value.push({
-      ...data.data,
-      children: [],
-      isCollapsed: false,
-    })
-  } catch (error) {
-    console.error(error)
-  }
-}
-async function updateFAQ() {
-  if (!active.value) return
-
-  try {
-    await axios.put(`/faq/update/${active.value.id}`, active.value)
-  } catch (error) {
-    console.error(error)
-  }
-}
-async function saveFAQ() {
-  if (!active.value) return
-  return updateFAQ()
-}
-async function deleteFAQ(item: Question) {
-  try {
-    await axios.delete(`/faq/delete/${item.id}`)
-    const list = item.parent_id ? questionsMap.value[item.parent_id].children : questions.value
-    if (!list) return
-    const index = list.findIndex(i => i.id === item.id)
-    if (!~index) return
-    list.splice(index, 1)
-  } catch (error) {
-    console.error(error)
-  }
-}
-async function onSelect(item: Question) {
-  try {
-    const { data } = await axios.get(`/faq/get/${item.id}`)
+    const { data } = await axios.get(`/paper/get/${paper.id}`)
     active.value = {
       ...data.data,
-      isCollapsed: true,
     }
+
+    console.log(active.value)
   } catch (error) {
     console.error(error)
   }
 }
 
-async function addElement(parent_id: number, order: number) {
-  await createFAQ({
-    id: 0,
-    parent_id: parent_id || null,
-    order,
-    title: 'Новая статья',
-    isCollapsed: false,
-    page: '___',
-    body: '<h1>Заполните содержимое статьи</h1>',
-    children: [],
-  })
+const deletePaper = async (currentPaper: TPaper) => {
+  await axios.delete(`/paper/delete/${currentPaper.id}`)
+  papers.value = papers.value.filter(paper => paper.id !== currentPaper.id)
 }
 
-async function saveOrder(parentId: number, currentId: number) {
-  const items = parentId ? questionsMap.value[parentId]?.children : questions.value
+const updatePaper = async () => {
+  if (!active.value) return
 
-  const quetion = questionsMap.value[currentId]
+  console.log(active.value);
 
-  if (!items) return
-  const request = {
-    items: items.map(({ id, parent_id }, index) => ({
-      id,
-      parent_id,
-      order: index,
-    })),
-  }
   try {
-    await axios.post('/faq/set-order', request)
-
-    if (parentId === 0) {
-      await axios.put(`/faq/update/${currentId}`, {
-        ...quetion,
-        parent_id: null,
-      })
-    } else {
-      await axios.put(`/faq/update/${currentId}`, {
-        ...quetion,
-        parent_id: parentId,
-      })
-    }
+    await axios.put(`/paper/update/${active.value.id}`, active.value)
   } catch (error) {
     console.error(error)
   }
 }
 
-type TItem = {
-  itemId: string
-  toId: string
-}
-
-function onOrder(item: TItem) {
-  const currentQuestion = questionsMap.value[item.itemId]
-
-  if (!currentQuestion) return
-
-  // const parentId = currentQuestion.parent_id
-  const currentQuestionId = currentQuestion.id
-  currentQuestion.parent_id = +item.toId || null
-
-  //if (+item.toId !== parentId) - условие которое мешело порядку сохранение элементу внутри родительского элемента
-
-  saveOrder(+item.toId, currentQuestionId)
-}
 </script>
 
 <style scoped lang="scss">
@@ -233,5 +164,19 @@ function onOrder(item: TItem) {
   color: white;
   border-radius: 8px;
   font-weight: 600;
+}
+
+.paper-item {
+  cursor: pointer;
+  padding: 1%;
+  transition: all ease 100ms;
+  border-radius: 5px;
+  width: 100%;
+  &:hover {
+    background-color: #c4c4c41d;
+  }
+  .remove-icon {
+    cursor: pointer;
+  }
 }
 </style>

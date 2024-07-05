@@ -1,8 +1,10 @@
 <template>
 	<main class="article-news">
 		<div
+			v-for="paper in papers.data"
+			:key="paper.id"
 			class="article-news__wrapper"
-			@click="navigate('1')"
+			@click="navigate(paper.id)"
 		>
 			<div class="article-news__card">
 				<div class="article-news__image">
@@ -13,19 +15,16 @@
 				</div>
 				<div class="article-news__content">
 					<h2 class="article-news__title">
-						Статья 1
+						{{ paper.title }}
 					</h2>
 					<p class="article-news__subtitle">
-						Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus
-						modi, molestiae iste dignissimos odio et voluptatum accusamus eaque
-						a! Perferendis, dolore facere minus natus laborum praesentium esse
-						enim ab ipsa.
+						{{ paper.description }}
 					</p>
 					<button class="article-news__button">
 						Читать дальше
 					</button>
 					<div class="article-news__date">
-						03.08.2003
+						{{ paper.created_at }}
 					</div>
 				</div>
 			</div>
@@ -37,11 +36,14 @@
 export default {
 	name: 'ArticleView',
 	data() {
-		return {};
+		return {
+			papers: [],
+		};
 	},
 	mounted() {
 		this.$nextTick(() => {
 			this.setMetaViewport();
+			this.getPapers();
 		});
 	},
 	methods: {
@@ -56,6 +58,10 @@ export default {
 				name: 'Article',
 				params: { id },
 			});
+		},
+		async getPapers() {
+			const data = await fetch('http://admin.localhost/paper');
+			this.papers = await data.json();
 		},
 	},
 };
@@ -101,7 +107,7 @@ export default {
 					background-color: #00aeff;
 					color: white;
 					border-radius: 30px;
-					padding: 1% 2%;
+					padding: 4% 6%;
 					margin-top: 2%;
 					outline: none;
 				}

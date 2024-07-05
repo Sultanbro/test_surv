@@ -2,16 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Admin\FaqRequest;
-use App\Http\Requests\Admin\SetOrderFaqRequest;
-use App\Service\Admin\FaqService;
+use App\Http\Requests\Admin\PaperRequest;
+use App\Service\Admin\PaperService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Exception;
 
-class FaqController extends Controller
+class PaperController extends Controller
 {
-    public function __construct(public FaqService $service)
+    public function __construct(public PaperService $service)
     {
     }
 
@@ -23,34 +21,22 @@ class FaqController extends Controller
     {
         return $this->response(
             message: "Success",
-            data: $this->service->getTree()
+            data: $this->service->getAll()
         );
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param FaqRequest $request
+     * @param PaperRequest $request
      * @return JsonResponse
-     * @throws Exception
+     * @throws \Exception
      */
-    public function store(FaqRequest $request): JsonResponse
+    public function store(PaperRequest $request): JsonResponse
     {
         return $this->response(
             message: "Success",
             data: $this->service->store($request->toDto())
-        );
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     */
-    public function setOrder(SetOrderFaqRequest $request): JsonResponse
-    {
-        return $this->response(
-            message: "Success",
-            data: $this->service->setOrder($request->get('items'))
         );
     }
 
@@ -71,12 +57,12 @@ class FaqController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param FaqRequest $request
+     * @param PaperRequest $request
      * @param $id
      * @return JsonResponse
-     * @throws Exception
+     * @throws \Exception
      */
-    public function update(FaqRequest $request, $id): JsonResponse
+    public function update(PaperRequest $request, $id): JsonResponse
     {
         return $this->response(
             message: "Success",

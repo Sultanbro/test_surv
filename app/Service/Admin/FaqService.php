@@ -2,25 +2,9 @@
 
 namespace App\Service\Admin;
 
-use App\Classes\Helpers\Currency;
-use App\Downloads;
 use App\DTO\Admin\FaqDTO;
-use App\Http\Requests\UserProfileUpdateRequest;
-use App\Models\Analytics\Activity;
-use App\Models\Analytics\TraineeReport;
-use App\Models\Analytics\UserStat;
 use App\Models\Faq;
-use App\Models\GroupUser;
-use App\Photo;
-use App\Position;
-use App\PositionDescription;
-use App\QualityRecordWeeklyStat;
-use App\Zarplata;
 use Illuminate\Contracts\Support\Arrayable;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use App\User;
-use Illuminate\Support\Facades\Auth;
 
 class FaqService
 {

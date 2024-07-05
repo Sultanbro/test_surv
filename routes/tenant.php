@@ -939,6 +939,14 @@ Route::middleware(['web', 'tenant', 'admin_subdomain'])->group(function () {
         Route::delete('/delete/{id}', [Root\FaqController::class, 'delete']);
     });
 
+    Route::group(['prefix' => 'paper', 'as' => 'paper.'], function () {
+        Route::get('/', [Root\PaperController::class, 'getAll']);
+        Route::post('/', [Root\PaperController::class, 'store']);
+        Route::get('/get/{id}', [Root\PaperController::class, 'getOne']);
+        Route::put('/update/{id}', [Root\PaperController::class, 'update']);
+        Route::delete('/delete/{id}', [Root\PaperController::class, 'delete']);
+    });
+
     Route::any('/admin/upload/images/', [Learning\KnowBaseController::class, 'uploadimages']);
 });
 

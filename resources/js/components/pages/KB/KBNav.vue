@@ -119,7 +119,7 @@
 				</div>
 			</div>
 			<div v-else-if="!archived.show">
-				<KBNavItems
+				<!-- <KBNavItems
 					v-if="currentBook"
 					:key="'p' + listsKey"
 					:input="search.input"
@@ -136,21 +136,21 @@
 					@add-book="$emit('create', $event)"
 					@remove-book="archiveBook($event)"
 					@settings="$emit('settings', $event)"
-				/>
+				/> -->
 				<KBNavItems
-					v-else-if="books.length"
-					:key="'b' + listsKey"
+					v-if="books.length"
+					:key="'p' + listsKey"
+					:input="search.input"
 					class="KBNav-items"
 					:items="books"
 					:opened="true"
 					:mode="mode"
-					:parent="null"
-					:active="null"
-					:sections-mode="true"
+					:parent="currentBook"
+					:active="activeBook ? activeBook.id : null"
 					@update-input="updateInput"
-					@show-page="$emit('book', $event)"
-					@page-order="$emit('page-order', $event)"
+					@show-page="$emit('page', $event)"
 					@add-page="$emit('add-page', $event)"
+					@page-order="$emit('page-order', $event)"
 					@add-book="$emit('create', $event)"
 					@remove-book="archiveBook($event)"
 					@settings="$emit('settings', $event)"
@@ -223,7 +223,7 @@
 					<div class="KBNav-footer-button">
 						<AddIconSilver />
 						База
-						<InfoIcon />
+						<InfoIcon v-b-popover.hover.top="'Навая база знаний'" />
 					</div>
 					<!-- <img
 						v-b-popover.hover.right="
@@ -549,7 +549,7 @@ export default {
 		}
 		.KBNav-footer-button {
 			@extend %button-content;
-			gap: 3px;
+			gap: 7px;
 		}
 	}
 
