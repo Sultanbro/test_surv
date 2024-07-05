@@ -1,0 +1,1 @@
+<?phpnamespace App\DTO\Admin;use Illuminate\Http\UploadedFile;class PaperDTO{    public function __construct(        public string $title,        public string|null $description,        public string $body,        public UploadedFile $image,        public int $publish    )    {    }}

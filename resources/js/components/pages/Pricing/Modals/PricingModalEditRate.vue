@@ -569,16 +569,18 @@ export default {
 }
 
 .pricing-buy-promo-input {
-	border-radius: 8px;
-	border: 1px solid #afb5c0;
-	padding: 14px 16px;
+  border: 1px solid #afb5c0;
+  border-radius: 8px;
+  font-size: 11px;
+  padding: 11px 6px;
 }
 
 .pricing-buy-promo-button {
 	background-color: #dbeafe;
-	border-radius: 8px;
-	padding: 13px 24px;
-	color: #0c50ff;
+  border-radius: 8px;
+  color: #0c50ff;
+  font-size: 13px;
+  padding: 6px;
 }
 
 .pricing-buy-total-content {
