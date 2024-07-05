@@ -79,7 +79,7 @@ class EditedSalaryRepository extends CoreRepository
                 'date'  => $date
             ],
             [
-                'author_id' => auth()->id() ?? 5,
+//                'author_id' => auth()->id() ?? 5,
                 'amount'    => $amount,
                 'comment'   => $comment,
                 'date'      => $date
