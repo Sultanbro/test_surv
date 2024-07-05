@@ -12,6 +12,12 @@ return [
             'success_url' => 'https://jobtron.org',
             'failed_url' => 'https://jobtron.org',
         ],
+        'prodamus-test' => [
+            'payment_url' => env('PRODAMUS_SHOP_PAYMENT_URL', 'https://bp.proeducation.kz/'),
+            'secret_key' => env('PRODAMUS_SHOP_KEY', 'ce5169b490209093ba24359f2beb6cf6b0914badc326c7788528645dd1fe6859'),
+            'success_url' => 'https://jobtron.org',
+            'failed_url' => 'https://jobtron.org',
+        ],
         'wallet1' => [
             'payment_url' => env('WALLET1_SHOP_PAYMENT_URL', 'https://wl.walletone.com/checkout/checkout/Index'),
             'merchant_id' => env('WALLET1_SHOP_ID', 164796334920),
