@@ -9,6 +9,7 @@ use App\Models\CentralUser;
 use App\Models\Tenant;
 use App\Service\Tenancy\CabinetService;
 use App\User;
+use Arr;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -71,8 +72,15 @@ class ProjectController extends Controller
         $tenant = $this->createTenantWithDomain($centralUser);
         $data = $authUser->toArray();
         $data['password'] = $authUser->password;
-        dd($data);
-        $user = $this->createTenantUser($tenant, $data);
+        $user = $this->createTenantUser($tenant, [
+            'name' => Arr::get($data, 'name'),
+            'last_name' => Arr::get($data, 'last_name'),
+            'email' => Arr::get($data, 'email'),
+            'phone' => Arr::get($data, 'phone'),
+            'currency' => Arr::get($data, 'currency'),
+            'password' => Arr::get($data, 'password'),
+        ]);
+        dd($user);
         $this->cabinetService->add($tenant->id, $user, true);
         return response()->json([
             'link' => $this->loginLinkToSubDomain($tenant, $user->email)

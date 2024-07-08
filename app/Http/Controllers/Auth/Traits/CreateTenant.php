@@ -54,7 +54,7 @@ trait CreateTenant
                 'email' => $data['email'],
                 'phone' => $data['phone'],
                 'currency' => $data['currency'],
-                'password' => $this->hashedPassword,
+                'password' => $data['password'] ?? $this->hashedPassword,
                 'position_id' => 1,
                 'program_id' => 1,
                 'is_admin' => 1
