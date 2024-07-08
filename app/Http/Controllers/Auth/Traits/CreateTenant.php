@@ -17,10 +17,6 @@ trait CreateTenant
     private ?string $password = null;
     private ?string $hashedPassword = null;
 
-    public function createTenant(CentralUser $centralUser): Tenant
-    {
-        return $this->createTenantWithDomain($centralUser);
-    }
 
     protected function createTenantWithDomain(CentralUser $centralUser): Tenant
     {

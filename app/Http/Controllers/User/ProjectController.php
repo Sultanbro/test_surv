@@ -68,8 +68,8 @@ class ProjectController extends Controller
         $authUser = auth()->user();
 
         $centralUser = CentralUser::userByEmail($authUser->email)->makeVisible('password');
-        dd($centralUser->toArray());
-        $tenant = $this->createTenant($centralUser);
+        $tenant = $this->createTenantWithDomain($centralUser);
+        dd($tenant);
         $data = $authUser->toArray();
         $data['password'] = $centralUser->password;
         $user = $this->createTenantUser($tenant, $data);
