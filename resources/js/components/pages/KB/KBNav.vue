@@ -620,6 +620,7 @@ export default {
 	}
 
 	&__footer {
+    margin-top: 5%;
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
@@ -635,12 +636,19 @@ export default {
 			font-weight: 500;
 			justify-content: center;
 			gap: 4px;
+      &:hover {
+        background-color: #566abe45;
+      }
 		}
 		.KBNav__footer-archive {
 			border: 1px solid #8da0c1;
 			padding: 7px;
 			background-color: #ffffff;
 			border-radius: 8px;
+
+      &:hover {
+        background-color: #566bbe21;
+      }
 		}
 	}
 
