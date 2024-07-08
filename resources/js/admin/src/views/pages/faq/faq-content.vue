@@ -247,10 +247,7 @@ const pageVariants = [
   },
 ]
 
-const mceKey =
-  process.env.NODE_ENV === 'production'
-    ? 'jv0h9szrpjbnrx2g3pftvxsd4lcdaaiacb96dvzabbkzszff'
-    : 'jv0h9szrpjbnrx2g3pftvxsd4lcdaaiacb96dvzabbkzszff'
+const mceKey = 'jv0h9szrpjbnrx2g3pftvxsd4lcdaaiacb96dvzabbkzszff'
 const mceInit: Settings = {
   images_upload_url: '/upload/images/',
   automatic_uploads: true,

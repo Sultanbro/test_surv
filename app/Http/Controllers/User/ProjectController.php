@@ -59,8 +59,6 @@ class ProjectController extends Controller
     /**
      * Create new project for Owner and redirect to it
      *
-     * @param Request $request
-     *
      * @return JsonResponse
      * @throws Exception
      */
@@ -70,16 +68,14 @@ class ProjectController extends Controller
         $authUser = auth()->user();
 
         $centralUser = CentralUser::userByEmail($authUser->email)->makeVisible('password');
-
+        dd($centralUser->toArray());
         $tenant = $this->createTenant($centralUser);
         $data = $authUser->toArray();
-        $data['password'] = $centralUser->password;;
+        $data['password'] = $centralUser->password;
         $user = $this->createTenantUser($tenant, $data);
         $this->cabinetService->add($tenant->id, $user, true);
         return response()->json([
             'link' => $this->loginLinkToSubDomain($tenant, $user->email)
         ]);
     }
-
-
 }
