@@ -142,10 +142,6 @@ final class Analytics
 
         $days = range(1, Carbon::parse($date)->lastOfMonth()->day);
         $columnIds = $columns->whereIn('name', $days)->pluck('id')->toArray();
-        $currentDay = Carbon::now();
-        $isCurrentMonth = $currentDay->month === Carbon::parse($date)->month;
-
-//        dd_if(auth()->id() == 5 && $dto->groupId == 31, $columnIds);
 
         foreach ($rows as $rowIndex => $row) {
             $item = [];
@@ -170,16 +166,12 @@ final class Analytics
                         }
                     }
                     if ($statistic->type == 'formula') {
-                        $afterToday = is_numeric($column->name) && $isCurrentMonth && $currentDay->setDay($column->name)->isAfter(now()->format("Y-m-d"));
-                        if ($afterToday) $val = 0;
-                        else {
-                            $val = AnalyticStat::calcFormula(
-                                statistic: $statistic,
-                                date: $date,
-                                round: $statistic->decimals,
-                                stats: $stats
-                            );
-                        }
+                        $val = AnalyticStat::calcFormula(
+                            statistic: $statistic,
+                            date: $date,
+                            round: $statistic->decimals,
+                            stats: $stats
+                        );
                         $statistic->show_value = $val;
                         $statistic->save();
                         $arr['value'] = AnalyticStat::convert_formula($statistic->value, $keys['rows'], $keys['columns']);
@@ -255,8 +247,7 @@ final class Analytics
                         $arr['value'] = round($val, 1);
                         $arr['show_value'] = round($val, 1);
                     }
-                }
-                else {
+                } else {
                     $type = 'initial';
                     if ($column->name == 'sum' && $rowIndex > 3) {
                         $type = 'sum';
