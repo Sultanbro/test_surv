@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Editor from '@tinymce/tinymce-vue'
-import type { Settings } from '@types/tinymce'
+import type {Settings} from '@types/tinymce'
 import axios from 'axios'
 
 type Question = {
@@ -37,9 +37,9 @@ const emit = defineEmits<{
 const divider = '___'
 
 const mceKey =
-  process.env.NODE_ENV === 'production'
-    ? 'jv0h9szrpjbnrx2g3pftvxsd4lcdaaiacb96dvzabbkzszff'
-    : 'jv0h9szrpjbnrx2g3pftvxsd4lcdaaiacb96dvzabbkzszff'
+    process.env.NODE_ENV === 'production'
+        ? 'jv0h9szrpjbnrx2g3pftvxsd4lcdaaiacb96dvzabbkzszff'
+        : 'jv0h9szrpjbnrx2g3pftvxsd4lcdaaiacb96dvzabbkzszff'
 const mceInit: Settings = {
   images_upload_url: '/upload/images/',
   automatic_uploads: true,
@@ -95,19 +95,19 @@ const mceInit: Settings = {
   ].join(''),
   // toolbar_sticky: true,
   content_style:
-    '.lineheight20px { line-height: 20px; }' +
-    '.lineheight22px { line-height: 22px; }' +
-    '.lineheight24px { line-height: 24px; }' +
-    '.lineheight26px { line-height: 26px; }' +
-    '.lineheight28px { line-height: 28px; }' +
-    '.lineheight30px { line-height: 30px; }' +
-    '.lineheight32px { line-height: 32px; }' +
-    '.lineheight34px { line-height: 34px; }' +
-    '.lineheight36px { line-height: 36px; }' +
-    '.lineheight38px { line-height: 38px; }' +
-    '.lineheight40px { line-height: 40px; }' +
-    'body { padding: 20px;max-width: 960px;margin: 0 auto; }' +
-    '.tablerow1 { background-color: #D3D3D3; }',
+      '.lineheight20px { line-height: 20px; }' +
+      '.lineheight22px { line-height: 22px; }' +
+      '.lineheight24px { line-height: 24px; }' +
+      '.lineheight26px { line-height: 26px; }' +
+      '.lineheight28px { line-height: 28px; }' +
+      '.lineheight30px { line-height: 30px; }' +
+      '.lineheight32px { line-height: 32px; }' +
+      '.lineheight34px { line-height: 34px; }' +
+      '.lineheight36px { line-height: 36px; }' +
+      '.lineheight38px { line-height: 38px; }' +
+      '.lineheight40px { line-height: 40px; }' +
+      'body { padding: 20px;max-width: 960px;margin: 0 auto; }' +
+      '.tablerow1 { background-color: #D3D3D3; }',
   formats: {
     lineheight20px: {
       selector: 'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
@@ -155,17 +155,17 @@ const mceInit: Settings = {
     },
   },
   style_formats: [
-    { title: 'lineheight20px', format: 'lineheight20px' },
-    { title: 'lineheight22px', format: 'lineheight22px' },
-    { title: 'lineheight24px', format: 'lineheight24px' },
-    { title: 'lineheight26px', format: 'lineheight26px' },
-    { title: 'lineheight28px', format: 'lineheight28px' },
-    { title: 'lineheight30px', format: 'lineheight30px' },
-    { title: 'lineheight32px', format: 'lineheight32px' },
-    { title: 'lineheight34px', format: 'lineheight34px' },
-    { title: 'lineheight36px', format: 'lineheight36px' },
-    { title: 'lineheight38px', format: 'lineheight38px' },
-    { title: 'lineheight40px', format: 'lineheight40px' },
+    {title: 'lineheight20px', format: 'lineheight20px'},
+    {title: 'lineheight22px', format: 'lineheight22px'},
+    {title: 'lineheight24px', format: 'lineheight24px'},
+    {title: 'lineheight26px', format: 'lineheight26px'},
+    {title: 'lineheight28px', format: 'lineheight28px'},
+    {title: 'lineheight30px', format: 'lineheight30px'},
+    {title: 'lineheight32px', format: 'lineheight32px'},
+    {title: 'lineheight34px', format: 'lineheight34px'},
+    {title: 'lineheight36px', format: 'lineheight36px'},
+    {title: 'lineheight38px', format: 'lineheight38px'},
+    {title: 'lineheight40px', format: 'lineheight40px'},
   ],
   content_css: ['/static/css/mycontent.css', '//fonts.googleapis.com/css?family=Lato:300,300i,400,400i'],
 
@@ -174,11 +174,11 @@ const mceInit: Settings = {
   media_dimensions: false,
   media_poster: false,
   iframe_template_callback({
-    title,
-    source,
-    width,
-    height,
-  }: {
+                             title,
+                             source,
+                             width,
+                             height,
+                           }: {
     title: string
     source: string
     width: string
@@ -197,7 +197,7 @@ async function onUploadImage(blobInfo, progress) {
   }
   // formData.append('id', 0)
   try {
-    const { data } = await axios.post('/admin/upload/images/', formData, { onUploadProgress })
+    const {data} = await axios.post('/admin/upload/images/', formData, {onUploadProgress})
     return data.location
   } catch (error) {
     console.error(error)
@@ -214,7 +214,7 @@ async function onUploadImage(blobInfo, progress) {
             <template v-slot:append-inner>
               <v-tooltip location="bottom">
                 <template v-slot:activator="{ props }">
-                  <v-icon v-bind="props" icon="mdi-help-circle-outline" />
+                  <v-icon v-bind="props" icon="mdi-help-circle-outline"/>
                 </template>
                 Название пункта меню в попапе FAQ
               </v-tooltip>
@@ -225,9 +225,9 @@ async function onUploadImage(blobInfo, progress) {
         <div class="w-100">
           <VCol cols="9">
             <v-file-input
-              v-model="active.image"
-              label="Добавьте изображение"
-              variant="outlined"
+                v-model="active.image"
+                label="Добавьте изображение"
+                variant="outlined"
             ></v-file-input>
           </VCol>
           <div class="ma-1">
@@ -241,9 +241,9 @@ async function onUploadImage(blobInfo, progress) {
     </h4>
 
     <div v-if="faqEdit" class="faq-content-editor mt-2">
-      <Editor v-model="active.body" :api-key="mceKey" :init="mceInit" />
+      <Editor v-model="active.body" api-key="jv0h9szrpjbnrx2g3pftvxsd4lcdaaiacb96dvzabbkzszff" :init="mceInit"/>
     </div>
-    <div v-else class="faq-content-body scrollable" v-html="active.body" />
+    <div v-else class="faq-content-body scrollable" v-html="active.body"/>
   </div>
 </template>
 

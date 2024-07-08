@@ -474,7 +474,7 @@ async function onUploadImage(blobInfo, progress) {
     >
       <Editor
         v-model="active.body"
-        :api-key="mceKey"
+        api-key="jv0h9szrpjbnrx2g3pftvxsd4lcdaaiacb96dvzabbkzszff"
         :init="mceInit"
       />
     </div>

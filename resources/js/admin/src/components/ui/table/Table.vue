@@ -10,7 +10,7 @@
     <VDivider />
     <VContainer class="faq-card-body">
       <VRow>
-        <VCol class="faq-card-list">
+          <VCol class="faq-card-list">
           <slot name="col-1" />
         </VCol>
         <VCol
