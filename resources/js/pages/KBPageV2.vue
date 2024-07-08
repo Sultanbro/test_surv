@@ -1273,12 +1273,13 @@ export default {
 		},
 		async savePageOrder({ item, to, newIndex }) {
 			const id = +item.getAttribute('data-id');
-			const parentId = +to.getAttribute('data-id');
+			const parentId = +to.getAttribute('data-id') || null;
+      
 			try {
 				await API.updateKBOrder({
 					id,
 					order: newIndex,
-					parent_id: parentId || null,
+					parent_id: parentId,
 				});
 				this.updateBookOrder(id, parentId, newIndex);
 
@@ -1293,32 +1294,40 @@ export default {
 				this.$toast.error('Не удалось сохранить очередь');
 			}
 		},
+
 		updateBookOrder(id, parentId, newIndex) {
 			const book = this.booksMap[id];
 			const prevParent = this.booksMap[book.parent_id];
-			const parent = this.booksMap[parentId];
 
+			// Удаление из предыдущего родителя или корня
 			if (prevParent) {
-				const index = prevParent.children.findIndex(
-					(children) => children.id === id
-				);
+				const index = prevParent.children.findIndex((children) => children.id === id);
 				if (~index) prevParent.children.splice(index, 1);
 			} else {
 				const index = this.books.findIndex((p) => p.id === id);
 				if (~index) this.books.splice(index, 1);
 			}
 
-			if (parent) {
-				if (!parent.children) parent.children = [];
+			// Обновление родителя
+			if (parentId !== null) {
+				let parent = this.booksMap[parentId];
+				if (!parent) {
+					// Создание нового родителя, если он не существует
+					parent = { id: parentId, children: [] };
+					this.booksMap[parentId] = parent;
+					this.books.push(parent); // Добавление нового родителя в корень
+				}
 				parent.children.splice(newIndex, 0, book);
 			} else {
+				// Добавление в корень, если parentId равен null
 				this.books.splice(newIndex, 0, book);
 			}
-			book.parent_id = parentId;
-		},
-		/* === BOOKS === */
 
-		/* === ACCESS === */
+			book.parent_id = parentId;
+			this.booksMap[id] = book; // Обновляем карту книг
+		},
+
+
 		async fetchAccess(book) {
 			try {
 				const { whoCanEdit, whoCanRead, whoCanReadPairs, whoCanEditPairs } =
@@ -1581,6 +1590,7 @@ export default {
 	height: 100vh;
 
 	&-nav {
+    overflow-y: auto;
 		width: 290px;
 		flex: 0 0 290px;
 	}

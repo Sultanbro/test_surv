@@ -51,7 +51,7 @@
 					title="Добавить страницу"
 					@click.stop="$emit('add-page', item)"
 				>
-					<AddСhapterIcon />
+					<AddСhapterIcon class="KBNavItem-action-select" />
 				</div>
 				<div
 					v-if="type === 'book' && $laravel.is_admin"
@@ -174,7 +174,7 @@ export default {
 				&-actions {
 					margin-top: 2%;
 					display: flex;
-          padding: 2px;
+					padding: 2px;
 				}
 			}
 		}
@@ -236,10 +236,9 @@ export default {
 		transform: translateY(-50%);
 	}
 	&-action {
-    transition: all ease 100ms;
-		&:hover {
-			outline: 1px solid #435c8dc5;
-		}
+		svg {
+      fill: red;
+    }
 	}
 
 	.fa-plus-square {
