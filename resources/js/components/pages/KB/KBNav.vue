@@ -620,7 +620,7 @@ export default {
 	}
 
 	&__footer {
-    margin-top: 5%;
+    margin: 5% 0%;
 		display: flex;
 		justify-content: space-between;
 		align-items: center;

@@ -33,7 +33,6 @@
 				@settings="$emit('settings', $event)"
 			>
 				<template
-					v-if="item.children && item.children.length"
 					#nested
 				>
 					<KBNavItems
@@ -121,11 +120,11 @@ export default {
 			item.opened = !item.opened;
 
 			// Закрываем все остальные элементы
-			this.items.forEach(i => {
-				if (i.id !== item.id) {
-					i.opened = false;
-				}
-			});
+			// this.items.forEach(i => {
+			// 	if (i.id !== item.id) {
+			// 		i.opened = false;
+			// 	}
+			// });
 
 			this.showPage(item, false, true);
 			++this.key;

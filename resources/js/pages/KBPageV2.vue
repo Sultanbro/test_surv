@@ -1590,6 +1590,7 @@ export default {
 	height: 100vh;
 
 	&-nav {
+    overflow-y: auto;
 		width: 290px;
 		flex: 0 0 290px;
 	}
