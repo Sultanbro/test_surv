@@ -42,10 +42,7 @@ class WebhookController extends Controller
 
         /** @var Invoice $invoice */
         $invoice = Invoice::query()
-            ->where(function ($query) use ($webhookHandler) {
-                $query->where('transaction_id', $webhookHandler->getTransactionId());
-                $query->orWhere('payer_phone', $webhookHandler->getParams('customer_phone'));
-            })
+            ->where('transaction_id', $webhookHandler->getTransactionId())
             ->where('provider', $provider->name())
             ->where('status', 'pending')
             ->first();
