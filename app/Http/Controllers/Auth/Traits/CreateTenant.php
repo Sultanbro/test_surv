@@ -28,7 +28,9 @@ trait CreateTenant
 
         $tenant->createDomain($domain);
 
-        $centralUser->tenants()->attach($tenant);
+        $centralUser->tenants()->attach($tenant, [
+            'is_owner' => true,
+        ]);
 
         Portal::query()
             ->create([

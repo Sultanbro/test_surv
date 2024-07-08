@@ -71,7 +71,7 @@ class ProjectController extends Controller
         $tenant = $this->createTenantWithDomain($centralUser);
         $data = $authUser->toArray();
         $data['password'] = $authUser->password;
-        $user = $this->createTenantUser($tenant, [
+        $createdTenantUser = $this->createTenantUser($tenant, [
             'name' => Arr::get($data, 'name'),
             'last_name' => Arr::get($data, 'last_name'),
             'email' => Arr::get($data, 'email'),
@@ -79,10 +79,8 @@ class ProjectController extends Controller
             'currency' => Arr::get($data, 'currency'),
             'password' => Arr::get($data, 'password'),
         ]);
-        dd($user);
-        $this->cabinetService->add($tenant->id, $user, true);
         return response()->json([
-            'link' => $this->loginLinkToSubDomain($tenant, $user->email)
+            'link' => $this->getSubDomainLink($tenant, $createdTenantUser->email)
         ]);
     }
 }
