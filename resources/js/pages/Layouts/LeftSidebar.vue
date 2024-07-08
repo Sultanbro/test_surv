@@ -499,8 +499,7 @@ export default {
 				closeButton: false,
 				icon: true
 			})
-			this.axios.post('/projects/create', {})
-			loader.hide()
+
 			this.axios.post('/projects/create', {}).then(response => {
 				if (response.data) location.assign(response.data.link)
 			}).catch(error => {
