@@ -33,7 +33,7 @@ trait CreateTenant
         Portal::query()
             ->create([
                 'tenant_id' => $tenant->id,
-                'owner_id' => $centralUser->getKey(),
+                'owner_id' => $centralUser->id,
                 'currency' => $centralUser->currency ?? 'kzt'
             ]);
 

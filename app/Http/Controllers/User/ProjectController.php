@@ -67,11 +67,11 @@ class ProjectController extends Controller
         /** @var User $authUser */
         $authUser = auth()->user();
 
-        $centralUser = CentralUser::userByEmail($authUser->email)->makeVisible('password');
+        $centralUser = CentralUser::userByEmail($authUser->email);
         $tenant = $this->createTenantWithDomain($centralUser);
-        dd($tenant);
         $data = $authUser->toArray();
-        $data['password'] = $centralUser->password;
+        $data['password'] = $authUser->password;
+        dd($data);
         $user = $this->createTenantUser($tenant, $data);
         $this->cabinetService->add($tenant->id, $user, true);
         return response()->json([
