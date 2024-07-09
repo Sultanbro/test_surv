@@ -168,7 +168,7 @@ class Timetracking extends Model
                 'full_time',
                 'weekdays',
                 'timezone',
-                'timetracking.minutes as test',
+                'timetracking.minute as test',
 //                DB::raw('SUM(timetracking.minutes / 60) as total_hours')
             ])
             ->paginate($perPage);
