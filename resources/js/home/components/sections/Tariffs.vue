@@ -1,81 +1,81 @@
 <template>
-	<!-- <div
-			class="section-content"
-		>
-			<div class="jTariffs-header-wrapper jTariffs-header">
-				<h2 class="jTariffs-header jHeader">
-					{{ $lang(lang, 'prices-header') }}
-				</h2>
-        <NavbarLang
-          class="jTariffs-lang"
-          :isShowCurrency="true"
-          :options="currecyCode"
-					:lang="lang"
-					@change="$root.$data.setLang($event)"
-				/>
-			</div>
-			<div class="jTariffs-content">
-				<table
-					:data-col="activeCol"
-					class="jTariffs-table"
-					@mouseout="activeCol = -1"
-				>
-					<tbody class="jTariffs-tbody">
-						<tr
-							v-for="(tr, rkey) in table"
-							:key="'r' + rkey"
-							class="jTariffs-tr"
-						>
-							<template v-if="rkey === 0 || rkey >= table.length - 3">
-								<th
-									v-for="(td, dkey) in tr"
-									:key="'r' + rkey + 'd' + dkey"
-									:data-col="dkey"
-									class="jTariffs-th jTariffs-cell"
-									@mouseover="activeCol = dkey"
-								>
-									{{ td }}
-								</th>
-							</template>
-							<template v-else>
-								<td
-									v-for="(td, dkey) in tr"
-									:key="'r' + rkey + 'd' + dkey"
-									:data-col="dkey"
-									class="jTariffs-td jTariffs-cell"
-									@mouseover="activeCol = dkey"
-								>
-									{{ td }}
-								</td>
-							</template>
-						</tr>
-						<tr>
-							<th />
-							<td
-								v-for="td in 4"
-								:key="td"
-							>
-								<a
-									class="jButton jButton-tariffs-four"
-									href="/register"
-								>
-									{{ $lang(lang, 'prices-register') }}
-								</a>
-							</td>
-						</tr>
-					</tbody>
-				</table>
-				<div class="jButton-tariffs-one">
-					<a
-						class="jButton"
-						href="/register"
+	<div
+		class="section-content"
+	>
+		<div class="jTariffs-header-wrapper jTariffs-header">
+			<h2 class="jTariffs-header jHeader">
+				{{ $lang(lang, 'prices-header') }}
+			</h2>
+			<NavbarLang
+				class="jTariffs-lang"
+				:is-show-currency="true"
+				:options="currecyCode"
+				:lang="lang"
+				@change="$root.$data.setLang($event)"
+			/>
+		</div>
+		<div class="jTariffs-content">
+			<table
+				:data-col="activeCol"
+				class="jTariffs-table"
+				@mouseout="activeCol = -1"
+			>
+				<tbody class="jTariffs-tbody">
+					<tr
+						v-for="(tr, rkey) in table"
+						:key="'r' + rkey"
+						class="jTariffs-tr"
 					>
-						{{ $lang(lang, 'prices-register') }}
-					</a>
-				</div>
+						<template v-if="rkey === 0 || rkey >= table.length - 3">
+							<th
+								v-for="(td, dkey) in tr"
+								:key="'r' + rkey + 'd' + dkey"
+								:data-col="dkey"
+								class="jTariffs-th jTariffs-cell"
+								@mouseover="activeCol = dkey"
+							>
+								{{ td }}
+							</th>
+						</template>
+						<template v-else>
+							<td
+								v-for="(td, dkey) in tr"
+								:key="'r' + rkey + 'd' + dkey"
+								:data-col="dkey"
+								class="jTariffs-td jTariffs-cell"
+								@mouseover="activeCol = dkey"
+							>
+								{{ td }}
+							</td>
+						</template>
+					</tr>
+					<tr>
+						<th />
+						<td
+							v-for="td in 4"
+							:key="td"
+						>
+							<a
+								class="jButton jButton-tariffs-four"
+								href="/register"
+							>
+								{{ $lang(lang, 'prices-register') }}
+							</a>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			<div class="jButton-tariffs-one">
+				<a
+					class="jButton"
+					href="/register"
+				>
+					{{ $lang(lang, 'prices-register') }}
+				</a>
 			</div>
-		</div> -->
-	<section id="jTariffs">
+		</div>
+	</div>
+	<!-- <section id="jTariffs">
 		<a
 			id="prices"
 			class="ancor"
@@ -158,7 +158,7 @@
 				</div>
 			</div>
 		</div>
-	</section>
+	</section> -->
 </template>
 
 <script>

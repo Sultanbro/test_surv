@@ -302,7 +302,6 @@
 							/>
 						</div>
 						<div
-							v-else
 							:title="Number(finalData.item.total) + Number(finalData.item.bonus) + Number(finalData.item.kpi)"
 						>
 							{{ finalData.value }}
