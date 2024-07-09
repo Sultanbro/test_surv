@@ -136,6 +136,20 @@ class Timetracking extends Model
     public static function getTimeTrackingReportPaginate($request, $users_ids, $year, $perPage = 1000)
     {
         return User::withTrashed()
+            ->select([
+                'id',
+                'email',
+                'deleted_at',
+                'name',
+                'last_name',
+                'user_type',
+                'working_time_id',
+                'program_id',
+                'full_time',
+                'weekdays',
+                'timezone',
+                DB::raw('SELECT SUM(TIMESTAMPDIFF(minute, `enter`, `exit`) / 60) FROM timetracking WHERE users.id = timetracking.user_id AND MONTH(enter) =' . $request->month . ' AND YEAR(enter)=' . $request->year . ') AS total_hourse')
+            ])
             ->with([
                 'group_users',
                 'timetracking' => function ($q) use ($request, $year) {
@@ -155,20 +169,6 @@ class Timetracking extends Model
                 }
             ])
             ->whereIn('id', array_unique($users_ids))
-            ->select([
-                'id',
-                'email',
-                'deleted_at',
-                'name',
-                'last_name',
-                'user_type',
-                'working_time_id',
-                'program_id',
-                'full_time',
-                'weekdays',
-                'timezone',
-//                DB::raw('SUM(timetracking.minutes / 60) as total_hours')
-            ])
             ->paginate($perPage);
     }
 
