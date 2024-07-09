@@ -6,6 +6,12 @@
 			<h2 class="jTariffs-header jHeader">
 				{{ $lang(lang, 'prices-header') }}
 			</h2>
+			<TariffsValute :lang="lang" />
+			<br>
+			<br>
+			<br>
+			<br>
+
 			<NavbarLang
 				class="jTariffs-lang"
 				:is-show-currency="true"
@@ -14,6 +20,7 @@
 				@change="$root.$data.setLang($event)"
 			/>
 		</div>
+		{{ table }}
 		<div class="jTariffs-content">
 			<table
 				:data-col="activeCol"
@@ -163,13 +170,14 @@
 
 <script>
 import axios from 'axios';
-// import TariffsValute from '../tariffs/TariffsValute'
+import TariffsValute from '../tariffs/TariffsValute'
 import NavbarLang from '../navbar/NavbarLang.vue'
 
 export default {
 	name: 'SectionTariffs',
 	components: {
-		NavbarLang
+		NavbarLang,
+		TariffsValute
 	},
 	data() {
 		return {
@@ -197,27 +205,28 @@ export default {
 			return this.$root.$data.lang
 		},
 		table() {
-			return this.$lang(this.lang, 'prices-table').map((row, rowIndex) => {
-				if(rowIndex === 12){
-					return row.map((item, index) => {
-						const plan = this.plans[index]
-						if(!plan) return item
-						const tariff = this.tariffs.find(tariff => tariff.kind === plan && tariff.validity === 'monthly')
-						if(!tariff) return item
-						return this.separateThousands(parseInt(tariff.multiCurrencyPrice[this.currecyCode[this.selectedValute]])) + ' ' + this.selectedValute
-					})
-				}
-				if(rowIndex === 13){
-					return row.map((item, index) => {
-						const plan = this.plans[index]
-						if(!plan) return item
-						const tariff = this.tariffs.find(tariff => tariff.kind === plan && tariff.validity === 'annual')
-						if(!tariff) return item
-						return this.separateThousands(parseInt(tariff.multiCurrencyPrice[this.currecyCode[this.selectedValute]])) + ' ' + this.selectedValute
-					})
-				}
-				return row
-			});
+			return this.$lang(this.lang, 'prices-table')
+			// .map((row, rowIndex) => {
+			// 	if(rowIndex === 12){
+			// 		return row.map((item, index) => {
+			// 			const plan = this.plans[index]
+			// 			if(!plan) return item
+			// 			const tariff = this.tariffs.find(tariff => tariff.kind === plan && tariff.validity === 'monthly')
+			// 			if(!tariff) return item
+			// 			return this.separateThousands(parseInt(tariff.multiCurrencyPrice[this.currecyCode[this.selectedValute]])) + ' ' + this.selectedValute
+			// 		})
+			// 	}
+			// 	if(rowIndex === 13){
+			// 		return row.map((item, index) => {
+			// 			const plan = this.plans[index]
+			// 			if(!plan) return item
+			// 			const tariff = this.tariffs.find(tariff => tariff.kind === plan && tariff.validity === 'annual')
+			// 			if(!tariff) return item
+			// 			return this.separateThousands(parseInt(tariff.multiCurrencyPrice[this.currecyCode[this.selectedValute]])) + ' ' + this.selectedValute
+			// 		})
+			// 	}
+			// 	return row
+			// });
 		},
 		isMedium() {
 			return this.$viewportSize.width >= 1260
