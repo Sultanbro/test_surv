@@ -4,11 +4,12 @@
 		:class="{'jNav-menu-lang-active': active}"
 		class="jNav-menu-lang"
 		href="javascript:void(0)"
+		v-bind="$attrs"
 		@click="togglePopup"
 		@mouseover="showPopup"
 		@mouseleave="hidePopup"
 	>
-		{{ lang.toUpperCase() }}
+		{{ isShowCurrency ? showCurrency : lang.toUpperCase() }}
 		<div
 			class="jNav-menu-lang-popup"
 		>
@@ -16,8 +17,9 @@
 				class="jNav-menu-lang-wrapper"
 				@click="$emit('change', 'ru')"
 			>
-				<div class="jNav-menu-lang-button">Русский</div>
+				<div class="jNav-menu-lang-button">{{ options.russia }}</div>
 				<img
+					v-if="isShowFlag"
 					:src="require('../../assets/img/rus.png').default"
 					alt="ru"
 					class="jNav-menu-lang-img"
@@ -27,8 +29,9 @@
 				class="jNav-menu-lang-wrapper"
 				@click="$emit('change', 'kz')"
 			>
-				<div class="jNav-menu-lang-button">Қазақ</div>
+				<div class="jNav-menu-lang-button">{{ options.kazakh }}</div>
 				<img
+					v-if="isShowFlag"
 					:src="require('../../assets/img/kz.png').default"
 					alt="kz"
 					class="jNav-menu-lang-img"
@@ -38,8 +41,9 @@
 				class="jNav-menu-lang-wrapper"
 				@click="$emit('change', 'en')"
 			>
-				<div class="jNav-menu-lang-button">English</div>
+				<div class="jNav-menu-lang-button">{{ options.english }}</div>
 				<img
+					v-if="isShowFlag"
 					:src="require('../../assets/img/eng.png').default"
 					alt="en"
 					class="jNav-menu-lang-img"
@@ -55,6 +59,24 @@ export default {
 		lang: {
 			type: String,
 			default: ''
+		},
+		isShowFlag: {
+			type: Boolean,
+			default: false
+		},
+		isShowCurrency: {
+			type: Boolean,
+			default: false
+		},
+		options: {
+			type: Object,
+			default() {
+				return {
+					'russia': 'Русский',
+					'english': 'English',
+					'kazakh': 'Қазақ',
+				}
+			}
 		}
 	},
 	data() {
@@ -62,6 +84,11 @@ export default {
 			active: false,
 			timeout: null,
 		}
+	},
+	computed: {
+		showCurrency() {
+			return this.lang.toUpperCase() === 'RU' ? '₽' : '₸'
+		},
 	},
 	methods: {
 		hidePopup() {
@@ -125,13 +152,15 @@ export default {
 .jNav-menu-lang-wrapper {
   display: flex;
   align-items: center;
-  padding: 0.5rem;
+  justify-content: space-between;
+  gap: 13px;
+  padding: 3px;
 }
 
-.jNav-menu-lang-button {
-  width: 54px;
-  margin-right: 1rem;
-}
+// .jNav-menu-lang-button {
+//   width: 54px;
+//   margin-right: 1rem;
+// }
 
 @media screen and (min-width: $large) {
   .jNav-menu-lang-button {
