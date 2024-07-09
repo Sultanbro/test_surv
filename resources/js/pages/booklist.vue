@@ -251,7 +251,7 @@
 				<template v-if="activesbook != null && edit_actives_book">
 					<Editor
 						v-model="activesbook.text"
-						"iijzasm8i8kh2in9jk178tu9bfl7ud3p5kav9w802sggs11c"
+						"jv0h9szrpjbnrx2g3pftvxsd4lcdaaiacb96dvzabbkzszff"
 						:init="{
 							...editorConfig,
 							height: editorHeight,

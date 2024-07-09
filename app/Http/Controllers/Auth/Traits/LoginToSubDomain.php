@@ -118,9 +118,10 @@ trait LoginToSubDomain
                 ]);
         }
 
-        // redirect link to subdomain  
-        $token = tenancy()->impersonate($tenant, $tenantUser->getKey(), '/profile');
+        // create token to impersonate
+        $token = tenancy()->impersonate($tenant, $tenantUser->id, '/');
 
+        // redirect link to subdomain
         return "https://$subdomain/impersonate/$token->token";
     }
 }
