@@ -148,7 +148,7 @@ class Timetracking extends Model
                 'full_time',
                 'weekdays',
                 'timezone',
-                DB::raw("(SELECT SUM(total_hours) / 60) FROM timetracking WHERE users.id = timetracking.user_id AND MONTH(enter) = $request->month AND YEAR(enter) = $request->year) AS total_hours")
+                DB::raw("(SELECT SUM(total_hours / 60) FROM timetracking WHERE users.id = timetracking.user_id AND MONTH(enter) = $request->month AND YEAR(enter) = $request->year) AS total_hours")
             ])
             ->with([
                 'group_users',
