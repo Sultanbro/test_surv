@@ -135,29 +135,40 @@ class Timetracking extends Model
 
     public static function getTimeTrackingReportPaginate($request, $users_ids, $year, $perPage = 1000)
     {
-        return User::withTrashed()->with([
-            'group_users',
-            'timetracking' => function ($q) use ($request, $year) {
-                $q->selectRaw("*,DATE_FORMAT(enter, '%e') as date, TIMESTAMPDIFF(minute, `enter`, `exit`) as minutes")
-                    ->orderBy('id', 'ASC')
-                    ->whereMonth('enter', '=', $request->month)
-                    ->whereYear('enter', $year);
-            },
-            'fines' => function ($q) use ($request, $year) {
-                $q->selectRaw("*,DATE_FORMAT(day, '%e') as date")->whereMonth('day', '=', $request->month)->whereYear('day', $year);
-            },
-            'daytypes' => function ($q) use ($request, $year) {
-                $q->selectRaw("*,DATE_FORMAT(date, '%e') as day")->whereMonth('date', '=', $request->month)->whereYear('date', $year);
-            },
-            'trackHistory' => function ($q) use ($request, $year) {
-                $q->selectRaw("*,DATE_FORMAT(date, '%e') as day")->whereMonth('date', '=', $request->month)->whereYear('date', $year);
-            }
-        ])->whereIn('id', array_unique($users_ids))
-            ->orderBy('last_name', 'asc')
-
-            //->get(['id', 'email', DB::raw("CONCAT(name,' ',last_name) as full_name"), 'user_type', 'working_time_id']);
-
-            ->select(['id', 'email', 'deleted_at', 'name', 'last_name', 'user_type', 'working_time_id', 'program_id', 'full_time', 'weekdays', 'timezone'])
+        return User::withTrashed()
+            ->select([
+                'id',
+                'email',
+                'deleted_at',
+                'name',
+                'last_name',
+                'user_type',
+                'working_time_id',
+                'program_id',
+                'full_time',
+                'weekdays',
+                'timezone',
+                DB::raw("cast((SELECT SUM(total_hours / 60) FROM timetracking WHERE users.id = timetracking.user_id AND MONTH(enter) = $request->month AND YEAR(enter) = $request->year) as decimal(10,2)) AS total_hours")
+            ])
+            ->with([
+                'group_users',
+                'timetracking' => function ($q) use ($request, $year) {
+                      $q->selectRaw("*,DATE_FORMAT(enter, '%e') as date, TIMESTAMPDIFF(minute, `enter`, `exit`) as minutes")
+                        ->orderBy('id', 'ASC')
+                        ->whereMonth('enter', '=', $request->month)
+                        ->whereYear('enter', $year);
+                },
+                'fines' => function ($q) use ($request, $year) {
+                    $q->selectRaw("*,DATE_FORMAT(day, '%e') as date")->whereMonth('day', '=', $request->month)->whereYear('day', $year);
+                },
+                'daytypes' => function ($q) use ($request, $year) {
+                    $q->selectRaw("*,DATE_FORMAT(date, '%e') as day")->whereMonth('date', '=', $request->month)->whereYear('date', $year);
+                },
+                'trackHistory' => function ($q) use ($request, $year) {
+                    $q->selectRaw("*,DATE_FORMAT(date, '%e') as day")->whereMonth('date', '=', $request->month)->whereYear('date', $year);
+                }
+            ])
+            ->whereIn('id', array_unique($users_ids))
             ->paginate($perPage);
     }
 

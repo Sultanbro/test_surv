@@ -179,7 +179,7 @@
 						</template>
 						<template #cell(total)="total">
 							<div class="td-div">
-								{{ total.value }}
+								{{ newTotal.value }}
 							</div>
 						</template>
 
@@ -1550,6 +1550,7 @@ export default {
 				items.push({
 					name: `${item.last_name} ${item.name}`,
 					total: Math.round(Number(total) * 100) / 100,
+					newTotal: item.total_hours,
 					enable_comment: item.enable_comment,
 					id: item.id,
 					fines: item.selectedFines,
