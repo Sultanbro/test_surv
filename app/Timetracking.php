@@ -155,7 +155,6 @@ class Timetracking extends Model
                 }
             ])
             ->whereIn('id', array_unique($users_ids))
-            ->orderBy('last_name', 'asc')
             ->select([
                 'id',
                 'email',
@@ -168,7 +167,6 @@ class Timetracking extends Model
                 'full_time',
                 'weekdays',
                 'timezone',
-                'timetracking.minute as test',
 //                DB::raw('SUM(timetracking.minutes / 60) as total_hours')
             ])
             ->paginate($perPage);
