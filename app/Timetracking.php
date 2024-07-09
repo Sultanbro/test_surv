@@ -135,24 +135,26 @@ class Timetracking extends Model
 
     public static function getTimeTrackingReportPaginate($request, $users_ids, $year, $perPage = 1000)
     {
-        return User::withTrashed()->with([
-            'group_users',
-            'timetracking' => function ($q) use ($request, $year) {
-                $q->selectRaw("*,DATE_FORMAT(enter, '%e') as date, TIMESTAMPDIFF(minute, `enter`, `exit`) as minutes")
-                    ->orderBy('id', 'ASC')
-                    ->whereMonth('enter', '=', $request->month)
-                    ->whereYear('enter', $year);
-            },
-            'fines' => function ($q) use ($request, $year) {
-                $q->selectRaw("*,DATE_FORMAT(day, '%e') as date")->whereMonth('day', '=', $request->month)->whereYear('day', $year);
-            },
-            'daytypes' => function ($q) use ($request, $year) {
-                $q->selectRaw("*,DATE_FORMAT(date, '%e') as day")->whereMonth('date', '=', $request->month)->whereYear('date', $year);
-            },
-            'trackHistory' => function ($q) use ($request, $year) {
-                $q->selectRaw("*,DATE_FORMAT(date, '%e') as day")->whereMonth('date', '=', $request->month)->whereYear('date', $year);
-            }
-        ])->whereIn('id', array_unique($users_ids))
+        return User::withTrashed()
+            ->with([
+                'group_users',
+                'timetracking' => function ($q) use ($request, $year) {
+                    $q->selectRaw("*,DATE_FORMAT(enter, '%e') as date, TIMESTAMPDIFF(minute, `enter`, `exit`) as minutes")
+                        ->orderBy('id', 'ASC')
+                        ->whereMonth('enter', '=', $request->month)
+                        ->whereYear('enter', $year);
+                },
+                'fines' => function ($q) use ($request, $year) {
+                    $q->selectRaw("*,DATE_FORMAT(day, '%e') as date")->whereMonth('day', '=', $request->month)->whereYear('day', $year);
+                },
+                'daytypes' => function ($q) use ($request, $year) {
+                    $q->selectRaw("*,DATE_FORMAT(date, '%e') as day")->whereMonth('date', '=', $request->month)->whereYear('date', $year);
+                },
+                'trackHistory' => function ($q) use ($request, $year) {
+                    $q->selectRaw("*,DATE_FORMAT(date, '%e') as day")->whereMonth('date', '=', $request->month)->whereYear('date', $year);
+                }
+            ])
+            ->whereIn('id', array_unique($users_ids))
             ->orderBy('last_name', 'asc')
             ->select([
                 'id',
@@ -166,7 +168,8 @@ class Timetracking extends Model
                 'full_time',
                 'weekdays',
                 'timezone',
-                DB::raw('SUM(timetracking.minutes / 60) as total_hours')
+                'timetracking.minutes as test',
+//                DB::raw('SUM(timetracking.minutes / 60) as total_hours')
             ])
             ->paginate($perPage);
     }
