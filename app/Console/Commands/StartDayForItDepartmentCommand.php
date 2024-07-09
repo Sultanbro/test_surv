@@ -39,12 +39,12 @@ class StartDayForItDepartmentCommand extends Command
          * Получаем всех кроме IT специалистов.
          */
         $userIds = DB::table('group_user')
-            ->where([
-                ['group_id', '=', ProfileGroup::IT_DEPARTMENT_ID],
-                ['status', '=', 'active']
-            ])
-            ->whereNotIn('user_id', [5, 24937, 25473])
-            ->get()->pluck('user_id')->toArray();
+            ->select(['user_id'])
+            ->join('profile_groups', 'profile_groups.id', '=', 'group_user.group_id')
+            ->where('profile_groups.name', '=', ProfileGroup::IT_DEPARTMENT_NAME)
+            ->where('group_user.status', '=', 'active')
+            ->get()
+            ->toArray();
 
         /**
          * Получаем время прихода.
@@ -56,9 +56,8 @@ class StartDayForItDepartmentCommand extends Command
         /**
          * За выходные дни не можем поставить отметку.
          */
-        if ($enterTime->isSaturday() || $enterTime->isSunday())
-        {
-            throw new Exception("Выходной же брат");
+        if ($enterTime->isSaturday() || $enterTime->isSunday()) {
+            return;
         }
 
         $timeTrack = DB::table('timetracking')
@@ -66,21 +65,19 @@ class StartDayForItDepartmentCommand extends Command
             ->whereDate('enter', $enterTime->format('Y-m-d'))
             ->get();
 
-        foreach ($userIds as $userId)
-        {
+        foreach ($userIds as $userId) {
             $exist = $timeTrack->where('user_id', $userId)->count() > 0;
 
-            if (!$exist)
-            {
+            if (!$exist) {
                 $data[] = [
-                    'user_id'       => $userId,
-                    'total_hours'   => isset($date) ? 480 : 0,
-                    'updated'       => 0,
-                    'program_id'    => null,
-                    'enter'         => $enterTime->format('Y-m-d H:i:s'),
-                    'exit'          => $exitTime,
-                    'created_at'    => now(),
-                    'updated_at'    => now()
+                    'user_id' => $userId,
+                    'total_hours' => isset($date) ? 480 : 0,
+                    'updated' => 0,
+                    'program_id' => null,
+                    'enter' => $enterTime->format('Y-m-d H:i:s'),
+                    'exit' => $exitTime,
+                    'created_at' => now(),
+                    'updated_at' => now()
                 ];
             }
         }

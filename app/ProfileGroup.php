@@ -124,7 +124,7 @@ class ProfileGroup extends Model
     const FROM_UCALLS = -1;
     const NOWHERE = 0;
 
-    const IT_DEPARTMENT_ID = 26;
+    const IT_DEPARTMENT_NAME = "Отдел Разработки";
     const BUSINESS_CENTER_ID = 34;
 
     const SWITCH_UTILITY = 'switch_utility';
@@ -704,7 +704,6 @@ class ProfileGroup extends Model
     ): Collection
     {
         return self::hasAnalytics()
-            ->ignore([ProfileGroup::IT_DEPARTMENT_ID, ProfileGroup::BUSINESS_CENTER_ID])
             ->isActive()
             ->where(fn($q) => $q->whereNull('archived_date')->orWhere(fn($query) => $query->whereYear('archived_date', '>=', $year)
                 ->whereMonth('archived_date', '>=', $month)
