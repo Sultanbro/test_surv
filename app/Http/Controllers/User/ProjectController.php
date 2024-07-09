@@ -11,7 +11,7 @@ use App\Service\Tenancy\CabinetService;
 use App\User;
 use Exception;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 
 class ProjectController extends Controller
 {
@@ -59,8 +59,6 @@ class ProjectController extends Controller
     /**
      * Create new project for Owner and redirect to it
      *
-     * @param Request $request
-     *
      * @return JsonResponse
      * @throws Exception
      */
@@ -69,17 +67,20 @@ class ProjectController extends Controller
         /** @var User $authUser */
         $authUser = auth()->user();
 
-        $centralUser = CentralUser::userByEmail($authUser->email)->makeVisible('password');
-
-        $tenant = $this->createTenant($centralUser);
+        $centralUser = CentralUser::userByEmail($authUser->email);
+        $tenant = $this->createTenantWithDomain($centralUser);
         $data = $authUser->toArray();
-        $data['password'] = $centralUser->password;;
-        $user = $this->createTenantUser($tenant, $data);
-        $this->cabinetService->add($tenant->id, $user, true);
+        $data['password'] = $authUser->password;
+        $createdTenantUser = $this->createTenantUser($tenant, [
+            'name' => Arr::get($data, 'name'),
+            'last_name' => Arr::get($data, 'last_name'),
+            'email' => Arr::get($data, 'email'),
+            'phone' => Arr::get($data, 'phone'),
+            'currency' => Arr::get($data, 'currency'),
+            'password' => Arr::get($data, 'password'),
+        ]);
         return response()->json([
-            'link' => $this->loginLinkToSubDomain($tenant, $user->email)
+            'link' => $this->getSubDomainLink($tenant, $createdTenantUser->email)
         ]);
     }
-
-
 }

@@ -291,7 +291,6 @@
 
 					<template #cell(final)="finalData">
 						<div
-							v-if="user_types == '1'"
 							class="pointer"
 							:title="Number(finalData.item.total) + Number(finalData.item.bonus) + Number(finalData.item.kpi)"
 							@click="defineClickNumber('final', finalData)"

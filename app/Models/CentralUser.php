@@ -112,7 +112,12 @@ class CentralUser extends Model implements ICustomer
      */
     public function tenants(): BelongsToMany
     {
-        return $this->belongsToMany(Tenant::class, 'tenant_pivot', 'user_id', 'tenant_id');
+        return $this->belongsToMany(
+            Tenant::class,
+            'tenant_pivot',
+            'user_id',
+            'tenant_id'
+        );
     }
 
     public function portals(): HasMany

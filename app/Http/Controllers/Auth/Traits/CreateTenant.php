@@ -17,10 +17,6 @@ trait CreateTenant
     private ?string $password = null;
     private ?string $hashedPassword = null;
 
-    public function createTenant(CentralUser $centralUser): Tenant
-    {
-        return $this->createTenantWithDomain($centralUser);
-    }
 
     protected function createTenantWithDomain(CentralUser $centralUser): Tenant
     {
@@ -32,12 +28,14 @@ trait CreateTenant
 
         $tenant->createDomain($domain);
 
-        $centralUser->tenants()->attach($tenant);
+        $centralUser->tenants()->attach($tenant, [
+            'owner' => true,
+        ]);
 
         Portal::query()
             ->create([
                 'tenant_id' => $tenant->id,
-                'owner_id' => $centralUser->getKey(),
+                'owner_id' => $centralUser->id,
                 'currency' => $centralUser->currency ?? 'kzt'
             ]);
 
@@ -58,7 +56,7 @@ trait CreateTenant
                 'email' => $data['email'],
                 'phone' => $data['phone'],
                 'currency' => $data['currency'],
-                'password' => $this->hashedPassword,
+                'password' => $data['password'] ?? $this->hashedPassword,
                 'position_id' => 1,
                 'program_id' => 1,
                 'is_admin' => 1
