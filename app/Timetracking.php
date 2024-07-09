@@ -154,10 +154,20 @@ class Timetracking extends Model
             }
         ])->whereIn('id', array_unique($users_ids))
             ->orderBy('last_name', 'asc')
-
-            //->get(['id', 'email', DB::raw("CONCAT(name,' ',last_name) as full_name"), 'user_type', 'working_time_id']);
-
-            ->select(['id', 'email', 'deleted_at', 'name', 'last_name', 'user_type', 'working_time_id', 'program_id', 'full_time', 'weekdays', 'timezone'])
+            ->select([
+                'id',
+                'email',
+                'deleted_at',
+                'name',
+                'last_name',
+                'user_type',
+                'working_time_id',
+                'program_id',
+                'full_time',
+                'weekdays',
+                'timezone',
+                DB::raw('SUM(timetracking.minutes / 60) as total_hours')
+            ])
             ->paginate($perPage);
     }
 
