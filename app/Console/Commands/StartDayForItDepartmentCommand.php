@@ -45,7 +45,7 @@ class StartDayForItDepartmentCommand extends Command
             ->where('group_user.status', '=', 'active')
             ->get()
             ->toArray();
-
+        dd($userIds);
         /**
          * Получаем время прихода.
          * Если есть аргумент получаем время выхода.
