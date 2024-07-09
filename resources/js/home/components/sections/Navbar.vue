@@ -123,6 +123,7 @@
 					</li>
 					<li class="jNav-menu-item jNav-menu-item-md">
 						<NavbarLang
+							:is-show-flag="true"
 							:lang="lang"
 							@change="$root.$data.setLang($event)"
 						/>
