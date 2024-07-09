@@ -6,11 +6,11 @@
 			<h2 class="jTariffs-header jHeader">
 				{{ $lang(lang, 'prices-header') }}
 			</h2>
-			<TariffsValute :lang="lang" />
+			<!-- <TariffsValute :lang="lang" />
 			<br>
 			<br>
 			<br>
-			<br>
+			<br> -->
 
 			<NavbarLang
 				class="jTariffs-lang"
@@ -20,7 +20,6 @@
 				@change="$root.$data.setLang($event)"
 			/>
 		</div>
-		{{ table }}
 		<div class="jTariffs-content">
 			<table
 				:data-col="activeCol"
@@ -170,14 +169,13 @@
 
 <script>
 import axios from 'axios';
-import TariffsValute from '../tariffs/TariffsValute'
+// import TariffsValute from '../tariffs/TariffsValute'
 import NavbarLang from '../navbar/NavbarLang.vue'
 
 export default {
 	name: 'SectionTariffs',
 	components: {
 		NavbarLang,
-		TariffsValute
 	},
 	data() {
 		return {
