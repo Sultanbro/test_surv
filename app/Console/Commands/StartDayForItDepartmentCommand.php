@@ -44,8 +44,8 @@ class StartDayForItDepartmentCommand extends Command
             ->where('profile_groups.name', '=', ProfileGroup::IT_DEPARTMENT_NAME)
             ->where('group_user.status', '=', 'active')
             ->get()
+            ->pluck('user_id')
             ->toArray();
-
         /**
          * Получаем время прихода.
          * Если есть аргумент получаем время выхода.
