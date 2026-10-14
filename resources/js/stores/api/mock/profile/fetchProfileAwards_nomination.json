@@ -1,0 +1,50 @@
+{
+  "data": [
+    {
+      "id": 0,
+      "name": "Demo",
+      "description": "",
+      "type": 0,
+      "my": [
+        {
+          "award_id": 0,
+          "award_category_id": 0,
+          "format": "",
+          "name": "Demo",
+          "last_name": "Demo",
+          "user_id": 0,
+          "tempPath": ""
+        }
+      ],
+      "available": [
+        {
+          "id": 0,
+          "format": "",
+          "path": "",
+          "deleted_at": null,
+          "created_at": "2000-01-01",
+          "updated_at": "2000-01-01",
+          "styles": null,
+          "targetable_id": null,
+          "targetable_type": null,
+          "award_category_id": 0,
+          "type": "",
+          "read": 0,
+          "tempPath": ""
+        }
+      ],
+      "other": [
+        {
+          "award_id": 0,
+          "award_category_id": 0,
+          "format": "",
+          "name": "Demo",
+          "last_name": "Demo",
+          "user_id": 0,
+          "tempPath": ""
+        }
+      ]
+    }
+  ],
+  "read": false
+}

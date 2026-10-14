@@ -1,0 +1,1 @@
+<?phpnamespace App\DTO\Admin;class FaqDTO{    public function __construct(        public int|null $parent_id,        public string $title,        public string $page,        public string $body,        public int $order,    )    {    }}

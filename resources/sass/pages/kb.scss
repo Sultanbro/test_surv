@@ -1,0 +1,92 @@
+.kb-sections {
+    .sections-wrap {
+        height: calc(100vh - 94px);
+        overflow-y:auto ;
+        overflow-x: hidden;
+        &.expand {
+            height: calc(100vh - 65px);
+        }
+    }
+    .section {
+        padding: 8px 0;
+        cursor:pointer;
+        position: relative;
+        p {
+            font-weight: 400;
+            font-size: 13px;
+            margin-bottom: 0;
+            white-space: nowrap;
+        }
+        &:hover {
+            background: #f1f1f1;
+            p {
+                display: block;
+            }   
+            .section-btns i {
+                display: block;
+            }
+        }
+        .section-btns i {
+            display: none;
+            width: 27px;
+            margin-left: 5px;
+            padding: 5px;
+            background: #dddddd;
+            border-radius: 4px;
+            &:hover {
+                color:$hover-blue;
+            }
+        }
+        .section-btns {
+            position: absolute;
+            right: 0;
+            top: 6px;
+            text-align: center;
+            display: flex;
+        }
+    }
+}
+
+
+.modal-search {
+
+    margin: 50px 80px;
+    
+    .relative {
+        position: relative;
+
+        button {
+            position: absolute;
+            right: 0px;
+            top: 0px;
+            height: 100%;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+    }
+
+    .s-content {
+        .item {
+            padding: 12px 10px;
+            border-bottom: 1px solid #eee;
+
+            p {
+                font-size: 14px;
+                font-weight: 600;
+                margin-bottom: 0;
+
+                &.book {
+                    color:#1272aa;
+                    font-size: 12px;
+                }
+            }
+            .text {
+                font-size: 12px;
+                color: #ccc;
+                b {
+                    color: #51a0d6;
+                }
+            }
+        }
+    }
+}

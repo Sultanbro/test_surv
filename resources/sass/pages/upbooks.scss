@@ -1,0 +1,223 @@
+.upbook-edit-book{
+  .test{
+    padding-top: 15px;
+    margin-bottom: 15px;
+    border-top: 1px solid #ededed;
+    .questions{
+      margin: 0!important;
+      width: 100%;
+      max-width: 100%;
+    }
+  }
+}
+
+.upbooks-page {
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid #EBEBF9;
+  background-color: #fff;
+  .lp{
+    padding: 9px 20px 10px 20px;
+    background-color: #fff !important;
+    min-height: calc(100vh - 65px) !important;
+    max-height: calc(100vh - 65px) !important;
+  }
+  .cont {
+
+  }
+
+  .boxes{
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+    display: flex;
+    flex-wrap: wrap;
+    padding: 20px 10px 0 10px;
+    min-height: calc(100vh - 110px) !important;
+    max-height: calc(100vh - 110px) !important;
+    overflow: auto;
+  }
+
+  .box-content{
+    margin-bottom: 20px;
+    padding: 0 10px;
+    width: 33%;
+    @media screen and (max-width: 1700px){
+      width: 50%;
+    }
+    &:hover{
+      .box{
+        background: #dddddd;
+        .left{
+          img{
+            transform: scale(1.1);
+          }
+        }
+        .right{
+          &:before{
+            background: linear-gradient(180deg, #dddddd 0%, rgba(255, 255, 255, 0) 0.01%, #dddddd 52.85%);
+          }
+        }
+      }
+    }
+  }
+
+  .box {
+    height: 300px;
+    display: flex;
+    overflow: hidden;
+    background: #f4f4f4;
+    padding: 0;
+    border-radius: 5px;
+    border: 1px solid #f3f3f3;
+    position: relative;
+    cursor: pointer;
+    transition: 0.15s all ease;
+    .buttons {
+      display: flex;
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      i {
+        font-size: 14px;
+        background: #d2dbea;
+        border-radius: 5px;
+        color: #000;
+        padding: 3px;
+        width: 25px;
+        height: 25px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        text-align: center;
+        &.fa-trash{
+          background-color: red;
+          color: #fff;
+        }
+      }
+    }
+    .left {
+      width: 200px;
+      min-width: 200px;
+      overflow: hidden;
+      height: 100%;
+      position: relative;
+      img{
+        width: 100%;
+        height: 300px;
+        object-fit: cover;
+        transition: 0.15s all ease;
+      }
+    }
+
+    .right {
+      width: 100%;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow: hidden;
+      position: relative;
+      &:before{
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 100px;
+        z-index: 2;
+        background: linear-gradient(180deg, #f3f3f3 0%, rgba(255, 255, 255, 0) 0.01%, #f3f3f3 52.85%);
+      }
+
+      p.title {
+        font-size: 14px;
+        margin-bottom: 5px;
+        text-align: left;
+      }
+
+      p.author {
+        font-size: 12px;
+      }
+
+      .text {
+        margin-top: 15px;
+        font-size: 10px;
+        line-height: 1.2;
+      }
+    }
+
+    img {
+      min-width: 100%;
+      max-width: unset;
+      height: 100%;
+      margin: 0 auto;
+    }
+  }
+
+  .section {
+    padding: 8px 0;
+    cursor: pointer;
+    p {
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 0;
+      white-space: nowrap;
+    }
+    &.active{
+      color: #096dd9;
+    }
+    &:hover {
+      p {
+        display: block;
+      }
+      i {
+        display: block;
+      }
+    }
+    i {
+      display: none;
+      width: 27px;
+      margin-left: 5px;
+      font-size: 11px;
+      padding: 5px;
+      background: #dddddd;
+      border-radius: 4px;
+      text-align: center;
+      &:hover {
+        color: $hover-blue;
+      }
+    }
+  }
+
+
+
+
+
+
+}
+
+
+.f-70 {
+  flex: 0 0 70%;
+}
+
+.f-30 {
+  flex: 0 0 30%;
+}
+
+.book-img {
+  width: 100%;
+  margin-left: 5px;
+  border-radius: 5px;
+  margin-bottom: 5px;
+}
+
+.book-text {
+  min-height: 138px;
+    font-size: 12px;
+}
+
+.right .hide {
+  display: none;
+}

@@ -1,0 +1,66 @@
+.profile-edit {
+  .form-group{
+	&.form-group-error{
+	  label{
+		color: red!important;
+	  }
+	  input, select, textarea{
+		border:1px solid red!important;
+	  }
+	  .multiselect{
+		.multiselect__tags{
+		  border-color: red!important;
+		}
+	  }
+	}
+  }
+
+  .profile-edit-list-tabs {
+	margin: 0;
+	display: flex;
+	align-items: center;
+	li {
+	  padding: 10px 20px;
+	  border-left: 1px solid #ddd;
+	  border-top: 1px solid #ddd;
+	  cursor: pointer;
+	  transition: 0.15s all ease;
+	  color: #777;
+	  &:first-child{
+		border-radius: 5px 0 0 0;
+	  }
+	  &:last-child{
+		border-radius: 0 5px 0 0;
+		border-right: 1px solid #ddd;
+	  }
+	  &:hover {
+		background-color: rgba(0, 0, 0, 0.1);
+		color: #000;
+	  }
+
+	  &.active {
+		background-color: #156AE8;
+		color: #fff;
+		border-color: #156AE8;
+	  }
+	}
+  }
+.xtab-content{
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 0 10px 10px 10px;
+}
+  .table-profile-edit {
+	th, td {
+	  vertical-align: middle;
+	}
+
+	tbody {
+	  tr:last-child {
+		th, td {
+		  border-bottom: 1px solid #dee2e6;
+		}
+	  }
+	}
+  }
+}

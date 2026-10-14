@@ -1,0 +1,54 @@
+services:
+  app:
+    container_name: app
+    build:
+      context: ./docker/php
+      dockerfile: Dockerfile
+      args:
+        WWWGROUP: '${WWWGROUP}'
+    image: sail-8.2/app
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    restart: "unless-stopped"
+    tty: true
+    ports:
+      - '127.0.0.1:${APP_PORT:-8080}:80'
+    environment:
+      APP_SERVICE: 'app'
+      WWWUSER: '${WWWUSER}'
+      LARAVEL_SAIL: 1
+      XDEBUG_MODE: '${SAIL_XDEBUG_MODE:-off}'
+      XDEBUG_CONFIG: '${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}'
+    volumes:
+      - '.:/var/www/html'
+    networks:
+      - sail
+    depends_on:
+      - mysql
+  mysql:
+    container_name: mysql
+    image: 'mysql/mysql-server:8.0'
+    tty: true
+    ports:
+      - '127.0.0.1:${FORWARD_DB_PORT:-3306}:3306'
+    restart: "unless-stopped"
+    environment:
+      MYSQL_ROOT_PASSWORD: '${MYSQL_ROOT_PASSWORD:?Set MYSQL_ROOT_PASSWORD in .env}'
+      MYSQL_DATABASE: '${DB_DATABASE}'
+      MYSQL_USER: '${DB_USERNAME}'
+      MYSQL_PASSWORD: '${DB_PASSWORD:?Set DB_PASSWORD in .env}'
+    volumes:
+      - 'sailmysql:/var/lib/mysql'
+    networks:
+      - sail
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-p${DB_PASSWORD}" ]
+      retries: 3
+      timeout: 5s
+
+networks:
+  sail:
+    driver: bridge
+volumes:
+  sailmysql:
+    driver: local

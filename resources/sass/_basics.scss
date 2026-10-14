@@ -1,0 +1,104 @@
+html{
+    // overflow-y: scroll; - показывает место для скролла даже если он не нужен (стояло изначально)
+    overflow-y: auto; // - с этим свойством частично пропадают скроллы на некоторых страницах, но не на всех
+}
+.flex-column {
+    flex-direction: column;
+}
+.flex-wrap {
+    flex-wrap:wrap;
+}
+.align-start {
+    align-items: flex-start;
+}
+.align-center, .aic {
+    align-items: center;
+}
+.align-end {
+    align-items: flex-end;
+}
+.justify-start {
+    justify-content: flex-start;
+}
+.justify-center, .jcc {
+    justify-content: center;
+}
+.justify-between, .jcsb {
+    justify-content: space-between;
+}
+.justify-around {
+    justify-content: space-around;
+}
+.justify-end {
+    justify-content: flex-end;
+}
+.m-a{
+    margin: auto;
+}
+.mx-a{
+    margin-left: auto;
+    margin-right: auto;
+}
+.my-a{
+    margin-top: auto;
+    margin-bottom: auto;
+}
+.ml-a{
+    margin-left: auto;
+}
+.mt-a{
+    margin-top: auto;
+}
+.mr-a{
+    margin-right: auto;
+}
+.mb-a{
+    margin-bottom: auto;
+}
+.mt-6{
+    margin-top: 4rem !important;
+}
+
+.gap-1{
+    gap: 0.25rem;
+}
+.gap-2{
+    gap: 0.5rem;
+}
+.gap-3{
+    gap: 1rem;
+}
+.gap-4{
+    gap: 1.5rem;
+}
+.gap-5{
+    gap: 3rem;
+}
+
+.fz-10{
+    font-size: 1rem;
+}
+.fz-11{
+    font-size: 1.1rem;
+}
+.fz-12{
+    font-size: 1.2rem;
+}
+.fz-13{
+    font-size: 1.3rem;
+}
+.fz-14{
+    font-size: 1.4rem;
+}
+.fz-15{
+    font-size: 1.5rem;
+}
+.fz-16{
+    font-size: 1.6rem;
+}
+.fz-18{
+    font-size: 1.8rem;
+}
+.fz-20{
+    font-size: 2rem;
+}

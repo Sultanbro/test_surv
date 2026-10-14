@@ -1,0 +1,250 @@
+.nestable {
+  position: relative;
+}
+
+.nestable-rtl {
+  direction: rtl;
+}
+
+.nestable .nestable-list {
+  margin: 0;
+  padding: 0 0 0 40px;
+  list-style-type: none;
+}
+
+.nestable-rtl .nestable-list {
+  padding: 0 40px 0 0;
+}
+
+.nestable>.nestable-list {
+  padding: 0;
+}
+
+.nestable-item,
+.nestable-item-copy {
+  margin: 10px 0 0;
+}
+
+.nestable-item:first-child,
+.nestable-item-copy:first-child {
+  margin-top: 0;
+}
+
+.nestable-item .nestable-list,
+.nestable-item-copy .nestable-list {
+  margin-top: 10px;
+}
+
+.nestable-item {
+  position: relative;
+}
+
+.nestable-item.is-dragging .nestable-list {
+  pointer-events: none;
+}
+
+.nestable-item.is-dragging * {
+  opacity: 0;
+  filter: alpha(opacity=0);
+}
+
+.nestable-item.is-dragging:before {
+  content: " ";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(106, 127, 233, 0.274);
+  border: 1px dashed rgb(73, 100, 241);
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+}
+
+.nestable-drag-layer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  pointer-events: none;
+}
+
+.nestable-rtl .nestable-drag-layer {
+  left: auto;
+  right: 0;
+}
+
+.nestable-drag-layer>.nestable-list {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 0;
+  background-color: rgba(106, 127, 233, 0.274);
+}
+
+.nestable-rtl .nestable-drag-layer>.nestable-list {
+  padding: 0;
+}
+
+.nestable [draggable="true"] {
+  cursor: move;
+}
+
+.nestable-handle {
+  display: inline;
+}
+
+// chapters
+
+.dragArea {
+  padding: 0;
+  margin: 0;
+  .dragArea{
+    margin-left: 10px!important;
+  }
+}
+
+.handles {
+  width: 25px;
+  min-width: 25px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  & .shower {
+    width: 25px;
+    min-width: 25px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.handles i {
+  color: #a3a3a3;
+  font-size: 12px;
+}
+
+.mover {
+  cursor: move;
+  color: #1db332 !important;
+}
+
+ul {
+  list-style: none;
+}
+
+.chapter {
+  padding: 0;
+  position: relative;
+
+  &:first-child {
+    margin-top: 5px;
+  }
+  .fa-circle {
+    font-size: 5px;
+  }
+  display: none;
+  &.opened {
+    display: block;
+  }
+
+  // & > .titles {
+  //   p, i {
+  //     color: #ccc;
+  //   }
+  // }
+
+
+  &.pass {
+    & > .titles {
+      p, i {
+        color: #000;
+      }
+      padding: 0 0 0 5px;
+    }
+
+  }
+
+  &.active {
+    & > .titles {
+      p, i {
+        color: #096dd9;
+      }
+      padding: 0 0 0 5px;
+    }
+
+  }
+
+
+
+  .chapter-btns i {
+    width: 27px;
+    margin-left: 5px;
+    font-size: 10px;
+    padding: 5px;
+    background: #c7d0d6;
+    border-radius: 4px;
+    cursor: pointer;
+
+    &:hover {
+      color: $hover-blue;
+    }
+  }
+
+  .chapter-btns {
+    position: absolute;
+    right: -2px;
+    top: 2px;
+    z-index: 21;
+    text-align: center;
+    display: none;
+    height: 24px;
+    align-items: center;
+    justify-content: center;
+  }
+
+ .d-flex:hover > .chapter-btns {
+    display: inline-flex;
+  }
+}
+
+.chapter p {
+  width: 100%;
+  padding: 5px;
+  font-size: 13px;
+  word-break: break-all;
+  white-space: nowrap;
+  cursor: pointer;
+  background-color: transparent;
+  &:hover{
+    background-color: #efefef;
+  }
+}
+
+li.chapter:hover > div p, li.chapter.active > div p {
+  color: rgb(10, 161, 10);
+}
+
+.chapter {
+  .mover {
+    display: none;
+  }
+
+  .shower {
+    display: flex;
+  }
+
+}
+
+.chapter .handles:hover {
+  &>.mover {
+    display: inline-flex;
+  }
+
+  &>.shower {
+    display: none;
+  }
+}

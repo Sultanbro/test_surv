@@ -1,0 +1,149 @@
+$bon-gradient: linear-gradient(0deg, #353e4b, #254c83);
+$bon-gradient-light: linear-gradient(0deg, rgba(53,62,75, .24), rgba(55,75,102, .67));
+$bon-bg-grey: #e8ebef;
+$color-user: rgb(38, 98, 166); 
+$color-group: rgb(208, 138, 33);
+$color-position: rgb(54, 182, 73);
+.whitespace-no-wrap {
+    white-space: nowrap;
+}
+.kpi-pages {
+    .kpi-item{
+        overflow: auto;
+    }
+    // another
+    .searcher {
+        border: 1px solid #ced4da;
+        border-radius: 5px;
+        min-width: 250px;
+    }
+
+    .kpi {
+        table
+        {
+            td, th {
+                min-width: 40px;
+            }
+        }
+    }
+
+    table {
+        td, th {
+            min-width: 125px;
+            padding: 0;
+            height: 1px;
+            font-weight: 400;
+
+            &:first-child {
+                width: 60px;
+                min-width: 60px !important;
+            }
+
+
+
+        }
+
+        &.table-inner {
+            th {
+                padding: 5px 10px;
+                background-color: #686e76;
+            }
+        }
+
+
+        th {
+            height: 40px;
+            background-color: #3b4b62;
+            padding: 10px;
+            color: #fff;
+        }
+
+        &.table.table-inner th {
+            font-size: 12px;
+            font-weight: 400;
+        }
+
+        .text-center {
+            textarea,
+            select,
+            input {
+                text-align: center;
+            }
+        }
+
+        input[type="checkbox"] {
+            min-width: unset !important;
+        }
+    }
+}
+
+.field {
+    font-weight: 600;
+}
+ 
+.child-row {
+    background:#7fabe7;
+}
+
+.child-td-first{
+    width: 120px;
+    max-width: 120px;
+    .child-td-first-div{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 60px;
+        margin-left: 60px;
+    }
+}
+
+.input-sm {
+    padding: 3px 10px;
+}
+
+.w-lg {
+    min-width: 250px !important;
+    width: 250px;
+}
+
+.color {
+
+    &-user {
+        color: $color-user;
+    }
+
+    &-group {
+        color: $color-group;
+    }
+
+    &-position {
+        color: $color-position;
+    }
+}
+
+.hidden {
+    display: none;
+}
+
+.w-sm {
+    width: 66px;
+}
+
+.little-expander {
+    font-size: 8px;
+    position: relative;
+    top: -1px;
+}
+
+
+
+
+.kpi-pages table.child-table td:last-child,
+.kpi-pages table.child-table th:last-child {
+    width: unset;
+    min-width: unset !important;
+}
+
+.bg-transparent {
+    background: transparent !important;
+}

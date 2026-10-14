@@ -1,0 +1,680 @@
+@media (min-width: 1200px) {
+    .container-big {
+        max-width: calc(100vw - 340px);
+    }
+}
+
+.w-100px{
+    width: 100px;
+}
+
+.w-150px{
+    width: 150px;
+}
+
+.w-200px{
+    width: 200px;
+}
+
+.radius-full{
+    border-radius: 100%;
+}
+
+.overflow-hidden{
+    overflow: hidden!important;
+}
+
+.pointer {
+    cursor: pointer!important;
+}
+
+.table-bordered td,
+.table-bordered th {
+    border: 1px solid #dddfe5;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: #1076b0;
+    border-color: #1076b0;
+}
+
+.container {
+    max-width: 100% !important;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: #fafcff;
+}
+
+.form-control:focus {
+    box-shadow: 0 0 0 1px rgba(0, 123, 255, .25);
+}
+
+.bg-white {background:white}
+
+.bg-green {
+    background: #bbcbd6 !important
+}
+
+.bg-green-2 {
+    background: #bbd6c2 !important
+}
+
+.bg-green-3 {
+    &.office {
+        background: #1076b0 !important;
+    }
+
+    background: #ebe9a0 !important
+}
+
+.bg-green-4 {
+    background: #e46b6b !important
+}
+
+.bgw {
+    background: #ebeef2;
+}
+
+.selected-date {
+    max-width: 100% !important;
+}
+
+.multiple-datepicker-header {
+    display: none;
+}
+
+.analytics .ant-tabs {
+    overflow: unset
+}
+
+// D3 funnel
+tspan:last-child {
+    fill: #ffffff;
+    /* padding-top: 15px; */
+    font-size: 22px !important;
+    font-family: 'Open Sans';
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+// Table like excel
+
+.table-bordered td,
+.table-bordered th {
+    border: 0.001px solid #dddfe5;
+}
+
+.table-excel table {
+    thead {
+        th {
+            background: #e9ecef !important;
+            border-bottom: 2px solid #a1b7cc !important;
+            text-align: center !important;
+        }
+
+    }
+
+    tr {
+        td:first-child {
+            background: #e9ecef !important;
+            border-right: 2px solid #a1b7cc !important;
+        }
+    }
+
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    td.day {
+        .table-danger {
+            background-color: #ff7669 !important;
+        }
+
+        .table-success {
+            background-color: #2cca50 !important;
+        }
+    }
+}
+
+.font-bold {
+    font-weight: 700;
+}
+
+.text-24 {
+    font-size: 24px;
+}
+
+.empty-space {
+    height: 200px;
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+.text-red {
+    color: red;
+}
+
+.b-table-sticky-column {
+    position: sticky;
+    z-index: 2;
+}
+
+.fa-cog {
+    cursor: pointer;
+    font-size: 14px;
+    color: #1076b0;
+}
+
+.goldencup {
+    height: 20px;
+    position: relative;
+    top: -2px;
+}
+
+.roman {
+    font-family: 'Times New Roman', serif;
+    font-weight: 700;
+    font-size: 18px;
+    position: relative;
+    top: 1px;
+}
+
+.first-width {
+    min-width: 250px !important;
+}
+
+.text-uppercase {
+    text-transform: uppercase;
+}
+
+
+/// animations vue trnstiotions
+
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity .5s;
+}
+
+.fade-enter,
+.fade-leave-to
+
+/* .fade-leave-active до версии 2.1.8 */
+    {
+    opacity: 0;
+}
+
+.modal-backdrop {
+    background-color: rgba(0, 0, 0, .28);
+}
+
+
+// hider input
+.hider {
+    position: absolute;
+    left: -10px;
+    width: 10px;
+    height: 10px;
+    opacity: 0;
+    display: block;
+}
+
+/**
+  Booklist.vue
+*/
+
+.book_page {
+    padding: 20px 30px;
+    max-width: 1000px;
+    margin: 0 auto;
+    height: calc(100vh - 128px);
+
+    .author{
+        text-align: center;
+        img{
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            margin-right: 10px;
+            border: 1px solid #fefefe;
+        }
+        .edited{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            margin-bottom: 5px;
+            .author-time{
+                color: #A0AEC0;
+                span{
+                    color: #A0AEC0!important;
+                    text-align: right;
+                }
+            }
+            i{
+                color: #E4ECF7;
+                margin: 0 15px;
+            }
+            .author-author{
+                font-weight: 500!important;
+                color: #156AE8;
+            }
+        }
+    }
+
+    // ol,
+    // ul{
+    //     margin-left: 30px;
+    // }
+}
+
+.add_cat {
+    margin-bottom: 20px;
+}
+
+.flip-list-move {
+    transition: transform 0.1s;
+}
+
+.no-move {
+    transition: transform 0s;
+}
+
+#app .rp {
+    //min-width: calc(100vw - 377px);
+}
+
+.content {
+    margin: 0 !important;
+    position: relative;
+
+    padding: 0 !important;
+}
+
+.right-side {
+    padding: 15px;
+}
+
+.hat-top {
+    padding: 5px 15px;
+    align-items: center;
+    min-height: 36px;
+    background: #f8f8f8;
+    border-bottom: 1px solid #dfdfdf;
+}
+
+.article_title {
+    height: max-content;
+    font-size: 20px;
+    line-height: 20px;
+    text-align: center;
+    border: none;
+    max-width: 960px;
+    margin: 0 auto;
+    display: block;
+    padding: 15px 0 !important;
+    padding-bottom: 0;
+    width: 100%;
+    font-weight: 600;
+    outline: 0;
+}
+
+.jcsb {
+    justify-content: space-between;
+}
+.wsnw{
+    white-space: nowrap;
+}
+
+// font
+
+.font-16 {
+    font-size: 16px;
+}
+.font-bold {
+    font-weight: 700;
+}
+
+//
+
+nav {
+    margin: 0 -15px;
+}
+
+.nav-tabs{
+    border-bottom: 1px solid #EAEAEA;
+    .nav-item{
+        .nav-link{
+            border: none;
+            color: #8DA0C1;
+            font-size: 16px;
+            font-weight: 600;
+            padding: 0 0 20px 0;
+            margin-right: 24px;
+            background-color: transparent;
+            &.active{
+                color: #156AE8;
+                font-weight: 600;
+                border-bottom: 2px solid #156AE8;
+            }
+            &:hover{
+                color: #156AE8;
+            }
+        }
+        &:last-child{
+            .nav-link{
+                margin-right: 0;
+            }
+        }
+    }
+}
+
+.b-popover {
+    font-size: 16px;
+    * {
+        font-size: 16px;
+    }
+}
+
+.sticky-left{
+    position: sticky;
+    left: 0;
+}
+.sicky-top{
+    position: sticky;
+    top: 0;
+}
+
+
+/*
+
+Новые стили для интеграции профильного дизайна
+Там ставили html {font-size:10px}
+Размеры шрифтов не совпадают
+
+*/
+
+
+$text-grey: #62788B;
+
+.old {
+
+    &__content {
+        font-size: 16px;
+
+        select.form-control:not([size]):not([multiple]) {
+            height: 3.2rem;
+        }
+
+        .fz-08 {
+            font-size: 1.2rem;
+        }
+
+        .fz-09 {
+            font-size: 1.4rem;
+        }
+
+        .cell-input {
+            font-size: 1.2rem;
+        }
+
+        label {
+            font-size: 1.4rem;
+            line-height: 2rem;
+        }
+
+        .my-table .day {
+            font-size: 1.2rem;
+        }
+
+        // TOP page
+        .gauge {
+            margin-bottom: 1rem;
+        }
+
+        // analytics page
+        .day-minute div {
+            font-size: 1.2rem;
+        }
+
+        .table td, .table th {
+            font-size: 1.4rem;
+        }
+        .wd {
+            font-size: 1.2rem;
+        }
+
+        // база знаний
+        .questions .question .title .btns {
+            font-size: 1.6rem;
+        }
+        .questions .points input {
+            padding: 2px 8px;
+            text-align: center;
+        }
+
+        // найстроки
+        .input-group-sm>.form-control {
+            font-size: 1.4rem;
+        }
+
+        .custom-select-sm {
+            height: 2.8rem;
+        }
+
+        .custom-select {
+            height: 3.2rem;
+            font-size: 1.4rem;
+        }
+        .box svg {
+            height: 50px;
+        }
+
+        // HR
+        .resp_user {
+            font-size: 1rem;
+        }
+        .ind p {
+            font-size: 1.2rem;
+        }
+        .progress,
+        .plan p.name {
+            font-size: 1.4rem;
+        }
+        .recruting-analytics h3 {
+            font-size: 1.8rem;
+        }
+        // .skypes-table td:nth-child(7), .skypes-table th:nth-child(7) {
+        //     font-size: 1rem;
+        // }
+    }
+
+
+}
+
+.v-select  {
+    font-size: 13px;
+
+    .vs__dropdown-toggle {
+        padding: 3px 4px;
+    }
+}
+
+.pagination-sm .page-link {
+    font-size: 1.3rem;
+}
+
+.ui-sidebar__header {
+    font-size: 1.6rem;
+}
+
+.modal-title {
+    color: $text-grey;
+    font-size: 1.4rem;
+}
+
+.modal-body {
+    font-size: 16px;
+
+    select.form-control-sm:not([size]):not([multiple]) {
+        height: 2.75rem;
+    }
+}
+
+.modal-content {
+    border-radius: 1rem;
+}
+.modal-dialog {
+    .close {
+        font-size: 2.2rem;
+    }
+}
+
+.file-uploads-container{
+    .file-item{
+        width: 100%;
+       label{
+           position: relative;
+           height: 150px;
+           border-radius: 12px;
+           background-color: #ffffff;
+           box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+           display: flex;
+           align-items: center;
+           justify-content: center;
+           text-align: center;
+           padding: 20px;
+           font-size: 16px;
+           color: #666;
+           font-weight: 700;
+           cursor: pointer;
+           overflow: hidden;
+           &:before{
+               content: 'Загрузить файл';
+               position: absolute;
+               top: 0;
+               left: 0;
+               width: 100%;
+               height: 100%;
+               display: flex;
+               align-items: center;
+               justify-content: center;
+               text-align: center;
+               background-color: rgba(0,0,0,0.7);
+               opacity: 0;
+               color: #fff;
+               transition: 0.3s all ease;
+           }
+           i{
+               position: absolute;
+               top: 20px;
+               left: 20px;
+               font-size: 20px;
+               color: #666;
+           }
+           &.active{
+               i{
+                   color: green;
+               }
+               &:before{
+                   content: 'Заменить файл';
+               }
+               color: green!important;
+               background-color: rgba(0, 128, 0, 0.1);
+           }
+           &:hover{
+               &:before{
+                   opacity: 1;
+               }
+           }
+       }
+    }
+}
+
+.courses-add {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 300px;
+    margin: 0 auto;
+    height: 200px;
+    text-decoration: none;
+    color: #333;
+    font-size: 24px;
+    text-align: center;
+    text-transform: uppercase;
+    border: 2px dashed #ddd;
+    border-radius: 10px;
+    transition: 0.3s all ease;
+
+    &:hover {
+        border-color: green;
+        color: green;
+    }
+}
+
+span.red{
+    color: red;
+}
+
+.popup-add-button{
+    width: 30px;
+    height: 30px;
+    display: inline-flex;
+    align-items: center;
+    margin-left: 10px;
+    justify-content: center;
+    border-radius: 6px;
+    border: 1px solid green;
+    color: green;
+    font-size: 16px;
+    &:hover{
+        color: green;
+    }
+}
+
+.DefaultLayout{
+    &.has-bg{
+        background-color: #ffffff;
+        background-image: url("https://www.transparenttextures.com/patterns/inspiration-geometry.png");
+        background-repeat: repeat;
+    }
+}
+
+.pagination{
+    .page-item{
+        .page-link{
+            width: 30px;
+            height: 30px;
+            line-height: 1;
+        }
+    }
+}
+
+.usn{
+    user-select: none;
+}
+.poen{
+    pointer-events: none;
+}
+/**
+    end of new design integration
+*/
+
+/* fix bootstrap scrollable dialog */
+.modal-dialog-scrollable{
+    display: flex;
+    max-height: calc(100% - 3.5rem);
+    .modal-content{
+        max-height: calc(100% - 3.5rem);
+        overflow: hidden;
+    }
+    .modal-body{
+        overflow: auto;
+    }
+}

@@ -1,0 +1,312 @@
+.quality-page {
+
+    button.page-link {
+        display: inline-block;
+    }
+
+    .my-table.m2 tr .badge {
+        opacity: 1;
+    }
+
+    .day-minute {
+        padding: 0 !important;
+        text-align: center;
+        vertical-align: middle;
+
+        div {
+            font-size: 0.8rem;
+        }
+
+        &.table-success {
+            background-color: #01c601 !important;
+        }
+
+        &.table-danger {
+            background-color: #fd1600 !important;
+        }
+    }
+
+    .table {
+        position: relative;
+
+        &.table-bordered {
+            border: none;
+        }
+
+        &.b-table.table-sm>thead>tr>[aria-sort]:not(.b-table-sort-icon-left),
+        &.b-table.table-sm>tfoot>tr>[aria-sort]:not(.b-table-sort-icon-left) {
+            background-image: none !important;
+            min-width: 32px;
+        }
+
+        .t-name {
+            white-space: nowrap;
+            background: rgb(198, 225, 255);
+            min-width: 175px;
+        }
+
+        .stat {
+            background: #d9edff;
+
+            &.plan {
+                background: #007bff;
+                color: #fff;
+            }
+        }
+
+        tr {
+            &.selected {
+                background: #d1d1d1;
+
+                td.params {
+                    background: #f1f9a7;
+                }
+
+                &.changed {
+                    background: #d1d1d1;
+
+                    td.params {
+                        background: #f7fadb;
+                    }
+                }
+            }
+
+            &.changed {
+                background: #dae9f9;
+
+                td.params {
+                    background: #e4f078;
+                }
+            }
+
+            &.trashy {
+                position: relative;
+
+                &:hover {
+                    .delete {
+                        opacity: 1;
+                    }
+                }
+
+                .delete {
+                    position: absolute;
+                    left: 100%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    padding-left: 10px;
+                    opacity: 0;
+                    color: red;
+                }
+            }
+        }
+
+        th.averages,
+        td.averages {
+            background: #01c601;
+        }
+
+        .t-total {
+            background: #519951;
+        }
+
+        .t-quantity {
+            background: lightblue;
+        }
+
+        th {
+            font-size: 0.75rem;
+        }
+
+        td {
+            &.editable {
+                background: #c6e1ff;
+            }
+
+            &.params {
+                background: #fdffe9;
+            }
+        }
+
+        td,
+        th,
+        thead th {
+            vertical-align: middle;
+            min-width: 42px;
+            text-align: center;
+
+            &.month {
+                min-width: 100px;
+                text-align: center;
+                font-size: 0.8rem;
+                text-transform: capitalize;
+            }
+        }
+
+        td,
+        th {
+            &.phoner {
+                width: 120px;
+            }
+
+            &.arg {
+                max-width: 110px;
+            }
+
+            &.actions {
+                min-width: 20px;
+                width: 30px;
+            }
+
+            &.segment-width {
+                width: 100px;
+            }
+        }
+    }
+
+    .b-table-sticky-column {
+        position: sticky;
+        left: 0;
+        z-index: 2;
+    }
+
+    .wd {
+        background: #fff;
+
+        div {
+            font-size: 0.8rem;
+            width: max-content;
+            width: 100%;
+        }
+    }
+
+    .records-table select.form-control:not([size]):not([multiple]).form-control,
+    .records-table input.form-control {
+        padding: 2px;
+        height: auto;
+        font-size: 0.8rem;
+        text-align: left;
+        border: 0;
+        margin-left: 0;
+        background: transparent;
+        outline: none !important;
+        box-shadow: none !important;
+    }
+
+    .records-table td,
+    .records-table th {
+        font-size: 0.8rem;
+    }
+
+    .comments {
+        width: 150px;
+        height: 20px;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+
+    .records-table .number input.form-control {
+        padding-left: 14px;
+    }
+
+    input {
+        background: transparent;
+        border: none;
+        -moz-appearance: textfield;
+        font-size: 0.8rem;
+        font-weight: normal;
+        padding: 0;
+        color: #000;
+        border-radius: 0;
+        outline: none;
+        height: 100%;
+
+        &[type="date"]::-webkit-inner-spin-button {
+            display: none;
+        }
+
+        &[type="date"]::-webkit-calendar-picker-indicator {
+            display: none;
+        }
+
+        &[type="number"] {
+            text-align: center;
+        }
+
+        &:read-only:hover {
+            cursor: pointer;
+        }
+
+        &:focus {
+            background-color: #fff;
+            color: #000;
+            box-shadow: none;
+        }
+
+        &::-webkit-outer-spin-button,
+        &::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+    }
+
+    .action-btn button {
+        padding: 2px 7px;
+        font-size: 14px;
+    }
+
+    #bv-modal .modal-dialog {
+        max-width: 1140px;
+
+        input {
+            height: auto;
+        }
+    }
+
+    .table-sm td,
+    .table-sm th {
+        padding: 0;
+    }
+
+    .summy {
+        font-size: 2em;
+        margin-top: 15px;
+        text-align: center;
+        margin-bottom: 0;
+        color: #000;
+    }
+
+    .vs__dropdown-toggle {
+        padding: 4px 0 7px;
+    }
+
+    .pl2 {
+        padding-left: 2px;
+    }
+
+    .sg {
+        text-align-last: center;
+    }
+
+    b.bluish {
+        color: #0067c1;
+    }
+
+    .cell-input {
+        background: none;
+        border: none;
+        text-align: center;
+        -moz-appearance: textfield;
+        font-size: 0.8rem;
+        font-weight: normal;
+        padding: 0;
+        color: #000;
+        border-radius: 0;
+    }
+
+    .change-typex {
+        position: absolute;
+        top: 58px;
+        right: 0;
+    }
+}

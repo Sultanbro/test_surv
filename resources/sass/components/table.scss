@@ -1,0 +1,129 @@
+.table-container {
+  .table {
+    //border: 1px solid #EBEBF9!important;
+    border-spacing: 0;
+    color: #62788B;
+    border-radius: 1.2rem 1.2rem 0 0;
+    border-collapse: separate;
+    &.table-bordered {
+      th, td {
+        border-left: 1px solid #E7EAEA;
+        border-top: 1px solid #E7EAEA;
+      }
+
+      thead {
+        td, th {
+          &:first-child {
+            position: relative;
+          }
+
+          &:last-child {
+            position: relative;
+          }
+        }
+      }
+    }
+    td,th{
+      &.Sat, &.Sun{
+        background-color: #fef2cb;
+        border-color: #e5dab6;
+      }
+    }
+
+    .b-table-sticky-column {
+      position: sticky !important;
+      background-color: #fff;
+      left: 0;
+    }
+
+    thead {
+      tr {
+        position: relative;
+        z-index: 2;
+
+        &:first-child {
+          th, td {
+            &:first-child {
+              position: relative;
+              border-radius: 12px 0 0 0;
+              &:before{
+                content: "";
+                position: absolute;
+                top: -11px;
+                left: -13px;
+                transform: skewX(326deg);
+                background-color: #ffffff;
+                width: 20px;
+                height: 20px;
+                border-radius: 50px;
+              }
+            }
+
+            &:last-child {
+              border-radius: 0 12px 0 0;
+            }
+          }
+        }
+      }
+
+      td, th {
+        padding: 10px 15px;
+        line-height: 1.2;
+        font-size: 14px;
+        background-color: #F8F9FD;
+        border-bottom: none;
+      }
+
+      .b-table-sticky-column {
+        background-color: #F8F9FD;
+      }
+    }
+
+    tbody {
+      tr {
+        cursor: default;
+
+        td, th {
+          border-top: none;
+          padding: 10px 15px;
+        }
+      }
+    }
+
+    &.table-striped {
+      tbody {
+        tr {
+          cursor: default;
+
+          &:nth-child(odd) {
+            background-color: #F7FAFC;
+
+            &:hover {
+              background-color: #f4f7f9;
+            }
+          }
+
+          &:hover {
+            background-color: #f4f7f9;
+          }
+
+          td, th {
+            border-top: none;
+            padding: 10px 15px;
+          }
+        }
+      }
+    }
+
+    &.table-hover {
+      tbody {
+        tr {
+          &:hover {
+            background-color: #f4f7f9;
+          }
+        }
+      }
+    }
+  }
+}
+

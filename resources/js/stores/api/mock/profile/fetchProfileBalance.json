@@ -1,0 +1,32 @@
+{
+  "data": {
+    "salaries": {
+      "1": {
+        "fines": [],
+        "bonuses": [],
+        "awards": [],
+        "test_bonus": [],
+        "avanses": [],
+        "value": "",
+        "training": false,
+        "calculated": ""
+      }
+    },
+    "times": {
+      "1": {
+        "value": "",
+        "fines": [],
+        "training": false
+      }
+    },
+    "hours": {
+      "1": {
+        "value": "",
+        "fines": [],
+        "training": false
+      }
+    }
+  },
+  "totalFines": 0,
+  "total_avanses": 0
+}

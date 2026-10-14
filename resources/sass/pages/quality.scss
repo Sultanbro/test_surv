@@ -1,0 +1,15 @@
+.quality-page{
+    .table-container{
+        .custom-table-quality{
+            white-space: nowrap;
+            th,td{
+                height: 40px!important;
+                padding: 0 15px!important;
+            }
+            input{
+                width: 100%;
+                text-align: center;
+            }
+        }
+    }
+}

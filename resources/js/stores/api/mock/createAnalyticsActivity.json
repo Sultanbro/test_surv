@@ -1,0 +1,36 @@
+[
+  {
+    "id": 0,
+    "name": "Demo",
+    "editable": 0,
+    "daily_plan": 0,
+    "order": 0,
+    "group_id": 0,
+    "plan_unit": "",
+    "workdays": 0,
+    "weekdays": 0,
+    "type": "",
+    "view": 0,
+    "unit": "",
+    "table": 0,
+    "records": [
+      {
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "name": "Demo",
+        "lastname": "",
+        "fullname": "",
+        "email": "demo@example.invalid",
+        "full_time": 0,
+        "id": 0,
+        "fired": 0,
+        "is_trainee": false,
+        "applied_from": 0,
+        "group": "",
+        "plan": 0
+      }
+    ],
+    "price": 0
+  }
+]

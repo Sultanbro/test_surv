@@ -1,0 +1,33 @@
+{
+  "data": [
+    {
+      "id": 0,
+      "name": "Demo",
+      "description": "",
+      "type": 0,
+      "available": [
+        {
+          "award_id": 0,
+          "award_category_id": 0,
+          "format": "",
+          "course_id": 0,
+          "course_name": "",
+          "tempPath": ""
+        }
+      ],
+      "other": [
+        {
+          "award_id": 0,
+          "award_category_id": 0,
+          "format": "",
+          "name": "Demo",
+          "last_name": "Demo",
+          "user_id": 0,
+          "course_id": 0,
+          "tempPath": ""
+        }
+      ]
+    }
+  ],
+  "read": false
+}

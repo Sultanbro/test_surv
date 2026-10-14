@@ -1,0 +1,98 @@
+.chat-app {
+    width: unset !important;
+    z-index: 22;
+    height: unset !important;
+    display: flex;
+    position: fixed;
+    right: 0;
+    width: 100%;
+    justify-content: flex-end;
+    height: calc(100vh - 140px);
+
+    width: 50px !important;
+    box-shadow: 0;
+
+    .red-indicator {
+        background: #34aef0 !important;
+        width: 12px !important;
+        height: 12px !important;
+        position: absolute;
+        right: 4px !important;
+        top: 8px !important;
+        display: flex;
+        animation: zoomback infinite 1.5s;
+        border-radius: 50%;
+    }
+
+    @keyframes zoomback {
+        from {
+            transform: scale(1);
+            opacity: 1;
+        }
+        50% {
+            transform: scale(1.3);
+            opacity: 0.2;
+        }
+        70% {
+            transform: scale(0.9);
+            opacity: 0.9;
+        }
+        to {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+    &.fullscreen {
+        width: 650px !important; 
+        border: 1px solid #eee;
+    }
+
+    .side-contacts-list {
+        height: 100%  !important;
+        background: transparent;
+        border-left: 0 !important;
+
+        ul li {
+            border: 0 !important;
+        }
+    }
+
+    .chats-list {
+        height: 100% !important;
+        max-height: 456px;
+        border: unset !important
+    }
+
+    .feed {
+        max-height: 400px !important;
+    }
+    .chats-list-panel {
+        height: 536px;
+        border: 1px solid #eee;
+    }
+
+    .create-chat-button {
+        border-bottom: 1px solid #ccc
+    }
+
+    .conversation {
+        border-bottom: 1px solid #eee;
+        border-top: 1px solid #eee;
+    }
+
+    .chat-header__action {
+        display: flex !important;
+        padding-top: 1px;
+        justify-content: center;
+    }
+
+    .vue-simple-context-menu {
+        left: 0 !important;
+        top: 0 !important;
+    }
+
+
+    .side-contacts-list ul li .avatar img {
+        width: 45px !important;
+    }
+}

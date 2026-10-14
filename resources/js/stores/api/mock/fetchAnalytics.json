@@ -1,0 +1,868 @@
+{
+  "decomposition": {
+    "name": "Demo",
+    "group_id": 0,
+    "records": [
+      {
+        "1": {
+          "plan": null,
+          "fact": null
+        },
+        "2": {
+          "plan": null,
+          "fact": null
+        },
+        "3": {
+          "plan": null,
+          "fact": null
+        },
+        "4": {
+          "plan": null,
+          "fact": null
+        },
+        "5": {
+          "plan": "",
+          "fact": ""
+        },
+        "6": {
+          "plan": null,
+          "fact": null
+        },
+        "7": {
+          "plan": null,
+          "fact": null
+        },
+        "8": {
+          "plan": null,
+          "fact": null
+        },
+        "9": {
+          "plan": "",
+          "fact": ""
+        },
+        "10": {
+          "plan": null,
+          "fact": null
+        },
+        "11": {
+          "plan": null,
+          "fact": null
+        },
+        "12": {
+          "plan": "",
+          "fact": ""
+        },
+        "13": {
+          "plan": null,
+          "fact": null
+        },
+        "14": {
+          "plan": null,
+          "fact": null
+        },
+        "15": {
+          "plan": null,
+          "fact": null
+        },
+        "16": {
+          "plan": null,
+          "fact": null
+        },
+        "17": {
+          "plan": null,
+          "fact": null
+        },
+        "18": {
+          "plan": null,
+          "fact": null
+        },
+        "19": {
+          "plan": "",
+          "fact": ""
+        },
+        "20": {
+          "plan": null,
+          "fact": null
+        },
+        "21": {
+          "plan": null,
+          "fact": null
+        },
+        "22": {
+          "plan": null,
+          "fact": null
+        },
+        "23": {
+          "plan": "",
+          "fact": null
+        },
+        "24": {
+          "plan": null,
+          "fact": null
+        },
+        "25": {
+          "plan": null,
+          "fact": null
+        },
+        "26": {
+          "plan": null,
+          "fact": null
+        },
+        "27": {
+          "plan": null,
+          "fact": null
+        },
+        "28": {
+          "plan": null,
+          "fact": null
+        },
+        "29": {
+          "plan": null,
+          "fact": null
+        },
+        "30": {
+          "plan": null,
+          "fact": null
+        },
+        "id": 0,
+        "name": "Demo",
+        "group_id": 0,
+        "editable": false,
+        "total_plan": 0,
+        "total_fact": 0
+      }
+    ]
+  },
+  "activities": [
+    {
+      "id": 0,
+      "name": "Demo",
+      "editable": 0,
+      "daily_plan": 0,
+      "order": 0,
+      "group_id": 0,
+      "plan_unit": "",
+      "workdays": 0,
+      "weekdays": 0,
+      "type": "",
+      "view": 0,
+      "unit": "",
+      "table": 0,
+      "records": [
+        {
+          "name": "Demo",
+          "lastname": "",
+          "fullname": "",
+          "email": "demo@example.invalid",
+          "full_time": 0,
+          "id": 0,
+          "fired": 0,
+          "is_trainee": false,
+          "applied_from": 0,
+          "group": "",
+          "plan": 0
+        }
+      ],
+      "price": 0
+    }
+  ],
+  "table": [
+    {
+      "1": {
+        "value": "",
+        "show_value": "",
+        "context": false,
+        "type": "",
+        "row_id": 0,
+        "column_id": 0,
+        "cell": "",
+        "class": "",
+        "editable": 0,
+        "depend_id": null,
+        "decimals": 0,
+        "comment": null,
+        "sign": ""
+      },
+      "2": {
+        "value": "",
+        "show_value": "",
+        "context": false,
+        "type": "",
+        "row_id": 0,
+        "column_id": 0,
+        "cell": "",
+        "class": "",
+        "editable": 0,
+        "depend_id": null,
+        "decimals": 0,
+        "comment": null,
+        "sign": ""
+      },
+      "3": {
+        "value": "",
+        "show_value": "",
+        "context": false,
+        "type": "",
+        "row_id": 0,
+        "column_id": 0,
+        "cell": "",
+        "class": "",
+        "editable": 0,
+        "depend_id": null,
+        "decimals": 0,
+        "comment": null,
+        "sign": ""
+      },
+      "4": {
+        "value": "",
+        "show_value": "",
+        "context": false,
+        "type": "",
+        "row_id": 0,
+        "column_id": 0,
+        "cell": "",
+        "class": "",
+        "editable": 0,
+        "depend_id": null,
+        "decimals": 0,
+        "comment": null,
+        "sign": ""
+      },
+      "5": {
+        "value": "",
+        "show_value": "",
+        "context": false,
+        "type": "",
+        "row_id": 0,
+        "column_id": 0,
+        "cell": "",
+        "class": "",
+        "editable": 0,
+        "depend_id": null,
+        "decimals": 0,
+        "comment": null,
+        "sign": ""
+      },
+      "6": {
+        "value": "",
+        "show_value": "",
+        "context": false,
+        "type": "",
+        "row_id": 0,
+        "column_id": 0,
+        "cell": "",
+        "class": "",
+        "editable": 0,
+        "depend_id": null,
+        "decimals": 0,
+        "comment": null,
+        "sign": ""
+      },
+      "7": {
+        "value": "",
+        "show_value": "",
+        "context": false,
+        "type": "",
+        "row_id": 0,
+        "column_id": 0,
+        "cell": "",
+        "class": "",
+        "editable": 0,
+        "depend_id": null,
+        "decimals": 0,
+        "comment": null,
+        "sign": ""
+      },
+      "8": {
+        "value": "",
+        "show_value": "",
+        "context": false,
+        "type": "",
+        "row_id": 0,
+        "column_id": 0,
+        "cell": "",
+        "class": "",
+        "editable": 0,
+        "depend_id": null,
+        "decimals": 0,
+        "comment": null,
+        "sign": ""
+      },
+      "9": {
+        "value": "",
+        "show_value": "",
+        "context": false,
+        "type": "",
+        "row_id": 0,
+        "column_id": 0,
+        "cell": "",
+        "class": "",
+        "editable": 0,
+        "depend_id": null,
+        "decimals": 0,
+        "comment": null,
+        "sign": ""
+      },
+      "10": {
+        "value": "",
+        "show_value": "",
+        "context": false,
+        "type": "",
+        "row_id": 0,
+        "column_id": 0,
+        "cell": "",
+        "class": "",
+        "editable": 0,
+        "depend_id": null,
+        "decimals": 0,
+        "comment": null,
+        "sign": ""
+      },
+      "11": {
+        "value": "",
+        "show_value": "",
+        "context": false,
+        "type": "",
+        "row_id": 0,
+        "column_id": 0,
+        "cell": "",
+        "class": "",
+        "editable": 0,
+        "depend_id": null,
+        "decimals": 0,
+        "comment": null,
+        "sign": ""
+      },
+      "12": {
+        "value": "",
+        "show_value": "",
+        "context": false,
+        "type": "",
+        "row_id": 0,
+        "column_id": 0,
+        "cell": "",
+        "class": "",
+        "editable": 0,
+        "depend_id": null,
+        "decimals": 0,
+        "comment": null,
+        "sign": ""
+      },
+      "13": {
+        "value": "",
+        "show_value": "",
+        "context": false,
+        "type": "",
+        "row_id": 0,
+        "column_id": 0,
+        "cell": "",
+        "class": "",
+        "editable": 0,
+        "depend_id": null,
+        "decimals": 0,
+        "comment": null,
+        "sign": ""
+      },
+      "14": {
+        "value": "",
+        "show_value": "",
+        "context": false,
+        "type": "",
+        "row_id": 0,
+        "column_id": 0,
+        "cell": "",
+        "class": "",
+        "editable": 0,
+        "depend_id": null,
+        "decimals": 0,
+        "comment": null,
+        "sign": ""
+      },
+      "15": {
+        "value": "",
+        "show_value": "",
+        "context": false,
+        "type": "",
+        "row_id": 0,
+        "column_id": 0,
+        "cell": "",
+        "class": "",
+        "editable": 0,
+        "depend_id": null,
+        "decimals": 0,
+        "comment": null,
+        "sign": ""
+      },
+      "16": {
+        "value": "",
+        "show_value": "",
+        "context": false,
+        "type": "",
+        "row_id": 0,
+        "column_id": 0,
+        "cell": "",
+        "class": "",
+        "editable": 0,
+        "depend_id": null,
+        "decimals": 0,
+        "comment": null,
+        "sign": ""
+      },
+      "17": {
+        "value": "",
+        "show_value": "",
+        "context": false,
+        "type": "",
+        "row_id": 0,
+        "column_id": 0,
+        "cell": "",
+        "class": "",
+        "editable": 0,
+        "depend_id": null,
+        "decimals": 0,
+        "comment": null,
+        "sign": ""
+      },
+      "18": {
+        "value": "",
+        "show_value": "",
+        "context": false,
+        "type": "",
+        "row_id": 0,
+        "column_id": 0,
+        "cell": "",
+        "class": "",
+        "editable": 0,
+        "depend_id": null,
+        "decimals": 0,
+        "comment": null,
+        "sign": ""
+      },
+      "19": {
+        "value": "",
+        "show_value": "",
+        "context": false,
+        "type": "",
+        "row_id": 0,
+        "column_id": 0,
+        "cell": "",
+        "class": "",
+        "editable": 0,
+        "depend_id": null,
+        "decimals": 0,
+        "comment": null,
+        "sign": ""
+      },
+      "20": {
+        "value": "",
+        "show_value": "",
+        "context": false,
+        "type": "",
+        "row_id": 0,
+        "column_id": 0,
+        "cell": "",
+        "class": "",
+        "editable": 0,
+        "depend_id": null,
+        "decimals": 0,
+        "comment": null,
+        "sign": ""
+      },
+      "21": {
+        "value": "",
+        "show_value": "",
+        "context": false,
+        "type": "",
+        "row_id": 0,
+        "column_id": 0,
+        "cell": "",
+        "class": "",
+        "editable": 0,
+        "depend_id": null,
+        "decimals": 0,
+        "comment": null,
+        "sign": ""
+      },
+      "22": {
+        "value": "",
+        "show_value": "",
+        "context": false,
+        "type": "",
+        "row_id": 0,
+        "column_id": 0,
+        "cell": "",
+        "class": "",
+        "editable": 0,
+        "depend_id": null,
+        "decimals": 0,
+        "comment": null,
+        "sign": ""
+      },
+      "23": {
+        "value": "",
+        "show_value": "",
+        "context": false,
+        "type": "",
+        "row_id": 0,
+        "column_id": 0,
+        "cell": "",
+        "class": "",
+        "editable": 0,
+        "depend_id": null,
+        "decimals": 0,
+        "comment": null,
+        "sign": ""
+      },
+      "24": {
+        "value": "",
+        "show_value": "",
+        "context": false,
+        "type": "",
+        "row_id": 0,
+        "column_id": 0,
+        "cell": "",
+        "class": "",
+        "editable": 0,
+        "depend_id": null,
+        "decimals": 0,
+        "comment": null,
+        "sign": ""
+      },
+      "25": {
+        "value": "",
+        "show_value": "",
+        "context": false,
+        "type": "",
+        "row_id": 0,
+        "column_id": 0,
+        "cell": "",
+        "class": "",
+        "editable": 0,
+        "depend_id": null,
+        "decimals": 0,
+        "comment": null,
+        "sign": ""
+      },
+      "26": {
+        "value": "",
+        "show_value": "",
+        "context": false,
+        "type": "",
+        "row_id": 0,
+        "column_id": 0,
+        "cell": "",
+        "class": "",
+        "editable": 0,
+        "depend_id": null,
+        "decimals": 0,
+        "comment": null,
+        "sign": ""
+      },
+      "27": {
+        "value": "",
+        "show_value": "",
+        "context": false,
+        "type": "",
+        "row_id": 0,
+        "column_id": 0,
+        "cell": "",
+        "class": "",
+        "editable": 0,
+        "depend_id": null,
+        "decimals": 0,
+        "comment": null,
+        "sign": ""
+      },
+      "28": {
+        "value": "",
+        "show_value": "",
+        "context": false,
+        "type": "",
+        "row_id": 0,
+        "column_id": 0,
+        "cell": "",
+        "class": "",
+        "editable": 0,
+        "depend_id": null,
+        "decimals": 0,
+        "comment": null,
+        "sign": ""
+      },
+      "29": {
+        "value": "",
+        "show_value": "",
+        "context": false,
+        "type": "",
+        "row_id": 0,
+        "column_id": 0,
+        "cell": "",
+        "class": "",
+        "editable": 0,
+        "depend_id": null,
+        "decimals": 0,
+        "comment": null,
+        "sign": ""
+      },
+      "30": {
+        "value": "",
+        "show_value": "",
+        "context": false,
+        "type": "",
+        "row_id": 0,
+        "column_id": 0,
+        "cell": "",
+        "class": "",
+        "editable": 0,
+        "depend_id": null,
+        "decimals": 0,
+        "comment": null,
+        "sign": ""
+      },
+      "name": {
+        "value": "",
+        "show_value": "",
+        "context": false,
+        "type": "",
+        "row_id": 0,
+        "column_id": 0,
+        "cell": "",
+        "class": "",
+        "editable": 0,
+        "depend_id": null,
+        "decimals": 0,
+        "comment": null,
+        "sign": ""
+      },
+      "plan": {
+        "value": "",
+        "show_value": "",
+        "context": false,
+        "type": "",
+        "row_id": 0,
+        "column_id": 0,
+        "cell": "",
+        "class": "",
+        "editable": 0,
+        "depend_id": null,
+        "decimals": 0,
+        "comment": null,
+        "sign": ""
+      },
+      "sum": {
+        "value": "",
+        "show_value": "",
+        "context": false,
+        "type": "",
+        "row_id": 0,
+        "column_id": 0,
+        "cell": "",
+        "class": "",
+        "editable": 0,
+        "depend_id": null,
+        "decimals": 0,
+        "comment": null,
+        "sign": ""
+      },
+      "avg": {
+        "value": "",
+        "show_value": "",
+        "context": false,
+        "type": "",
+        "row_id": 0,
+        "column_id": 0,
+        "cell": "",
+        "class": "",
+        "editable": 0,
+        "depend_id": null,
+        "decimals": 0,
+        "comment": null,
+        "sign": ""
+      }
+    }
+  ],
+  "columns": [
+    {
+      "key": ""
+    }
+  ],
+  "utility": [
+    {
+      "id": 0,
+      "name": "Demo",
+      "gauges": [
+        {
+          "id": 0,
+          "group_id": 0,
+          "place": 0,
+          "activity_id": 0,
+          "unit": "",
+          "editable": false,
+          "edit_value": false,
+          "diff": 0,
+          "cell": null,
+          "round": 0,
+          "fixed": 0,
+          "is_main": 0,
+          "value_type": "",
+          "key": 0,
+          "name": "Demo",
+          "value": 0,
+          "min_value": "",
+          "max_value": "",
+          "options": {
+            "angle": 0,
+            "staticLabels": {
+              "font": "",
+              "labels": [
+                0
+              ],
+              "color": "",
+              "fractionDigits": 0
+            },
+            "staticZones": [
+              {
+                "strokeStyle": "",
+                "min": 0,
+                "max": 0
+              }
+            ],
+            "pointer": {
+              "length": 0,
+              "strokeWidth": 0,
+              "color": ""
+            },
+            "limitMax": false,
+            "limitMin": false,
+            "lineWidth": 0,
+            "radiusScale": 0,
+            "colorStart": "",
+            "generateGradient": false,
+            "highDpiSupport": false,
+            "key": 0,
+            "minValue": 0,
+            "maxValue": 0,
+            "unit": null,
+            "name": "Demo"
+          },
+          "reversed": 0,
+          "sections": "[0]",
+          "angle": 0
+        }
+      ],
+      "group_activities": [
+        {
+          "id": 0,
+          "name": "Demo",
+          "group_id": 0,
+          "daily_plan": "",
+          "plan_unit": "",
+          "unit": null,
+          "plan_type": "",
+          "type": "",
+          "weekdays": 0,
+          "order": 0,
+          "editable": 0,
+          "ud_ves": 0,
+          "created_at": "2000-01-01",
+          "updated_at": "2000-01-01",
+          "deleted_at": null,
+          "data": [],
+          "method": 0,
+          "share": 0,
+          "source": 0,
+          "view": 0,
+          "created_by": 0,
+          "updated_by": null,
+          "common": 0,
+          "is_ucalls": 0
+        }
+      ],
+      "percento": 0,
+      "archive_utility": 0
+    }
+  ],
+  "totals": [],
+  "groups": [
+    {
+      "id": 0,
+      "name": "Demo",
+      "active": 0,
+      "users": "[0]",
+      "created_at": "2000-01-01",
+      "updated_at": "2000-01-01",
+      "work_start": "",
+      "work_end": "",
+      "workdays": 0,
+      "editors_id": "[0]",
+      "book_groups": "[]",
+      "required": 0,
+      "provided": 0,
+      "head_id": "[]",
+      "zoom_link": "",
+      "bp_link": "",
+      "corp_books": "[]",
+      "checktime": null,
+      "checktime_users": [],
+      "payment_terms": "",
+      "salary_approved": 0,
+      "salary_approved_by": 0,
+      "salary_approved_date": "2000-01-01",
+      "has_analytics": 0,
+      "quality": "",
+      "editable_time": 0,
+      "time_address": 0,
+      "time_exceptions": [],
+      "paid_internship": 0,
+      "rentability_max": 0,
+      "show_payment_terms": 0,
+      "archived_date": null,
+      "work_chart_id": 0,
+      "is_ucalls": 0,
+      "archive_utility": 0
+    }
+  ],
+  "archived_groups": [
+    {
+      "id": 0,
+      "name": "Demo",
+      "active": 0,
+      "users": "[0]",
+      "created_at": "2000-01-01",
+      "updated_at": "2000-01-01",
+      "work_start": "",
+      "work_end": "",
+      "workdays": 0,
+      "editors_id": "[0]",
+      "book_groups": "[]",
+      "required": 0,
+      "provided": 0,
+      "head_id": "[0]",
+      "zoom_link": "",
+      "bp_link": "",
+      "corp_books": "[]",
+      "checktime": null,
+      "checktime_users": [],
+      "payment_terms": "",
+      "salary_approved": 0,
+      "salary_approved_by": 0,
+      "salary_approved_date": "2000-01-01",
+      "has_analytics": 0,
+      "quality": "",
+      "editable_time": 0,
+      "time_address": 0,
+      "time_exceptions": [],
+      "paid_internship": 0,
+      "rentability_max": 0,
+      "show_payment_terms": 0,
+      "archived_date": null,
+      "work_chart_id": 0,
+      "is_ucalls": 0,
+      "archive_utility": 0
+    }
+  ],
+  "call_bases": [],
+  "fired_percent_prev": 0,
+  "fired_percent": 0,
+  "fired_number_prev": 0,
+  "fired_number": 0
+}

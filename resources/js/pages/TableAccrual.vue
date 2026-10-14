@@ -1,0 +1,2868 @@
+<template>
+	<div
+		v-if="groupss"
+		class="TableAccrual"
+	>
+		<div class="mb-0">
+			<!-- filters -->
+			<div class="row mb-4">
+				<div class="col-3">
+					<v-select
+						v-model="selectedGroup"
+						:options="groups"
+						label="name"
+						class="group-select"
+					>
+						<template #option="{ name, salary_approved, id }">
+							<div class="selector">
+								<p style="margin: 0">
+									{{ name }} : <span v-if="showAccruals">{{ accruals[id] }}</span>
+								</p>
+								<img
+									v-if="salary_approved"
+									src="/images/double-check.png"
+									alt=""
+								>
+							</div>
+						</template>
+					</v-select>
+				</div>
+				<div class="col-2">
+					<select
+						v-model="dateInfo.currentMonth"
+						class="form-control"
+						@change="fetchData()"
+					>
+						<option
+							v-for="month in $moment.months()"
+							:key="month"
+							:value="month"
+						>
+							{{ month }}
+						</option>
+					</select>
+				</div>
+				<div class="col-2">
+					<select
+						v-model="dateInfo.currentYear"
+						class="form-control"
+						@change="fetchData()"
+					>
+						<option
+							v-for="year in years"
+							:key="year"
+							:value="year"
+						>
+							{{ year }}
+						</option>
+					</select>
+				</div>
+				<div class="col-2  align-items-start">
+					<a
+						class="btn btn-primary mr-1 rounded text-white"
+						@click="fetchData()"
+					>
+						<i class="fa fa-redo-alt" />
+					</a>
+				</div>
+				<div class="col-3 d-flex aic justify-end">
+					<a
+						href="javascript:vpid(0)"
+						class="TableAccrual-video"
+						target="_blank"
+					>
+						Смотреть видео
+					</a>
+				</div>
+			</div>
+
+			<!-- filters -->
+			<hr>
+			<div
+				v-if="hasPermission"
+				class="row my-2"
+			>
+				<div class="col-6">
+					<div>
+						<p class="mb-0 fz-08 text-black">
+							<b>Итого действующие ФОТ
+								<i
+									v-b-popover.hover.right.html="'<b>ФОТ</b>- Фонд оплаты труда<br>Сумма без вычета расходов (Штрафы и авансы)<br>ФОТ = Начисления (Отработанные + Стажировочные) + Бонусы + KPI'"
+									class="fa fa-info-circle"
+									title="ФОТ"
+								/>
+								:</b>
+							{{ group_total }} тг.
+						</p>
+						<p class="mb-0 fz-08 text-black">
+							<b>Итого уволенные ФОТ:</b>
+							{{ group_fired }} тг.
+						</p>
+						<p
+							v-if="showTotals"
+							class="fz-08 text-black mr-1 mb-0"
+						>
+							<b>Итого все ФОТ (Действующие):</b>
+							{{ allTotal }}тг.
+						</p>
+						<p
+							v-if="showTotals"
+							class="fz-08 text-black mr-1 mb-0"
+						>
+							<b>Итого все ФОТ (Уволенные):</b>
+							{{ allTotalFired }}тг.
+						</p>
+					</div>
+				</div>
+				<div class="col-6 text-right">
+					<a
+						v-if="can_edit"
+						class="btn btn-success rounded text-white mr-1"
+						@click="exportData()"
+					>
+						<i class="far fa-file-excel" />
+					</a>
+					<a
+						class="btn btn-info rounded text-white mr-1"
+						@click="toggleVisible()"
+					>
+						<i class="fa fa-eye" />
+					</a>
+					<b-button
+						v-if="selectedGroup.salary_approved == 0 && can_edit"
+						style="float:right"
+						class="rounded mb-3 ml-3"
+						variant="info"
+						@click="showBeforeApprove = true"
+					>
+						Проверено и готово к выдаче
+					</b-button>
+
+					<div
+						v-if="selectedGroup.salary_approved == 1"
+						class="approved-text"
+					>
+						<p class="text-success">
+							<img
+								src="/images/double-check.png"
+								style="width: 20px"
+							> Начисления утверждены
+						</p>
+						<p>{{ selectedGroup.salary_approved_by }}</p>
+						<small>{{ selectedGroup.salary_approved_date }}</small>
+					</div>
+				</div>
+			</div>
+			<hr>
+			<div class="row mt-4">
+				<div class="col-12 col-md-9">
+					<div class="d-flex">
+						<b-form-group class="mr-3">
+							<b-form-select v-model="user_types">
+								<b-form-select-option value="0">
+									Действующие
+								</b-form-select-option>
+								<b-form-select-option value="1">
+									Уволенные
+								</b-form-select-option>
+								<b-form-select-option value="2">
+									Стажеры
+								</b-form-select-option>
+							</b-form-select>
+						</b-form-group>
+						<b-form-group>
+							<b-form-select v-model="show_user">
+								<b-form-select-option value="0">
+									Все
+								</b-form-select-option>
+								<b-form-select-option value="1">
+									Есть начисления
+								</b-form-select-option>
+							</b-form-select>
+						</b-form-group>
+					</div>
+				</div>
+				<div class="col-12 col-md-3">
+					<p class="text-right fz-09 text-black">
+						<span>Сотрудники:</span>
+						<b>{{ users_count }} | {{ total_resources }}</b>
+					</p>
+				</div>
+			</div>
+			<!-- table -->
+			<div
+				v-if="hasPermission"
+				class="table-container table-accrual"
+			>
+				<b-table
+					responsive
+					class="text-nowrap text-right salar accrual-table"
+					:class="{'hide-special': special_fields}"
+					:small="true"
+					:bordered="true"
+					:items="[totals, ...items]"
+					:fields="fields"
+					show-empty
+					empty-text="Нет данных"
+				>
+					<template #cell(name)="nameData">
+						<div class="badge_table">
+							{{ nameData.value }}
+							<b-badge
+								v-if="nameData.index !== 0 && nameData.value"
+								pill
+								variant="success"
+								class="mr-2"
+							>
+								{{ nameData.item.user_type }}
+							</b-badge>
+							<i
+								v-if="nameData.index == 0"
+								v-b-popover.hover.right.html="'В суммах этого ряда не учитываются Сотрудники, у которых <b>К выдаче</b> меньше 0'"
+								class="fa fa-info-circle"
+								title="Заметка"
+							/>
+							<TransfersInfo
+								v-else
+								:transfers="nameData.item.groupUsers"
+								:group-id="selectedGroup ? selectedGroup.id : 0"
+								:groups="groups"
+							/>
+						</div>
+					</template>
+
+					<template #cell(bonus)="bonusData">
+						<div
+							class="pointer"
+							@click="defineClickNumber('bonus', bonusData)"
+						>
+							{{ bonusData.value }}
+							<div
+								v-if="bonusData.item.edited_bonus !== null && bonusData.index != 0"
+								class="cell-border"
+							/>
+						</div>
+					</template>
+
+					<template #cell(kpi)="kpiData">
+						<!-- @click="fetchKPIStatistics(data.item.user_id)" -->
+						<div
+							class="pointer"
+							@click="defineClickNumber('kpi', kpiData)"
+						>
+							{{ kpiData.value }}
+							<div
+								v-if="kpiData.item.edited_kpi !== null && kpiData.index != 0"
+								class="cell-border"
+							/>
+						</div>
+					</template>
+
+					<template #cell(total)="totalData">
+						<div>{{ totalData.value }}</div>
+					</template>
+
+					<template #cell(fines)="finesData">
+						<div
+							class="pointer"
+							@click="showFineSidebar(finesData)"
+						>
+							{{ finesData.value }}
+						</div>
+					</template>
+
+					<template #cell(avans)="avansData">
+						<div
+							class="pointer"
+							@click="showAvansSidebar(avansData)"
+						>
+							{{ avansData.value }}
+						</div>
+					</template>
+
+					<template #cell(taxes)="taxesData">
+						<div
+							class="pointer"
+							@click="showTaxesSidebar(taxesData)"
+						>
+							{{ taxesData.value }}
+						</div>
+					</template>
+
+					<template #cell(final)="finalData">
+						<div
+							class="pointer"
+							:title="Number(finalData.item.total) + Number(finalData.item.bonus) + Number(finalData.item.kpi)"
+							@click="defineClickNumber('final', finalData)"
+						>
+							{{ finalData.value }}
+							<div
+								v-if="finalData.item.edited_salary !== null && finalData.index != 0"
+								class="cell-border"
+							/>
+						</div>
+						<div
+							:title="Number(finalData.item.total) + Number(finalData.item.bonus) + Number(finalData.item.kpi)"
+						>
+							{{ finalData.value }}
+						</div>
+					</template>
+
+					<template #cell()="cellData">
+						<div
+							:class="[
+								{
+									'SalaryCell': cellData.item.dayType && cellData.item.dayType[cellData.field.key],
+									'SalaryCell_accrual': cellData.item.dayType && cellData.item.dayType[cellData.field.key],
+								},
+								cellData.item.dayType ? `SalaryCell${cellData.field.weekend ? '-weekend' : ''}-${cellData.item.dayType[cellData.field.key] || '0'}` : '',
+							]"
+							@click="detectClick(cellData)"
+						>
+							{{ cellData.value }}
+						</div>
+					</template>
+				</b-table>
+			</div>
+			<div v-else>
+				<p>У вас нет доступа к этой группе</p>
+			</div>
+		</div>
+
+		<!-- kpi -->
+		<Sidebar
+			v-if="kpiSidebar"
+			width="80vw"
+			title="KPI Статистика"
+			:open="kpiSidebar"
+			@close="kpiSidebar = false"
+		>
+			<div class="px-2 pt-5">
+				<KpiContent
+					v-if="kpiItems.length"
+					class="px-4 TableAccrual-kpi"
+					:items="kpiItems"
+					:groups="groups"
+					:fields="kpiFields"
+				/>
+				<template v-else>
+					У сотрудника нет KPI
+				</template>
+			</div>
+		</Sidebar>
+
+		<!-- Premium -->
+		<Sidebar
+			v-if="editPremiumSidebar"
+			:title="sidebarTitle"
+			width="400px"
+			:open="editPremiumSidebar"
+			@close="editPremiumSidebar=false"
+		>
+			<div class="px-2">
+				<div>
+					<div v-if="editedField.item.edited_kpi !== null">
+						<p class="mt-3">
+							<b>Kpi  </b>
+							<i
+								v-b-popover.hover.right.html="'Сумма KPI утвержденная к выдаче'"
+								class="fa fa-info-circle"
+								title="Kpi на этот месяц"
+							/>
+						</p>
+						<div>
+							<b>Автор:</b>
+							<span>{{ editedField.item.edited_kpi.user }}</span>
+						</div>
+						<div>
+							<b>Изменено на:</b>
+							<span>{{ editedField.item.edited_kpi.amount }}</span>
+						</div>
+						<div>
+							<b>Комментарии:</b>
+							<span>{{ editedField.item.edited_kpi.comment }}</span>
+						</div>
+						<hr>
+					</div>
+				</div>
+
+				<div>
+					<div v-if="editedField.item.edited_bonus !== null">
+						<p class="mt-3">
+							<b>Бонусы</b>
+							<i
+								v-b-popover.hover.right.html="'Сумма Бонусов, утвержденная к выдаче'"
+								class="fa fa-info-circle"
+								title="Бонусы на этот месяц"
+							/>
+						</p>
+						<div>
+							<b>Автор:</b>
+							<span>{{ editedField.item.edited_bonus.user }}</span>
+						</div>
+						<div>
+							<b>Изменено на:</b>
+							<span>{{ editedField.item.edited_bonus.amount }}</span>
+						</div>
+						<div>
+							<b>Комментарии:</b>
+							<span>{{ editedField.item.edited_bonus.comment }}</span>
+						</div>
+						<hr>
+					</div>
+				</div>
+
+				<div>
+					<div v-if="editedField.item.edited_salary !== null">
+						<p class="mt-3">
+							<b>К выдаче</b>
+							<i
+								v-b-popover.hover.right.html="'Окончательная суммма утвержденная к выдаче'"
+								class="fa fa-info-circle"
+								title="К выдаче на этот месяц"
+							/>
+						</p>
+						<div>
+							<b>Автор:</b>
+							<span>{{ editedField.item.edited_salary.user }}</span>
+						</div>
+						<div>
+							<b>Изменено на:</b>
+							<span>{{ editedField.item.edited_salary.amount }}</span>
+						</div>
+						<div>
+							<b>Комментарии:</b>
+							<span>{{ editedField.item.edited_salary.comment }}</span>
+						</div>
+						<hr>
+					</div>
+				</div>
+
+
+
+				<div class="mt-3">
+					<!-- <p class="mt-3">
+						<b>Бонусы локальные</b>
+					</p>
+					<div
+						v-for="(item,index) in Object.keys(editedField.item.bonuses)"
+						:key="index"
+					>
+						<p
+							v-if="editedField.item.bonuses[item] != null"
+							class="fz12"
+						>
+							<b class="text-black">{{ item }}:</b>
+							{{ editedField.item.bonuses[item] }}
+						</p>
+					</div>
+					<hr> -->
+
+					<p class="mt-3">
+						<b>Бонусы за активности</b>
+					</p>
+					<div
+						v-for="(item,index) in Object.keys(editedField.item.awards)"
+						:key="index"
+					>
+						<p
+							v-if=" editedField.item.awards[item] != null"
+							class="fz12"
+						>
+							<b class="text-black">{{ item }}:</b> {{ editedField.item.awards[item] }}
+						</p>
+					</div>
+
+					<!-- <p class="mt-3">
+						<b>Бонусы за обучение</b>
+					</p>
+					<div
+						v-for="(item,index) in editedField.item.test_bonuses.slice().sort((a, b) => Number(a.day) - Number(b.day))"
+						:key="index"
+						class="AvansHistoryItem"
+					>
+						<div class="AvansHistoryItem-header">
+							<div class="AvansHistoryItem-date">
+								<b>{{ $moment(item.date).format('DD.MM.YYYY') }}</b>
+							</div>
+							<div
+								v-if="item.deleted_at"
+								class="AvansHistoryItem-restore pointer mr-2"
+								title="Восстановить"
+								@click="restoreHistory(item)"
+							>
+								<i class="fas fa-undo" />
+							</div>
+							<div
+								v-else
+								class="AvansHistoryItem-delete pointer mr-2"
+								title="Удалить"
+								@click="removeHistory(item)"
+							>
+								<i class="fas fa-times" />
+							</div>
+						</div>
+						eslint-disable vue/no-v-html
+						<div
+							class="AvansHistoryItem-text"
+							v-html="`Добавлен бонус на сумму ${item.amount}<br>Комментарии: ${item.comment}`"
+						/>
+						<hr>
+					</div> -->
+
+					<p class="mt-3">
+						<b>История</b>
+					</p>
+					<div
+						v-for="(item,index) in bonus_history"
+						:key="index"
+						class="AvansHistoryItem mb-3"
+						:class="{
+							'AvansHistoryItem_deleted': item.deleted_at
+						}"
+					>
+						<div class="AvansHistoryItem-header">
+							<div class="">
+								<p class="fz12">
+									<b class="text-black">Дата:</b> {{ (new Date(item.created_at)).addHours(6).toLocaleString('ru-RU') }}
+								</p>
+								<p class="fz12">
+									<b class="text-black">Автор:</b> {{ item.author }} <br>
+								</p>
+							</div>
+							<template v-if="canEdit">
+								<div
+									v-if="item.deleted_at"
+									class="AvansHistoryItem-restore pointer mr-2"
+									title="Восстановить"
+									@click="onRemoveRestore('restore', 'bonus', item)"
+								>
+									<i class="fas fa-undo" />
+								</div>
+								<div
+									v-else
+									class="AvansHistoryItem-delete pointer mr-2"
+									title="Удалить"
+									@click="onRemoveRestore('remove', 'bonus', item)"
+								>
+									<i class="fas fa-times" />
+								</div>
+							</template>
+						</div>
+
+						<!-- eslint-disable -->
+						<p
+							class="fz14 mb-0"
+							v-html="item.description + (item.payload ? item.payload.deleted_by || '' : '') + (item.payload ? item.payload.restored_by || '' : '')"
+						/>
+						<!-- eslint-enable -->
+						<br>
+						<hr>
+					</div>
+				</div>
+			</div>
+		</Sidebar>
+
+		<!-- info -->
+		<Sidebar
+			v-if="openSidebar"
+			width="400px"
+			:title="sidebarTitle"
+			:open="openSidebar"
+			:link="profile_link"
+			@close="openSidebar=false"
+		>
+			<div class="px-2">
+				<div
+					v-if="sidebarContent.item !== undefined"
+					class="mb-2"
+				>
+					<p
+						v-if="sidebarContent.item.hours !== undefined"
+						class="text-black"
+					>
+						<b>Отработано:</b>  {{ sidebarContent.item.hours[sidebarContent.field.key] }}
+					</p>
+					<p
+						v-if="sidebarContent.item.hourly_pays !== undefined"
+						class="text-black"
+					>
+						<b>Оплата за час:</b>  {{ sidebarContent.item.hourly_pays[sidebarContent.field.key] }}
+					</p>
+					<p class="text-black mb-0">
+						<b>Начис:</b>  {{ sidebarContent.item.salaries[sidebarContent.field.key] }}
+					</p>
+
+					<template v-if="selectedCell.field.editable">
+						<p
+							v-if="sidebarContent.item.avanses !== undefined"
+							class="text-black mb-0"
+						>
+							<b>Аванс:</b>
+							{{ sidebarContent.item.avanses[sidebarContent.field.key] }}
+						</p>
+						<p
+							v-if="sidebarContent.item.bonuses !== undefined"
+							class="text-black"
+						>
+							<b>Бонус:</b>
+							{{ sidebarContent.item.bonuses[sidebarContent.field.key] }}
+						</p>
+						<p
+							v-if="sidebarContent.item.awards !== undefined"
+							class="text-black"
+						>
+							<b>Бонус (авто):</b>
+							{{ sidebarContent.item.awards[sidebarContent.field.key] }}
+						</p>
+						<p
+							v-if="sidebarContent.item.test_bonus !== undefined"
+							class="text-black"
+						>
+							<b>Бонус (тесты):</b>
+							{{ sidebarContent.item.test_bonus[sidebarContent.field.key] }}
+						</p>
+					</template>
+				</div>
+				<div
+					v-if="can_edit"
+					class="mb-2"
+				>
+					<div class="d-flex row">
+						<div
+							v-if="(user_types == '0' || user_types == '1')"
+							class="col-6"
+						>
+							<b-button
+								class="rounded btn-primary w-full d-block"
+								:class="{'activex': avans.visible}"
+								@click="toggleTab('avans')"
+							>
+								Выдать аванс
+							</b-button>
+						</div>
+						<div class="col-6">
+							<b-button
+								class="rounded btn-primary w-full d-block"
+								:class="{'activex': bonus.visible}"
+								@click="toggleTab('bonus')"
+							>
+								Выдать бонус
+							</b-button>
+						</div>
+					</div>
+				</div>
+
+				<!-- avans form -->
+				<div
+					v-if="avans.visible"
+					class="mb-4 bg-bluish p-3"
+				>
+					<label>Сумма аванса</label>
+					<input
+						v-model="avans.sum"
+						placeholder="Cумма аванса"
+						:required="true"
+						class="form-control form-control-sm mr-2 mb-2"
+						type="number"
+					>
+					<label>Комментарии <span class="color-red">*</span></label>
+					<input
+						v-model="avans.comment"
+						placeholder="Причина выдачи..."
+						:required="true"
+						class="form-control form-control-sm mr-2 mb-2"
+						type="text"
+					>
+					<p><span class="color-red">{{ avans.require }}</span></p>
+					<b-button
+						class="rounded btn-primary"
+						variant="primary"
+						@click="updateSalary('avans')"
+					>
+						Выдать аванс
+					</b-button>
+				</div>
+
+				<!-- bonus form -->
+				<div
+					v-if="bonus.visible"
+					class="mb-4 bg-bluish p-3"
+				>
+					<label>Сумма бонуса</label>
+					<input
+						v-model="bonus.sum"
+						placeholder="Cумма бонуса"
+						:required="true"
+						class="form-control form-control-sm mr-2 mb-2"
+						type="number"
+					>
+					<label>Комментарии <span class="color-red">*</span></label>
+					<input
+						v-model="bonus.comment"
+						placeholder="Причина выдачи..."
+						:required="true"
+						class="form-control form-control-sm mr-2 mb-2"
+						type="text"
+					>
+					<p><span class="color-red">{{ avans.require }}</span></p>
+					<b-button
+						class="rounded btn-primary"
+						variant="primary"
+						@click="updateSalary('bonus')"
+					>
+						Выдать бонус
+					</b-button>
+				</div>
+
+				<div
+					v-if="selectedCell.item.fine[sidebarContent.field.key].length > 0"
+					class="mb-4"
+				>
+					<p><b>Штрафы</b></p>
+					<div
+						v-for="fine, fineIndex in selectedCell.item.fine[sidebarContent.field.key]"
+						:key="fineIndex"
+					>
+						<p
+							v-for="value, name in fine"
+							:key="name"
+							class="mb-0 mt-0"
+						>
+							{{ name }}: {{ value }}
+						</p>
+					</div>
+				</div>
+				<div>
+					<p class="text-black">
+						<b>История</b>
+					</p>
+					<template v-if="sidebarHistory && sidebarHistory.length > 0">
+						<div class="history">
+							<div
+								v-for="(item,index) in sidebarHistory"
+								:key="index"
+								class="mb-3"
+							>
+								<p class="fz12">
+									<b class="text-black">Дата:</b> {{ (new Date(item.created_at)).addHours(6).toLocaleString('ru-RU') }}
+								</p>
+								<p class="fz12">
+									<b class="text-black">Автор:</b> {{ item.author }} <br>
+								</p>
+								<!-- eslint-disable -->
+								<p
+									class="fz14 mb-0"
+									v-html="item.description + (item.payload ? item.payload.deleted_by || '' : '') + (item.payload ? item.payload.restored_by || '' : '')"
+								/><br>
+								<!-- eslint-enable -->
+								<hr>
+							</div>
+						</div>
+					</template>
+					<template v-else>
+						<p>История изменения отсутствует</p>
+					</template>
+				</div>
+			</div>
+		</Sidebar>
+
+		<!-- Авансы -->
+		<Sidebar
+			v-if="isAvansSidebar"
+			:title="sidebarTitle"
+			width="400px"
+			:open="isAvansSidebar"
+			@close="isAvansSidebar = false"
+		>
+			<div class="px-2">
+				<div
+					v-for="avansItem in avans_history"
+					:key="avansItem.id"
+					class="AvansHistoryItem"
+					:class="{
+						'AvansHistoryItem_deleted': avansItem.deleted_at
+					}"
+				>
+					<div class="AvansHistoryItem-header">
+						<div class="AvansHistoryItem-date">
+							<b>{{ $moment(avansItem.date).format('DD.MM.YYYY') }}</b> {{ avansItem.author }}
+						</div>
+						<template v-if="canEdit">
+							<div
+								v-if="avansItem.deleted_at"
+								class="AvansHistoryItem-restore pointer mr-2"
+								title="Восстановить"
+								@click="onRemoveRestore('restore', 'avans', avansItem)"
+							>
+								<i class="fas fa-undo" />
+							</div>
+							<div
+								v-else
+								class="AvansHistoryItem-delete pointer mr-2"
+								title="Удалить"
+								@click="onRemoveRestore('remove', 'avans', avansItem)"
+							>
+								<i class="fas fa-times" />
+							</div>
+						</template>
+					</div>
+					<!-- eslint-disable vue/no-v-html -->
+					<div
+						class="AvansHistoryItem-text"
+						v-html="avansItem.description + (avansItem.payload ? avansItem.payload.deleted_by || '' : '') + (avansItem.payload ? avansItem.payload.restored_by || '' : '')"
+					/>
+					<hr>
+					<!-- eslint-enable vue/no-v-html -->
+				</div>
+			</div>
+		</Sidebar>
+
+		<!-- Штрафы -->
+		<Sidebar
+			v-if="isFineSidebar"
+			:title="sidebarTitle"
+			width="400px"
+			:open="isFineSidebar"
+			@close="isFineSidebar = false"
+		>
+			<div class="px-2">
+				<template v-for="fineItem, fineIndex in fine_history">
+					<div
+						v-if="fineItem.pivot.status === 1"
+						:key="fineIndex"
+						class="AvansHistoryItem"
+						:class="{
+							'AvansHistoryItem_deleted': fineItem.pivot.deleted_at
+						}"
+					>
+						<div class="AvansHistoryItem-header">
+							<div class="AvansHistoryItem-date">
+								<b>{{ $moment(fineItem.pivot.day).format('DD.MM.YYYY') }}</b> {{ fineItem.penalty_amount }}
+							</div>
+							<template v-if="canEdit">
+								<div
+									v-if="fineItem.pivot.deleted_at"
+									class="AvansHistoryItem-restore pointer mr-2"
+									title="Восстановить"
+									@click="onFineRR('restore', fineItem)"
+								>
+									<i class="fas fa-undo" />
+								</div>
+								<div
+									v-else
+									class="AvansHistoryItem-delete pointer mr-2"
+									title="Удалить"
+									@click="onFineRR('remove', fineItem)"
+								>
+									<i class="fas fa-times" />
+								</div>
+							</template>
+						</div>
+						<!-- eslint-disable vue/no-v-html -->
+						<div
+							class="AvansHistoryItem-text"
+							v-html="fineItem.name"
+						/>
+						<hr>
+						<!-- eslint-enable vue/no-v-html -->
+					</div>
+				</template>
+			</div>
+		</Sidebar>
+
+		<!-- Налоги -->
+		<Sidebar
+			v-if="isTaxesSidebar"
+			:title="sidebarTitle"
+			width="400px"
+			:open="isTaxesSidebar"
+			@close="isTaxesSidebar = false"
+		>
+			<div class="px-2">
+				<div class="d-flex jcsb">
+					<span class="bold fz-18">
+						{{ editedField.item.taxGroup }}
+					</span>
+					<template v-if="canEdit">
+						<div class="d-flex">
+							<div
+								class="AvansHistoryItem-restore pointer mr-2"
+								title="Изменить"
+								@click="onTaxEdit(editedField.item)"
+							>
+								<i class="fas fa-edit" />
+							</div>
+							<template v-if="editedField.item.taxinfo.group">
+								<div
+									v-if="editedField.item.deleted_at"
+									class="AvansHistoryItem-restore pointer mr-2"
+									title="Восстановить"
+									@click="onTaxRR('restore', editedField.item)"
+								>
+									<i class="fas fa-undo" />
+								</div>
+								<div
+									v-else
+									class="AvansHistoryItem-delete pointer mr-2"
+									title="Удалить"
+									@click="onTaxRR('remove', editedField.item)"
+								>
+									<i class="fas fa-times" />
+								</div>
+							</template>
+						</div>
+					</template>
+				</div>
+				<div
+					v-for="taxItem, taxIndex in editedField.item.taxinfo.calc"
+					:key="taxIndex"
+					class="AvansHistoryItem"
+				>
+					<div>Налог: {{ taxItem.name }}</div>
+					<div>Объем: {{ taxItem.value }}</div>
+					<div>Сумма: {{ taxItem.amount }}</div>
+					<div>{{ taxItem.before }} > {{ taxItem.after }}</div>
+					<hr>
+					<!-- eslint-enable vue/no-v-html -->
+				</div>
+				<div class="bold">
+					Всего налогов: {{ editedField.item.totalTax }}
+				</div>
+
+				<!-- History -->
+				<div class="my-4 bold fz-18">
+					История
+				</div>
+				<div
+					v-for="hist in taxHistory"
+					:key="hist.id"
+					class="AvansHistoryItem"
+				>
+					<div class="">
+						c <span>{{ $moment(hist.from).format('DD.MM.YYYY') }}</span>
+						по <span>{{ hist.to ? $moment(hist.to).format('DD.MM.YYYY') : 'настоящее время' }}</span>
+					</div>
+					<div class="bold">
+						{{ hist.tax_group.name }}
+					</div>
+					<div
+						v-if="hist.payload"
+						class=""
+					>
+						<div class="">
+							{{ taxHistActions[hist.payload.action] }} {{ $moment(hist.payload.date).format('DD.MM.YYYY') }}
+						</div>
+						<div class="">
+							сотрудником {{ hist.payload.editor_name }}
+						</div>
+						<div class="">
+							комментарий: {{ hist.payload.comment }}
+						</div>
+					</div>
+					<hr>
+				</div>
+			</div>
+		</Sidebar>
+
+		<!-- premium -->
+		<b-modal
+			v-model="editPremiunWindow"
+			ok-text="Да"
+			cancel-text="Нет"
+			:title="editedField.name + ': ' + editedField.type"
+			size="md"
+			@ok="editPremium"
+		>
+			<b-form-input
+				v-model="amountEdit"
+				type="number"
+				placeholder="Сумма"
+				:required="true"
+				class="mb-2"
+			/>
+
+			<b-form-input
+				v-model="commentEdit"
+				type="text"
+				placeholder="Комментарий"
+				:required="true"
+				class="mb-2"
+			/>
+
+			<b-alert
+				v-for="error in errors"
+				:key="error"
+				show
+				variant="danger"
+			>
+				{{ error }}
+			</b-alert>
+		</b-modal>
+
+		<!-- approve salary -->
+		<b-modal
+			v-model="showBeforeApprove"
+			ok-text="Да"
+			cancel-text="Нет"
+			title="Утверждение зарплаты"
+			size="md"
+			@ok="approveSalary"
+		>
+			<p>Вы подтверждаете, что вы проверили начисления и уверены, в том что они верные?</p>
+		</b-modal>
+
+		<!-- salary update/remove -->
+		<b-modal
+			v-model="removeRestoreForm.isOpen"
+			:ok-text="removeRestoreForm.action === 'remove' ? 'Удалить' : 'Восстановить'"
+			cancel-text="Отмена"
+			:title="`${removeRestoreForm.action === 'remove' ? 'Удаление' : 'Восстановление'} ${{bonus: 'бонуса', avans: 'аванса', fine: 'штрафа'}[removeRestoreForm.type]}`"
+			size="md"
+			@ok="confirmRemoveUpdate"
+		>
+			<b-row class="my-1">
+				<b-col
+					sm="3"
+					class="pt-3"
+				>
+					<label for="salaryRRReason">Причина:</label>
+				</b-col>
+				<b-col sm="9">
+					<b-form-input
+						id="salaryRRReason"
+						v-model="removeRestoreForm.reason"
+						:placeholder="`Укажите причину ${removeRestoreForm.action === 'remove' ? 'Удаления' : 'Восстановления'}`"
+						class="mb-2"
+					/>
+				</b-col>
+			</b-row>
+		</b-modal>
+
+		<!-- fine update/remove -->
+		<b-modal
+			v-model="formFineRR.isOpen"
+			:ok-text="formFineRR.action === 'remove' ? 'Удалить' : 'Восстановить'"
+			cancel-text="Отмена"
+			:title="`${formFineRR.action === 'remove' ? 'Удаление' : 'Восстановление'} штрафа`"
+			size="md"
+			@ok="confirmFineRR"
+		>
+			<b-row class="my-1">
+				<b-col
+					sm="3"
+					class="pt-3"
+				>
+					<label for="fineRRReason">Причина:</label>
+				</b-col>
+				<b-col sm="9">
+					<b-form-input
+						id="fineRRReason"
+						v-model="formFineRR.reason"
+						:placeholder="`Укажите причину ${formFineRR.action === 'remove' ? 'Удаления' : 'Восстановления'}`"
+						class="mb-2"
+					/>
+				</b-col>
+			</b-row>
+		</b-modal>
+
+		<!-- tax update/remove -->
+		<b-modal
+			v-model="formTaxRR.isOpen"
+			:ok-text="formTaxRR.action === 'remove' ? 'Удалить' : 'Восстановить'"
+			cancel-text="Отмена"
+			:title="`${formTaxRR.action === 'remove' ? 'Удаление' : 'Восстановление'} штрафа`"
+			size="md"
+			@ok="confirmTaxRR"
+		>
+			<b-row class="my-1">
+				<b-col
+					sm="3"
+					class="pt-3"
+				>
+					<label for="taxRRReason">Причина:</label>
+				</b-col>
+				<b-col sm="9">
+					<b-form-input
+						id="taxRRReason"
+						v-model="formTaxRR.reason"
+						:placeholder="`Укажите причину ${formTaxRR.action === 'remove' ? 'Удаления' : 'Восстановления'}`"
+						class="mb-2"
+					/>
+				</b-col>
+			</b-row>
+		</b-modal>
+
+		<!-- tax edit -->
+		<b-modal
+			v-model="formTaxEdit.isOpen"
+			ok-text="Изменить"
+			cancel-text="Отмена"
+			title="Изменение налога"
+			size="md"
+			@ok="confirmTaxEdit"
+		>
+			<b-row class="my-1">
+				<b-col
+					sm="3"
+					class="pt-3"
+				>
+					<label for="taxEditTax">Заменить на:</label>
+				</b-col>
+				<b-col sm="9">
+					<b-form-select
+						id="taxEditTax"
+						v-model="formTaxEdit.newTax"
+						:options="taxOptions"
+						class="mb-2"
+					/>
+				</b-col>
+			</b-row>
+			<b-row class="my-1">
+				<b-col
+					sm="3"
+					class="pt-3"
+				>
+					<label for="taxEditReason">Причина:</label>
+				</b-col>
+				<b-col sm="9">
+					<b-form-input
+						id="taxEditReason"
+						v-model="formTaxEdit.reason"
+						placeholder="Укажите причину изменения"
+						class="mb-2"
+					/>
+				</b-col>
+			</b-row>
+		</b-modal>
+	</div>
+</template>
+
+<script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
+
+import { mapState } from 'pinia'
+import { usePortalStore } from '@/stores/Portal'
+import { useYearOptions } from '../composables/yearOptions'
+// import KpiItemsV2 from '@/pages/kpi/KpiItemsV2'
+import { kpi_fields, parseKPI, target2type } from '@/pages/kpi/kpis.js'
+import salaryCellType from '@/composables/salaryCellType'
+
+import KpiContent from '@/pages/Profile/Popups/KpiContent.vue'
+import Sidebar from '@/components/ui/Sidebar' // сайдбар table
+import TransfersInfo from '@/components/pages/Reports/TransfersInfo.vue'
+
+export default {
+	name: 'TableAccrual',
+	components: {
+		Sidebar,
+		// KpiItemsV2,
+		KpiContent,
+		TransfersInfo,
+	},
+	props: {
+		groupss: {
+			type: Array,
+			default: () => []
+		},
+		activeuserid: {
+			type: String,
+			default: ''
+		},
+		activeuserpos: {
+			type: Number,
+			default: 0
+		},
+		can_edit: Boolean,
+		is_admin: Boolean,
+	},
+	data() {
+		const now = new Date()
+		return {
+			data: {},
+			groups: [],
+			accruals: [],
+			bonus_history: [],
+			selectedGroup: null,
+			user_types: +(this.$route.query?.type || 0),
+			users_count: 0,
+			openSidebar: false,
+			show_user: +('only_salary' in this.$route.query ? this.$route.query.only_salary : 1),
+			sidebarTitle: '',
+			sidebarContent: {},
+			sidebarHistory: [],
+			numClicks: 0,
+			total_resources: 0,
+			allTotalFired: 0, // sum of pay for all fired users
+			group_fired: 0, // sum of payment for fired users in group
+			group_total: 0, // sum of payment for  users in group
+			items: [],
+			fields: [],
+			errors: [],
+			auth_token: '',
+			profile_link: '',
+			selectedCell: null,
+			special_fields: false,
+			editPremiumSidebar: false,
+			avans: {
+				sum: null,
+				comment: '',
+				require: '',
+				visible: false
+			},
+			bonus: {
+				sum: null,
+				comment: '',
+				require: '',
+				visible: false
+			},
+			dayInfoText: '',
+			hasPermission: false,
+			total: 0,
+			allTotal: 0,
+			dateInfo: {
+				currentMonth: this.$route.query?.month || null,
+				currentYear: this.$route.query?.year || now.getFullYear(),
+				month: 0,
+				year: 0,
+				monthEnd: 0,
+				workDays: 0,
+				weekDays:0,
+				daysInMonth: 0,
+			},
+			editedField: {
+				name: '',
+				type: 'kpi'
+			},
+			commentEdit: '',
+			amountEdit: 0,
+			editPremiunWindow: false,
+			showBeforeApprove: false,
+			dataLoaded: false,
+			currentGroup: null,
+			maxScrollWidth: 0,
+			scrollLeft: 0,
+			defaultScrollValue: 0,
+			dayPercentage: (now.getDate() / 31) * 100,
+			delay: 700,
+			clicks: 0,
+			timer: null,
+
+			kpiSidebarUserId: 0,
+			kpiSidebar: false,
+			kpiFields: kpi_fields,
+			kpiItems: [],
+			// stats:
+
+			isAvansSidebar: false,
+			avans_history: [],
+
+			isFineSidebar: false,
+			fine_history: [],
+
+			isTaxesSidebar: false,
+			taxes_history: [],
+
+			removeRestoreForm: {
+				isOpen: false,
+				action: '',
+				type: '',
+				reason: '',
+				item: null,
+			},
+
+			formFineRR: {
+				isOpen: false,
+				action: '',
+				item: '',
+				reason: '',
+			},
+
+			formTaxRR: {
+				isOpen: false,
+				action: '',
+				item: '',
+				reason: '',
+			},
+
+			taxHistory: [],
+			allTaxes: [],
+			formTaxEdit: {
+				isOpen: false,
+				newTax: '',
+				item: '',
+				reason: '',
+			},
+			taxHistActions: {
+				delete: 'Удален',
+				edit: 'Изменен',
+				add: 'Добавлен',
+				restore: 'Восстановлен',
+			},
+		};
+	},
+	computed: {
+		...mapState(usePortalStore, ['portal']),
+		years(){
+			if(!this.portal.created_at) return [new Date().getFullYear()]
+			return useYearOptions(new Date(this.portal.created_at).getFullYear())
+		},
+		showAccruals(){
+			return this.activeuserid && [5,18,84,157,27402].includes(Number(this.activeuserid))
+		},
+		showTotals(){
+			return this.activeuserid && [5,18,84,157,27402].includes(Number(this.activeuserid))
+		},
+		actualFOT(){
+			if (!this.items || !this.items[0]) return 0
+			return (parseInt(this.items[0].kpi) || 0) + (parseInt(this.items[0].bonus) || 0) + (parseInt(this.items[0].total) || 0)
+		},
+		date(){
+			return this.$moment(`${this.dateInfo.currentYear}-${this.dateInfo.currentMonth}-1`, 'YYYY-MMMM-D').format('YYYY-MM-DD')
+		},
+		totals(){
+			const final = this.items.reduce((result, item) => result + (Number(item.final)|| 0), 0)
+			const kpi = this.items.reduce((result, item) => result + (Number(item.kpi)|| 0), 0)
+			const bonus = this.items.reduce((result, item) => result + (Number(item.bonus)|| 0), 0)
+			const avans = this.items.reduce((result, item) => result + (Number(item.avans)|| 0), 0)
+			const fines = this.items.reduce((result, item) => result + (Number(item.fines)|| 0), 0)
+			const taxes = this.items.reduce((result, item) => result + (Number(item.taxes)|| 0), 0)
+			const total = this.items.reduce((result, item) => result + (Number(item.total)|| 0), 0)
+
+			const totals = {
+				name: 'Общая сумма',
+				final,
+				kpi,
+				bonus,
+				avans,
+				fines,
+				taxes,
+				total,
+			}
+
+			for(let i = 1; i < 32; ++i){
+				totals[i] = this.items.reduce((result, item) => result + (Number(item[i]) || 0), 0)
+			}
+			return totals
+		},
+		canEdit(){
+			return this.$can('salaries_edit')
+		},
+		taxOptions(){
+			return this.allTaxes.map(tax => ({
+				value: tax.id,
+				text: tax.name,
+			}))
+		},
+		allTaxesMap(){
+			return this.allTaxes.reduce((result, tax) => {
+				result[tax.id] = tax
+				return result
+			}, {})
+		},
+	},
+	watch: {
+		scrollLeft(value) {
+			var container = document.querySelector('.table-responsive');
+			container.scrollLeft = value;
+		},
+		user_types() {
+			this.fetchData()
+		},
+		show_user() {
+			this.fetchData()
+		},
+		selectedGroup() {
+			this.fetchData()
+		},
+		groupss(){
+			this.init()
+		}
+	},
+	created() {
+		if(this.groupss) this.init()
+	},
+	methods: {
+		init(){
+			this.dateInfo.currentMonth = this.dateInfo.currentMonth
+				? this.dateInfo.currentMonth
+				: this.$moment().format('MMMM');
+			const currentMonth = this.$moment(`${this.dateInfo.currentYear}-${this.dateInfo.currentMonth}`, 'YYYY-MMMM')
+
+			//Расчет выходных дней
+			this.dateInfo.monthEnd = currentMonth.endOf('month'); //Конец месяца
+			this.dateInfo.weekDays = currentMonth.weekdayCalc(this.dateInfo.monthEnd, [6]); //Колличество выходных
+			this.dateInfo.daysInMonth = currentMonth.daysInMonth(); //Колличество дней в месяце
+			this.dateInfo.workDays = this.dateInfo.daysInMonth - this.dateInfo.weekDays; //Колличество рабочих дней
+
+			this.groups = this.groupss;
+			if(this.$route.query?.group){
+				const group = this.groups.find(group => group.id === +this.$route.query?.group)
+				if(group) this.selectedGroup = group
+			}
+			else{
+				this.selectedGroup = this.groups[0];
+			}
+		},
+		//Установка выбранного года
+		setYear() {
+			this.dateInfo.currentYear = this.dateInfo.currentYear
+				? this.dateInfo.currentYear
+				: this.$moment().format('YYYY');
+		},
+
+		//Установка выбранного месяца
+		setMonth() {
+			let year = this.dateInfo.currentYear;
+			this.dateInfo.currentMonth = this.dateInfo.currentMonth
+				? this.dateInfo.currentMonth
+				: this.$moment().format('MMMM');
+			this.dateInfo.month = this.dateInfo.month
+				? this.dateInfo.month
+				: this.$moment().format('M');
+			this.dateInfo.year = year;
+
+			this.dateInfo.date = `${this.dateInfo.currentMonth} ${year}`;
+
+			const currentMonth = this.$moment(`${this.dateInfo.currentYear}-${this.dateInfo.currentMonth}`, 'YYYY-MMMM')
+			//Расчет выходных дней
+			this.dateInfo.monthEnd = currentMonth.endOf('month'); //Конец месяца
+			this.dateInfo.weekDays = currentMonth.weekdayCalc(
+				this.dateInfo.monthEnd,
+				[6]
+			); //Колличество выходных
+			this.dateInfo.daysInMonth = currentMonth.daysInMonth(); //Колличество дней в месяце
+			this.dateInfo.workDays = this.dateInfo.daysInMonth - this.dateInfo.weekDays; //Колличество рабочих дней
+		},
+
+		//Установка заголовока таблицы
+		setFields() {
+			let fields = [];
+			fields = [
+				{
+					key: 'name',
+					stickyColumn: true,
+					label: 'Имя',
+					variant: 'primary',
+					sortable: true,
+					class: 'text-left px-3 t-name',
+					editable: false
+				},
+				{
+					key: 'kpi',
+					label: 'KPI',
+					sortable: true,
+					editable: false,
+					stickyColumn: true
+				},
+				{
+					key: 'bonus',
+					label: 'Бонусы',
+					sortable: true,
+					editable: false,
+					stickyColumn: true
+				},
+				{
+					key: 'total',
+					label: 'Оклад',
+					sortable: true,
+					editable: false,
+					stickyColumn: true
+				},
+				{
+					key: 'fines',
+					label: 'Штрафы',
+					sortable: true,
+					editable: false,
+					stickyColumn: true
+				},
+				{
+					key: 'avans',
+					label: 'Авансы',
+					sortable: true,
+					editable: false,
+					stickyColumn: true
+				},
+				{
+					key: 'taxes',
+					label: 'Налоги',
+					sortable: true,
+					editable: false,
+					stickyColumn: true
+				},
+				{
+					key: 'final',
+					label: 'К выдаче',
+					sortable: true,
+					editable: false,
+					stickyColumn: true
+				}
+			];
+
+			let days = this.dateInfo.daysInMonth;
+
+			for (let i = 1; i <= days; i++) {
+				let dayName = this.$moment(`${i} ${this.dateInfo.date}`, 'D MMMM YYYY')
+					.locale('en')
+					.format('ddd');
+
+				let field = {
+					key: `${i}`,
+					label: `${i}`,
+					sortable: true,
+					editable: true,
+					weekend: dayName === 'Sat' || dayName === 'Sun',
+				};
+
+				fields.push(field);
+			}
+			this.fields = fields;
+		},
+
+		//Загрузка данных для таблицы
+		fetchData() {
+			if(this.selectedGroup == null) return ''
+
+			this.$router.push({
+				path: '/timetracking/salaries',
+				query: {
+					group: this.selectedGroup?.id || 0,
+					year: this.dateInfo.currentYear,
+					month: this.dateInfo.currentMonth,
+					type: this.user_types,
+					only_salary: this.show_user,
+					ts: Date.now(),
+				}
+			})
+
+			let loader = this.$loading.show();
+			this.dateInfo.month = this.$moment(
+				this.dateInfo.currentMonth,
+				'MMMM'
+			).format('M');
+
+			this.axios
+				.post('/timetracking/salaries', {
+					month: this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M'),
+					year: this.dateInfo.currentYear,
+					group_id: this.selectedGroup.id,
+					user_types: this.user_types,
+				})
+				.then(response => {
+					const users = response.data?.users?.map(user => {
+						if(typeof user.profile_histories_latest?.payload === 'string'){
+							user.profile_histories_latest.payload = JSON.parse(user.profile_histories_latest.payload || '{}')
+							if(user.profile_histories_latest.payload.position_id){
+								user.position_id = user.profile_histories_latest.payload.position_id
+							}
+						}
+						return user
+					}) || []
+					response.data.users = users
+					let data = response.data;
+					if (data.error && data.error == 'access') {
+						console.error(data.error);
+						this.hasPermission = false;
+						loader.hide();
+						return;
+					}
+
+					this.hasPermission = true;
+
+					this.data = data;
+					this.group_fired = data.group_fired;
+					this.allTotal = data.all_total;
+					this.allTotalFired = data.all_total_fired;
+					this.group_total = data.group_total;
+					this.total_resources = data.total_resources;
+					this.users_count = data.users.length;
+					this.groups = data.groups;
+					this.accruals = data.accruals;
+					this.auth_token = data.auth_token
+
+					if(data.currentGroup) {
+						this.selectedGroup.salary_approved = data.currentGroup.salary_approved;
+						this.selectedGroup.salary_approved_by = data.currentGroup.salary_approved_by;
+						this.selectedGroup.salary_approved_date = data.currentGroup.salary_approved_date;
+					}
+
+					this.setYear();
+					this.setMonth();
+					this.setFields();
+					this.loadItems();
+					this.dataLoaded = true;
+
+					loader.hide();
+				}).catch(error => {
+					this.$toast.error('Ошибка');
+					console.error(error)
+				});
+		},
+
+		// get salaries total for all group
+		getTotals() {
+			const  loader = this.$loading.show();
+			const currentMonth = this.$moment(`${this.dateInfo.currentYear}-${this.dateInfo.currentMonth}`, 'YYYY-MMMM')
+			this.axios
+				.post('/timetracking/salaries/get-total', {
+					month: currentMonth.format('M'),
+					year: this.dateInfo.currentYear,
+				})
+				.then(() => {
+					loader.hide();
+				}).catch((e) => {
+					console.error(e);
+					loader.hide();
+				});
+		},
+
+		toggleTab(type) {
+			if(type == 'avans') {
+				this.bonus.visible = false
+				this.avans.visible = !this.avans.visible
+			}
+			else {
+				this.avans.visible = false
+				this.bonus.visible = !this.bonus.visible
+			}
+		},
+
+		//Добавление загруженных данных в таблицу
+		loadItems() {
+			let hasMoney = 0;
+			let items = [];
+			let daySalariesSum = [];
+
+			// items.push({
+			// 	name: 'Общая сумма',
+			// });
+
+			// let total_final = 0; // К выдаче сумма
+			// let total_kpi = 0; // Кpi total
+			// let total_bonus = 0; // Bonus total
+			// let total_fines = 0; // fines total
+			// let total_avanses = 0; // Avans total
+			// let total_taxes = 0; // Taxes total
+			// let total_total = 0; // Начислено total
+
+			this.data.users.forEach(item => {
+				var daySalaries = [];
+				var daySalariesOnly = [];
+				var personalTotal = 0;
+				var personalFinal = 0;
+				var personalAvanses = 0;
+				var personalFines = 0;
+				var personalBonuses = 0;
+
+				item.dayType = []
+				item.salaries.forEach(tt => {
+					let salary = 0;
+					let total = 0;
+
+					if(item.earnings[tt.day]) {
+						salary = Number(item.earnings[tt.day]);
+						total = salary;
+					}
+
+					// salary earned to total
+					if(Number(salary) != 0) personalTotal += parseInt(salary);
+
+					if(tt.paid) {
+						personalAvanses += parseInt(tt.paid, 0);
+					}
+
+					if(item.bonuses[tt.day]) {
+						personalBonuses += Number(item.bonuses[tt.day]);
+						total += Number(item.bonuses[tt.day]);
+					}
+
+					if(item.awards[tt.day]) {
+						personalBonuses += Number(item.awards[tt.day]);
+						total += Number(item.awards[tt.day]);
+					}
+
+					// if(item.test_bonus[tt.day]) {
+					// 	personalBonuses += Number(item.test_bonus[tt.day]);
+					// 	total += Number(item.test_bonus[tt.day]);
+					// }
+
+					if(item.fine[tt.day]) {
+						let fine_for_day = 0;
+						item.fine[tt.day].forEach(el => {
+							Object.values(el).forEach(fine_sum => fine_for_day += Number(fine_sum));
+						})
+
+						total -= Number(fine_for_day);
+					}
+
+					daySalaries[tt.day] = Number(total) != 0
+						? Number(total).toFixed(0)
+						: '';
+
+					daySalariesOnly[tt.day] = Number(salary) != 0
+						? Number(salary).toFixed(0)
+						: '';
+
+					const isFine = item.fine[tt.day] && item.fine[tt.day].length ? salaryCellType.FINE : 0
+					const isTraining = item.trainings[tt.day] ? salaryCellType.TRAINING : 0
+					const isBonus = item.bonuses[tt.day] || item.awards[tt.day] || item.test_bonus[tt.day] ? salaryCellType.BONUS : 0
+					const isAvans = item.avanses[tt.day] ? salaryCellType.AVANS : 0
+					item.dayType[tt.day] = isFine | isTraining | isBonus | isAvans
+				});
+
+				let personalKpi =  Number(item.kpi);
+				if(item.edited_kpi) {
+					personalKpi = item.edited_kpi.amount
+				}
+
+				if(item.edited_bonus) {
+					personalBonuses = item.edited_bonus.amount
+				}
+
+				personalFines = Number(item.fines_total);
+
+				const total = personalKpi + personalTotal + personalBonuses - personalFines
+
+				personalFinal = personalTotal - personalAvanses + personalBonuses - personalFines + personalKpi
+
+				if(item.edited_salary) {
+					personalFinal = item.edited_salary.amount
+				}
+
+				personalFinal -= item.totalTaxes
+
+				daySalaries.bonus = Number(personalBonuses).toFixed(0);
+				daySalaries.avans = Number(personalAvanses).toFixed(0);
+				daySalaries.fines = Number(personalFines).toFixed(0);
+				daySalaries.total = Number(personalTotal).toFixed(0);
+				daySalaries.taxes = item.totalTaxes
+				daySalaries.final = Number(personalFinal).toFixed(0);
+
+				daySalaries.forEach((amount, day) => {
+					if(isNaN(amount) || isNaN(Number(amount))) {
+						amount = 0;
+					}
+
+					if (typeof daySalariesSum[day] === 'undefined') {
+						daySalariesSum[day] = 0;
+					}
+
+					daySalariesSum[day] = parseInt(daySalariesSum[day]) + Number(amount);
+
+					if(daySalariesSum[day] > 0){
+						hasMoney = 1;
+					}
+				});
+
+				const final = item.edited_salary ? item.edited_salary.amount : total
+				const taxItems = item.user_tax?.tax_group?.items || []
+				const taxes = taxItems.map(tax => {
+					if(!tax.histories_latest) return tax
+					const hist = typeof tax.histories_latest === 'string' ? JSON.parse(tax.histories_latest) : tax.histories_latest
+					return {
+						...tax,
+						...hist,
+					}
+				}).sort((a,b) => a.order - b.order)
+				const taxinfo = {
+					group: item.user_tax?.tax_group,
+					calc: []
+				}
+				let afterTaxes = final
+				let taxesSum = final
+				let totalTax = 0
+
+				taxes.forEach(tax => {
+					if(!tax.value) return
+					let amount
+					if(!tax.is_percent) {
+						amount = tax.value
+					}
+					else{
+						amount = tax.end_subtraction ? Math.round(taxesSum * tax.value / 100) : Math.round(final * tax.value / 100)
+					}
+					taxinfo.calc.push({
+						name: tax.name,
+						value: tax.value + (tax.is_percent ? '%' : ''),
+						amount,
+						before: afterTaxes,
+						after: tax.is_deduction ? afterTaxes : afterTaxes - amount,
+					})
+
+					taxesSum -= amount
+					if(taxesSum < 0) taxesSum = 0
+					if(!tax.is_deduction) afterTaxes -= amount
+					if(!tax.is_deduction) totalTax += amount
+				})
+
+				let obj = {
+					kpi: item.kpi,
+					fine: item.fine,
+					user_id: item.id,
+					position_id: item.position_id,
+					hours: item.hours,
+					awards: item.awards,
+					name: `${item.last_name} ${item.name}`,
+					avanses: item.avanses,
+					bonuses: item.bonuses,
+					user_type: item.user_type,
+					trainings: item.trainings,
+					history: item.track_history?.map(hist => ({
+						...hist,
+						payload: hist.payload ? JSON.parse(hist.payload || '{}') : {},
+					})),
+					edited_kpi: item.edited_kpi,
+					test_bonus: item.test_bonus,
+					hourly_pays: item.hourly_pays,
+					edited_bonus: item.edited_bonus,
+					edited_salary: item.edited_salary,
+					dayType: item.dayType,
+					salaries: daySalariesOnly,
+					groupUsers: item.group_users,
+					taxGroup: item.user_tax?.tax_group?.name,
+					taxinfo,
+					totalTax,
+					...daySalaries,
+				};
+
+				// let pass = false
+
+				if(this.show_user == 0) {
+					items.push(obj);
+					// pass = true
+				}
+				else if(hasMoney > 0) { // show if has salary records
+					items.push(obj);
+					hasMoney = 0
+					// pass = true
+				}
+
+				// if(pass){
+				// 	total_final += Number(personalFinal) >= 0 ? Number(personalFinal) : 0;
+				// 	total_total += Number(personalFinal) >= 0 ? Number(personalTotal) : 0;
+				// 	total_kpi += Number(personalFinal) >= 0 ? Number(item.kpi) : 0;
+				// 	total_fines += Number(personalFinal) >= 0 ? Number(personalFines) : 0;
+				// 	total_bonus += Number(personalFinal) >= 0 ? Number(personalBonuses) : 0;
+				// 	total_taxes += Number(personalFinal) >= 0 ? Number(personalTaxes) : 0;
+				// 	total_avanses += Number(personalFinal) >= 0 ? Number(personalAvanses) : 0;
+				// }
+			});
+
+
+			let total = 0;
+
+			if(this.user_types != '2') { // стажеры
+				daySalariesSum.forEach(sum => {
+					total = total + parseInt(sum);
+				});
+			}
+
+			// total_bonus = Number(total_bonus).toFixed(0);
+
+			// items[0] = {
+			// 	name: 'Общая сумма',
+			// 	final: total_final,
+			// 	kpi: total_kpi,
+			// 	bonus: total_bonus,
+			// 	avans: total_avanses,
+			// 	fines: total_fines,
+			// 	taxes: total_taxes,
+			// 	total: total_total,
+			// 	...daySalariesSum,
+			// };
+
+			// this.total = total_final;
+			this.items = items;
+		},
+
+		// окно редактирования kpi бонус  к выдаче на месяц
+		showEditPremiumWindow(type, data) {
+			if(!this.$can('salaries_edit')) return
+			if(data.index == 0) return false
+			data.type = type
+			this.editedField = data
+
+			this.editedField.name = data.item.name
+
+			this.editPremiunWindow = true
+		},
+
+		// сайдбар kpi бонус  к выдаче на месяц
+		showEditPremiumSidebar(type, data) {
+			if(data.index == 0) return false
+			data.type = type
+
+			this.fetchBonusHistory(data.item.user_id)
+
+			this.editedField = data
+			this.editPremiumSidebar = true
+			this.sidebarTitle = data.item.name + ' : ' + type
+		},
+
+		editPremium() {
+			const currentMonth = this.$moment(`${this.dateInfo.currentYear}-${this.dateInfo.currentMonth}`, 'YYYY-MMMM')
+
+			if(this.commentEdit < 3) {
+				this.errors = ['Комментарии обязательны!'];
+				return '';
+			}
+
+			this.axios
+				.post('/timetracking/salaries/edit-premium', {
+					date: currentMonth.startOf('month').format('YYYY-MM-DD'),
+					user_id: this.editedField.item.user_id,
+					amount: this.amountEdit,
+					comment: this.commentEdit,
+					type: this.editedField.type
+				})
+				.then(() => {
+
+					if(this.editedField.type == 'kpi') {
+						this.items[this.editedField.index].kpi = this.amountEdit
+					}
+
+					if(this.editedField.type == 'bonus') {
+						this.items[this.editedField.index].bonus = this.amountEdit
+					}
+
+					this.commentEdit = '';
+					this.amountEdit = 0;
+					this.$toast.success('Сохранено');
+					this.editedField = {name:'', type:'kpi'}
+					this.editPremiunWindow = false
+					this.editPremiumSidebar = false
+
+				}).catch(error => {
+					this.$toast.error('Не сохранилось');
+					console.error(error)
+				});
+		},
+
+		// утверждено к выдаче
+		approveSalary() {
+			this.axios
+				.post('/timetracking/salaries/approve-salary', {
+					group_id: this.selectedGroup.id,
+					month: this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M'),
+					year: this.dateInfo.currentYear,
+				})
+				.then(() => {
+					this.$toast.success('Сохранено');
+					this.showBeforeApprove = false
+					this.selectedGroup.salary_approved = 1;
+				}).catch(error => {
+					this.$toast.error('Не получилось');
+					console.error(error)
+				});
+		},
+
+		async updateSalary(type) {
+			if(this.selectedCell.index == 0) return '';
+
+			let comment, amount, response;
+
+			if(type == 'avans') {
+				if(this.avans.comment.length < 3) {
+					this.avans.require = 'Комментарии обязательны!'
+					return this.$toast.error('Комментарии обязательны!');
+				}
+
+				if(this.avans.sum == 0 || this.avans.sum == null) {
+					this.avans.require = 'Напишите сумму аванса!'
+					return this.$toast.error('Напишите сумму аванса!');
+				}
+
+				comment = this.avans.comment;
+				amount = this.avans.sum;
+			}
+
+			if(type == 'bonus') {
+				if(this.bonus.comment.length < 3) {
+					this.bonus.require = 'Комментарии обязательны!'
+					return this.$toast.error('Комментарии обязательны!');
+				}
+
+				if(this.bonus.sum == 0 || this.bonus.sum == null) {
+					this.bonus.require = 'Напишите сумму бонуса!'
+					return this.$toast.error('Напишите сумму бонуса!');
+				}
+
+				comment = this.bonus.comment;
+				amount = this.bonus.sum;
+			}
+
+			try {
+				const {data} = await this.axios.post('/timetracking/salaries/update', {
+					month: this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M'),
+					year: this.dateInfo.currentYear,
+					day: this.selectedCell.field.key,
+					user_id: this.selectedCell.item.user_id,
+					amount: amount,
+					comment: comment,
+					type: type
+				})
+				response = data
+			}
+			catch (error) {
+				this.$onError({error, msg: 'Не сохранилось'})
+			}
+			if(response){
+				switch(type){
+				case 'avans':
+					this.$toast.success('Аванс успешно сохранен');
+					this.selectedCell.item.avanses[this.selectedCell.field.key] = this.avans.sum;
+					break;
+				case 'bonus':
+					this.$toast.success('Бонус успешно сохранен');
+					this.selectedCell.item.bonuses[this.selectedCell.field.key] = this.bonus.sum;
+					break;
+				}
+				this.avans.sum = 0;
+				this.avans.comment = '';
+				this.avans.require = '';
+				this.avans.visible = false;
+
+				this.bonus.sum = 0;
+				this.bonus.comment = '';
+				this.bonus.require = '';
+				this.bonus.visible = false;
+
+				this.sidebarHistory?.unshift(response);
+				this.items[this.selectedCell.index]?.history?.unshift(response)
+				this.openSidebar = false
+			}
+		},
+
+		// excel
+		exportData() {
+			var link = '/timetracking/salaries/export';
+			link += '?group_id=' + this.selectedGroup.id;
+			link += '&month=' + this.dateInfo.month;
+			link += '&year=' + this.dateInfo.year;
+			link += '&user_types=' + this.user_types;
+			window.location.href = link;
+		},
+
+		detectClick(data) {
+			this.selectedCell = data
+			this.openDay(data)
+		},
+
+		toggleVisible() {
+			this.special_fields = !this.special_fields;
+		},
+
+		defineClickNumber(type, data) {
+			//var self = this
+			++this.clicks
+			if(type === 'kpi'){
+				return this.fetchKPIStatistics(data.item.user_id)
+			}
+
+			const onSingle = () => {
+				this.showEditPremiumSidebar(type, data)
+			}
+
+			if (this.clicks === 1) {
+				this.timer = setTimeout(() => {
+					onSingle()
+					this.clicks = 0
+				}, 350)
+				return
+			}
+			clearTimeout(this.timer)
+			this.clicks = 0
+			if(this.can_edit) return this.showEditPremiumWindow(type, data)
+			onSingle()
+		},
+
+		openDay(data) {
+			this.openSidebar = true
+			this.sidebarContent = data
+
+			if(this.hasPermission) {
+				this.profile_link = '<a href="https://test.jobtron.org/login-as-employee/' + data.item.user_id + '?auth=' + this.auth_token + '" target="_blank">';
+				this.profile_link += '<i class="fa fa-link pointer ml-2 mr-2"></i></a>';
+			}
+			else {
+				this.profile_link = '';
+			}
+
+			this.sidebarTitle = `${data.item.name} - ${data.field.key} ${this.dateInfo.currentMonth} `
+			this.sidebarHistory = data.item.history?.filter(hist => parseInt(hist.day) === parseInt(data.field.key))
+		},
+
+		// Дичайший костыль, переделать при первой возможности
+		getUserGroups(userId){
+			const user = this.data.users.find(user => user.id === userId)
+			const currentDate = this.$moment(this.dateInfo.date, 'MMMM YYYY')
+			const currentDateFormat = currentDate.format('YYYY-MM')
+			return user.group_users.reduce((result, group) => {
+				const from = this.$moment(group.from)
+				const fromFormat = from.format('YYYY-MM')
+				const to = this.$moment(group.to)
+				const toFormat = to.format('YYYY-MM')
+				if(currentDateFormat == fromFormat || currentDateFormat == toFormat || !group.to || currentDate.isBetween(from, to)){
+					result.push(group.group_id)
+				}
+				return result
+			}, [])
+		},
+
+		async fetchKPIStatistics(userId){
+			if(!userId) return
+			if(!this.is_admin) return
+
+			const loader = this.$loading.show();
+			const { data } = await this.axios.post('/statistics/kpi-with-currency', {
+				filters: {
+					data_from: {
+						year: this.dateInfo.currentYear,
+						month: this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M'),
+					},
+					user_id: userId
+				}
+			})
+
+			let items = data.items || []
+			if(!Array.isArray(items)){
+				items = Object.values(items)
+			}
+
+			this.kpiItems = items.map(res=> {
+				const kpi = parseKPI(res)
+				kpi.users = kpi.users.filter(user => user.id === userId)
+				return {...kpi, my_sum: 0}
+			}).sort((a, b) => target2type[a.targetable_type] - target2type[b.targetable_type])
+			this.kpiSidebar = true
+			loader.hide()
+		},
+
+		// Avans/Bonus history
+		async fetchBonusHistory(user_id) {
+			const currentMonth = this.$moment(`${this.dateInfo.currentYear}-${this.dateInfo.currentMonth}`, 'YYYY-MMMM')
+			try {
+				const {data} = await this.axios.post('/timetracking/salaries/bonuses', {
+					user_id: user_id,
+					date: currentMonth.startOf('month').format('YYYY-MM-DD'),
+				})
+				this.bonus_history = data.map(bonus => ({
+					...bonus,
+					payload: bonus.payload ? JSON.parse(bonus.payload || '{}') : {}
+				}))
+			}
+			catch (error) {
+				this.$onError({error, silent: 1})
+			}
+		},
+
+		async showAvansSidebar(cellData){
+			if(cellData.index === 0) return false
+
+			const currentMonth = this.$moment(`${this.dateInfo.currentYear}-${this.dateInfo.currentMonth}`, 'YYYY-MMMM')
+
+			this.avans_history = []
+			const loader = this.$loading.show()
+			const {data} = await this.axios.post('/timetracking/salaries/advances',{
+				user_id: cellData.item.user_id,
+				date: currentMonth.startOf('month').format('YYYY-MM-DD'),
+			})
+			this.avans_history = data.map(avans => ({
+				...avans,
+				payload: avans.payload ? JSON.parse(avans.payload || '{}') : {}
+			}))
+			this.editedField = cellData
+			this.sidebarTitle = cellData.item.name + ' : Авансы'
+			this.isAvansSidebar = true
+			loader.hide()
+		},
+
+		onRemoveRestore(action, type, item){
+			if(type === 'fine') return this.$toast.info('В разработке')
+			this.removeRestoreForm = {
+				isOpen: true,
+				action,
+				type,
+				item,
+				reason: '',
+			}
+		},
+
+		confirmRemoveUpdate(){
+			if(this.removeRestoreForm.reason.length < 5) {
+				alert('Укажите причину')
+				return false
+			}
+			if(this.removeRestoreForm.action === 'remove') return this.removeHistory()
+			this.restoreHistory()
+		},
+
+		async removeHistory(){
+			const {item} = this.removeRestoreForm
+			/* eslint-disable require-atomic-updates */
+			if(!confirm('Вы уверены?')) return ''
+			try {
+				const {data} = await this.axios.delete(`/timetracking/salaries/histories/${item.id}`, {params: {method: 'delete', reason: this.removeRestoreForm.reason}})
+				item.deleted_at = new Date().toISOString()
+				item.payload = JSON.parse(data.payload || '{}')
+				this.removeRestoreForm.isOpen = false
+			}
+			catch (error) {
+				this.$onError({error})
+			}
+			/* eslint-enable require-atomic-updates */
+		},
+
+		async restoreHistory(){
+			const {item} = this.removeRestoreForm
+			/* eslint-disable require-atomic-updates */
+			try {
+				const {data} = await this.axios.post(`/timetracking/salaries/histories/${item.id}`, {
+					method: 'post',
+					reason: this.removeRestoreForm.reason,
+				})
+				item.deleted_at = null
+				item.payload = JSON.parse(data.payload || '{}')
+				this.removeRestoreForm.isOpen = false
+			}
+			catch (error) {
+				this.$onError({error})
+			}
+			/* eslint-enable require-atomic-updates */
+		},
+		// Avans/Bonus history
+
+		// Fine history
+		async showFineSidebar(cellData){
+			if(cellData.index === 0) return false
+
+			const currentMonth = this.$moment(`${this.dateInfo.currentYear}-${this.dateInfo.currentMonth}`, 'YYYY-MMMM')
+
+			this.fine_history = []
+			const loader = this.$loading.show()
+			const {data} = await this.axios.post('/timetracking/salaries/fines',{
+				user_id: cellData.item.user_id,
+				date: currentMonth.startOf('month').format('YYYY-MM-DD'),
+			})
+			this.fine_history = data
+			this.editedField = cellData
+			this.sidebarTitle = cellData.item.name + ' : "Депремирования"'
+			this.isFineSidebar = true
+			loader.hide()
+		},
+
+		onFineRR(action, item){
+			this.formFineRR = {
+				isOpen: true,
+				action,
+				item,
+				reason: '',
+			}
+		},
+
+		confirmFineRR(){
+			if(this.formFineRR.reason.length < 5) {
+				alert('Укажите причину')
+				return false
+			}
+			if(this.formFineRR.action === 'remove') return this.removeFine()
+			this.restoreFine()
+		},
+
+		async removeFine(){
+			const {item, reason} = this.formFineRR
+			/* eslint-disable require-atomic-updates */
+			if(!confirm('Вы уверены?')) return ''
+			const {user_id: user, fine_id: fine} = item.pivot
+			try {
+				await this.axios.delete(`/timetracking/salaries/fines/histories/${user}/${fine}`, {params: {method: 'delete', reason}})
+				item.pivot.deleted_at = new Date().toISOString()
+				// item.payload = JSON.parse(data.payload || '{}')
+				this.formFineRR.isOpen = false
+			}
+			catch (error) {
+				this.$onError({error})
+			}
+			/* eslint-enable require-atomic-updates */
+		},
+
+		async restoreFine(){
+			const {item, reason} = this.formFineRR
+			/* eslint-disable require-atomic-updates */
+			if(!confirm('Вы уверены?')) return ''
+			const {user_id: user, fine_id: fine} = item.pivot
+			try {
+				await this.axios.post(`/timetracking/salaries/fines/histories/${user}/${fine}`, {
+					method: 'post',
+					reason,
+				})
+				item.pivot.deleted_at = null
+				// item.payload = JSON.parse(data.payload || '{}')
+				this.formFineRR.isOpen = false
+			}
+			catch (error) {
+				this.$onError({error})
+			}
+			/* eslint-enable require-atomic-updates */
+		},
+		// Fine history
+
+		// tax history
+		async fetchTaxHistory(userId){
+			try {
+				const {data} = await this.axios.get(`/taxes/${userId}/history`)
+				this.taxHistory = data.data.map(hist => ({
+					...hist,
+					payload: JSON.parse(hist.payload || 'null'),
+				}))
+			}
+			catch (error) {
+				this.$onError(error)
+			}
+		},
+		async fetchTaxes(){
+			try {
+				const {data} = await this.axios.get('/taxes')
+				this.allTaxes = data.data
+			}
+			catch (error) {
+				this.$onError({error, silent: true})
+			}
+		},
+		async showTaxesSidebar(cellData){
+			if(this.dateInfo.currentYear < 2024) return
+			if(this.dateInfo.currentYear === 2024 && +this.dateInfo.month < 2) return
+			if(cellData.index === 0) return false
+
+			const loader = this.$loading.show()
+			await this.fetchTaxes()
+			await this.fetchTaxHistory(cellData.item.user_id)
+
+			this.editedField = cellData
+			this.sidebarTitle = cellData.item.name + ' : Налоги'
+			this.isTaxesSidebar = true
+			loader.hide()
+		},
+		onTaxRR(action, item){
+			this.formTaxRR = {
+				isOpen: true,
+				action,
+				item,
+				reason: '',
+			}
+		},
+		confirmTaxRR(){
+			if(this.formTaxRR.reason.length < 5) return alert('Укажите причину')
+			if(this.formTaxRR.action === 'remove') return this.removeTax()
+			this.restoreTax()
+		},
+		clearFromTaxRR(){
+			this.formTaxRR = {isOpen: false}
+		},
+		async removeTax(msg){
+			const {item, reason} = this.formTaxRR
+			/* eslint-disable require-atomic-updates */
+			if(!confirm('Вы уверены?')) return ''
+			const {user_id} = item
+			try {
+				await this.axios.post('/taxes/delete/user-tax', {
+					year: this.dateInfo.currentYear,
+					month: +this.dateInfo.month,
+					user_id,
+					reason,
+					// tax_group_id: taxinfo.group.id,
+				})
+				// item.pivot.deleted_at = new Date().toISOString()
+				// item.payload = JSON.parse(data.payload || '{}')
+				this.formTaxRR.isOpen = false
+				this.$toast.success(msg || 'Налог удален')
+			}
+			catch (error) {
+				this.$onError({error})
+			}
+			/* eslint-enable require-atomic-updates */
+		},
+		async restoreTax(){
+			// same api
+			return this.removeTax('Налог восстановлен')
+		},
+		onTaxEdit(item){
+			this.formTaxEdit = {
+				isOpen: true,
+				newTax: '',
+				item,
+				reason: '',
+			}
+		},
+		confirmTaxEdit(){
+			if(this.formTaxEdit.reason.length < 5) return alert('Укажите причину')
+			this.editTax()
+		},
+		clearFromTaxEdit(){
+			this.formTaxEdit = {isOpen: false}
+		},
+		async editTax(){
+			const {item, reason, newTax} = this.formTaxEdit
+			/* eslint-disable require-atomic-updates */
+			if(!confirm('Вы уверены?')) return ''
+			const {user_id} = item
+			try {
+				const {data} = await this.axios.post('/taxes/edit/user-tax', {
+					year: this.dateInfo.currentYear,
+					month: +this.dateInfo.month,
+					user_id,
+					reason,
+					tax_group_id: newTax,
+				})
+				this.updateUserTax(user_id, data.data)
+				// item.pivot.deleted_at = new Date().toISOString()
+				// item.payload = JSON.parse(data.payload || '{}')
+				// this.formTaxEdit.isOpen = false
+				this.formTaxEdit.isOpen = false
+				this.isTaxesSidebar = false
+				this.$toast.success('Налог изменен')
+			}
+			catch (error) {
+				this.$onError({error})
+			}
+			/* eslint-enable require-atomic-updates */
+		},
+		updateUserTax(userId, tax){
+			const user = this.data.users?.find(user => user.id === userId) || null
+			if(!user) return
+			user.user_tax = tax
+			this.loadItems()
+		}
+		// tax history
+	},
+};
+</script>
+
+<style lang="scss">
+
+.fz-09 {
+	font-size: 0.9rem;
+}
+
+.TableAccrual{
+	&-kpi{
+		font-size: 10px;
+	}
+}
+.table-accrual{
+	.b-table-sticky-header{
+		height: 100% !important;
+	}
+}
+
+.ddf div {
+	display: flex;
+}
+.ddf .custom-control {
+	margin-right: 15px;
+}
+
+.ddf-br{
+	padding-left: 20px;
+	border-left: 1px solid #ddd;
+}
+
+.form-control.normal:disabled, .form-control.normal {
+	padding: 0 2px;
+	font-size: 11px;
+	opacity: 1;
+	background: transparent;
+	text-align: center;
+	height: 100%;
+	font-weight: 500;
+	border: none;
+	border-radius: 0;
+	width: 100%;
+	font-family: 'Open Sans';
+}
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
+}
+.fz12 {
+	line-height: 1.4em;
+	font-size: 12px;
+	margin-bottom: 0;
+}
+.fz14 {
+	font-size: 14px;
+	line-height: 1.4em;
+	padding: 10px 0;
+}
+.ssssssssss .ui-sidebar__body * {
+	color: #333;
+}
+hr {
+	margin: 2px !important;
+}
+.color-red {
+	color:red;
+}
+.bg-bluish {
+	background: #a1bdd6;
+}
+.btn.activex {
+	background: red;
+}
+.progresso {
+	height: 20px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	padding-left: 10px;
+	color: white !important;
+	line-height: 20px;
+	background: #007bff;
+	transition: width linear 0.5s;
+}
+.my-table.salar .cell-border {
+	position: absolute;
+	right: -47px;
+	bottom: -23px;
+	z-index: 2;
+}
+.accrual-table {
+	.b-table{
+		table-layout: fixed;
+	}
+	.cell-border {
+		border-left-color: red !important;
+	}
+	th,
+	td {
+		width: 72px;
+		padding: 0 !important;
+		& > div{
+			padding: 0 15px;
+			height: 40px;
+			min-width: 50px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+		&:first-child{
+			& > div{
+				justify-content: space-between;
+			}
+		}
+		&:nth-child(1) {
+			width: 290px;
+			left:0 !important;
+			// z-index: 5;
+			> div {
+				width: 288px;
+				white-space: normal;
+			}
+		}
+		&:nth-child(2) {
+			left:290px !important;
+		}
+		&:nth-child(3) {
+			left:362px!important;
+		}
+		&:nth-child(4) {
+			left:434px!important;
+		}
+		&:nth-child(5) {
+			left:506px!important;
+		}
+		&:nth-child(6) {
+			left:578px!important;
+		}
+		&:nth-child(7) {
+			left:650px!important;
+		}
+		&:nth-child(8) {
+			width: 98px;
+			left:722px!important;
+		}
+		&:nth-child(2),
+		&:nth-child(3),
+		&:nth-child(4),
+		&:nth-child(5),
+		&:nth-child(6),
+		&:nth-child(7){
+			div{
+				width: 70px;
+			}
+		}
+	}
+
+	&.hide-special {
+		th,
+		td {
+			&:nth-child(2),
+			&:nth-child(3),
+			&:nth-child(4),
+			&:nth-child(5),
+			&:nth-child(6),
+			&:nth-child(7) {
+				display: none;
+			}
+			&:nth-child(8) {
+				left:290px !important;
+			}
+		}
+	}
+
+	td {
+		&:nth-child(2),
+		&:nth-child(3),
+		&:nth-child(4),
+		&:nth-child(5),
+		&:nth-child(6),
+		&:nth-child(7) {
+			background: #DDE9FF !important;
+			border-color: #b4bed2 !important;
+			div {
+				font-size: 13px;
+				text-align: center;
+			}
+		}
+
+		&:nth-child(8) {
+			background: #8bab00 !important;
+			border-color: darken(#8bab00, 10) !important;
+			color: #fff;
+		}
+	}
+}
+.group-select {
+	.vs__dropdown-toggle {
+		padding: 5px 3px 6px;
+		margin: 0;
+		border: 1px solid #d3d7db;
+	}
+
+	.ddf div {
+		display: flex;
+	}
+	.ddf .custom-control {
+		margin-right: 15px;
+	}
+	.form-control.normal:disabled, .form-control.normal {
+		padding: 0 2px;
+		font-size: 11px;
+		opacity: 1;
+		background: transparent;
+		text-align: center;
+		height: 100%;
+		font-weight: 500;
+		border: none;
+		border-radius: 0;
+		width: 100%;
+		font-family: 'Open Sans';
+	}
+	input[type="number"]::-webkit-outer-spin-button,
+	input[type="number"]::-webkit-inner-spin-button {
+		-webkit-appearance: none;
+		margin: 0;
+	}
+	.fz12 {
+		line-height: 1.4em;
+		font-size: 12px;
+		margin-bottom: 0;
+	}
+	.fz14 {
+		font-size: 14px;
+		line-height: 1.4em;
+		padding: 10px 0;
+	}
+	.ssssssssss .ui-sidebar__body * {
+		color: #333;
+	}
+	hr {
+		margin: 2px !important;
+	}
+	.color-red {
+		color:red;
+	}
+	.bg-bluish {
+		background: #a1bdd6;
+	}
+	.btn.activex {
+		background: red;
+	}
+	.progresso {
+		height: 20px;
+		margin-top: 10px;
+		margin-bottom: 10px;
+		padding-left: 10px;
+		color: white !important;
+		line-height: 20px;
+		background: #007bff;
+		transition: width linear 0.5s;
+	}
+	.my-table.salar .cell-border {
+		position: absolute;
+		right: -47px;
+		bottom: -23px;
+		z-index: 2;
+	}
+	.accrual-table {
+		th,td{
+			padding: 0 !important;
+			& > div{
+				padding: 0 15px;
+				height: 40px;
+				min-width: 50px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+			}
+			&:first-child{
+				& > div{
+					justify-content: space-between;
+				}
+			}
+		}
+		.cell-border {
+			border-left-color: red !important;
+		}
+		th,
+		td {
+			&:nth-child(1) {
+				left:0 !important;
+				z-index: 5;
+				> div {
+					width: 288px;
+					white-space: normal;
+				}
+			}
+			&:nth-child(2) {
+				left:289px !important;
+			}
+			&:nth-child(3) {
+				left:360px!important;
+			}
+			&:nth-child(4) {
+				left:431px!important;
+			}
+			&:nth-child(5) {
+				left:502px!important;
+			}
+			&:nth-child(6) {
+				left:573px!important;
+			}
+			&:nth-child(7) {
+				left:644px!important;
+			}
+			&:nth-child(2),
+			&:nth-child(3),
+			&:nth-child(4),
+			&:nth-child(5),
+			&:nth-child(6){
+				div{
+					width: 70px;
+				}
+			}
+		}
+
+		td {
+			&:nth-child(2),
+			&:nth-child(3),
+			&:nth-child(4),
+			&:nth-child(5),
+			&:nth-child(6) {
+				background: #DDE9FF !important;
+				outline-color: #c1cee5 !important;
+				div {
+					font-size: 13px;
+					text-align: center;
+				}
+			}
+
+			&:nth-child(7) {
+				background: #8bab00 !important;
+				outline-color: darken(#8bab00, 10) !important;
+				color: #fff;
+			}
+
+		}
+
+
+	}
+	.group-select {
+		.vs__dropdown-toggle {
+			padding: 5px 3px 6px;
+			margin: 0;
+			border: 1px solid #d3d7db;
+		}
+	}
+	.selector {
+		position: relative;
+		p {
+			font-size: 13px;
+		}
+		img {
+			position: absolute;
+			right: 0;
+			top: 3px;
+			z-index: 5;
+			height: 16px;
+		}
+	}
+	.approved-text  {
+		text-align: right;
+		span {
+			font-size: 11px;
+		}
+	}
+}
+.fz-08 {
+	font-size: 0.8rem;
+}
+
+.AvansHistoryItem{
+	padding: 4px 0;
+	line-height: 1.3;
+	&_deleted{
+		background-color: #fdd;
+	}
+	&-header{
+		display: flex;
+		flex-flow: row nowrap;
+		justify-content: space-between;
+		align-items: flex-start;
+		gap: 10px;
+	}
+	&-date{
+		flex: 1;
+	}
+	&-text{
+		font-size: 0.95em;
+	}
+	&-delete{
+		color: red;
+	}
+}
+
+.TableAccrual{
+	.PopupMenu-scroll{
+		padding-left: 10px;
+		padding-right: 10px;
+		data,
+		div{
+			display: block !important; /// !important
+			white-space: nowrap;
+		}
+	}
+	.SalaryCell-2,
+	.SalaryCell-weekend-2{
+		color: #62788b;
+	}
+	&-video{
+		color: red;
+		&:hover{
+			color: red;
+			text-decoration: underline;
+		}
+	}
+}
+</style>
