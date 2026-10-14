@@ -1,29 +1,143 @@
-<img src="https://jobtron.org/images/logo.png" height="50">
+# Jobtron — платформа управления персоналом
 
-## Stack
+Веб-приложение для управления сотрудниками и внутренними процессами компаний: учёт рабочего времени, расчёты вознаграждений, KPI, обучение, подбор персонала и управленческая аналитика.
 
-- Laravel 9.43
-- Vue 2.6.12
-- PHP 8.1.6
-- Linux Ubuntu 20.04 x86_64
-- Nginx v1.18.0
-- Mysql v8.0.31
-- Node v16.15.1
-- npm v8.11.0
-- Bootstrap 5.2.3
+Платформа построена на **Laravel и Vue**. Для компаний предусмотрены отдельные кабинеты на поддоменах и отдельные базы данных. Центральная часть приложения обслуживает регистрацию, тарифы и подписки.
 
-## Composer dependencies
+## Моя роль
 
-- stancl/tenancy v3.6.0 
-- spatie/laravel-permission v5.7.0
-- beyondcode/laravel-websockets  v1.13.1
-- pusher/pusher-php-server v7.0.2
-- league/flysystem-aws-s3-v3 v3.10.3
-- maatwebsite/excel v3.1.44
+Участвовал в проекте как **backend-разработчик на PHP / Laravel**. Ниже описаны возможности и устройство проекта в целом.
 
-## Installation
+## Возможности платформы
 
-* git clone https://github.com/mediasend/surv
-* composer update
-* npm run production
+| Модуль | Задачи |
+| --- | --- |
+| Сотрудники и структура | Профили, должности, подразделения, организационная структура и права доступа |
+| Учёт времени | Графики работы, табели, опоздания, переработки и согласования |
+| Вознаграждения | Зарплаты, KPI, премии, удержания и связанные расчёты |
+| Обучение | Курсы, база знаний, назначение обучения и отслеживание прогресса |
+| Подбор и адаптация | Работа со стажёрами, рекрутинговая статистика, интеграции с HeadHunter и Bitrix |
+| Аналитика | Показатели сотрудников и отделов, эффективность, отчёты и сводные данные |
+| Подписки | Тарифы, пробный период, счета, промокоды и платёжные интеграции |
+| Коммуникации | Уведомления, рассылки и встроенный модуль сообщений |
 
+## Технологии
+
+| Часть | Стек |
+| --- | --- |
+| Backend | PHP `>=8.1.2`, Laravel 9; в `composer.lock` — Laravel 9.52.16 |
+| Данные | MySQL, Eloquent ORM, миграции, Redis |
+| Разделение компаний | `stancl/tenancy`: отдельные базы, контекст кеша, файлов и очередей |
+| Доступ | `spatie/laravel-permission`, middleware и policies |
+| Основной интерфейс | Vue 2, JavaScript, Laravel Mix |
+| Административный интерфейс | Vue 3, TypeScript, Vite, Pinia |
+| Фоновые процессы | Laravel Queue, планировщик задач, WebSockets |
+| Файлы и отчёты | S3-совместимое хранилище, Excel, PDF |
+| Интеграции | HTTP API, Bitrix, HeadHunter, платёжные и коммуникационные сервисы |
+
+## Архитектура backend
+
+Это монолитное приложение: функциональные модули используют общую Laravel-кодовую базу. Контроллеры принимают запросы, сервисы и actions выполняют операции, Eloquent-модели и репозитории работают с данными. В отдельных модулях используются DTO, интерфейсы и последовательности обработчиков. Степень разделения логики между слоями различается по модулям.
+
+```text
+Центральный домен → регистрация, тарифы и подписки
+
+Поддомен компании → определение tenant
+                 → контекст базы, кеша, файлов и очередей
+                 → маршруты и модули кабинета компании
+```
+
+При создании tenant в [TenancyServiceProvider](app/Providers/TenancyServiceProvider.php) предусмотрены создание базы, миграции, начальное заполнение и подготовка S3-хранилища. Настройки разделения данных находятся в [config/tenancy.php](config/tenancy.php).
+
+## С чего начать просмотр кода
+
+| Сценарий | Точки входа |
+| --- | --- |
+| Отдельные кабинеты компаний | [TenancyServiceProvider](app/Providers/TenancyServiceProvider.php), [маршруты кабинета](routes/tenant.php), [миграции tenant](database/migrations/tenant) |
+| Создание подписки | [NewSubscriptionController](app/Http/Controllers/Subscription/NewSubscriptionController.php) → [SubscriptionPipeline](app/Service/Subscription/Pipeline/SubscriptionPipeline.php) |
+| Фоновый пересчёт зарплат | [ProcessUpdateSalary](app/Jobs/Salary/ProcessUpdateSalary.php) → [сервисы расчёта](app/Service/Salary) |
+| Учёт времени | [сервисы Timetrack](app/Service/Timetrack) |
+| Обучение | [маршруты курсов](routes/v2-courses.php), [сервисы Courses](app/Service/Courses) |
+| Аналитика | [маршруты аналитики](routes/v2-analytics-routes.php), [сервисы Analytics](app/Service/Analytics) |
+| Промокоды | [SavePromoCodeAction](app/Actions/PromoCode/SaveAction/SavePromoCodeAction.php) и DTO в том же каталоге |
+
+## Структура репозитория
+
+```text
+app/Http/Controllers/   обработчики запросов
+app/Http/Requests/      проверка входных данных
+app/Service/            сервисы бизнес-логики
+app/Actions/            отдельные операции приложения
+app/DTO/                объекты передачи данных
+app/Repositories/       работа с данными
+app/Jobs/               фоновые задачи
+app/Console/            команды и планировщик
+app/Api/               внешние интеграции
+routes/tenant.php       маршруты кабинетов компаний
+routes/web.php          центральные веб-маршруты
+resources/js/           основной интерфейс
+resources/js/admin/     отдельная административная часть
+packages/eddir/messenger/ модуль сообщений
+```
+
+## Подготовка локального окружения
+
+Для запуска нужны PHP с расширениями из `composer.json`, Composer, MySQL, Redis и Node.js/npm для сборки интерфейса. Дополнительно настраиваются локальные домены компаний и хранилище файлов. Сквозной запуск с новой базой и внешними интеграциями пока не проверен; ниже приведён порядок подготовки по конфигурации репозитория.
+
+```sh
+git clone https://github.com/Sultanbro/test_surv.git
+cd test_surv
+cp .env.example .env
+composer install
+composer check-platform-reqs
+php artisan key:generate
+```
+
+Настройте локальный `.env` перед работой с базой и интеграциями:
+
+| Параметры | Назначение |
+| --- | --- |
+| `APP_URL` | Адрес центрального приложения |
+| `APP_DOMAIN`, `DOMAIN_NAME` | Центральный домен: используются разными файлами конфигурации; `DOMAIN_NAME` нужно добавить в `.env` |
+| `TENANT_DEFAULT` | Значение tenant по умолчанию, если оно требуется выбранному сценарию |
+| `DB_CONNECTION`, `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD` | Отдельная локальная центральная база MySQL |
+| `CACHE_DRIVER` | Для tenant-кеша нужен драйвер с поддержкой тегов, например `redis`; исходный `file` из `.env.example` для этого не подходит |
+| `REDIS_HOST`, `REDIS_PORT`, `REDIS_PASSWORD` | Подключение Redis при его использовании; добавьте переменные в `.env` |
+| `QUEUE_DRIVER` | В этом проекте используется именно эта переменная; `sync` для синхронного выполнения или `database` для фоновой очереди |
+| `MAIL_DRIVER` | `log` для локальной проверки без отправки писем |
+| `AWS_*`, `PUSHER_*` и параметры интеграций | Настройки соответствующих сервисов для проверяемого сценария |
+
+Для центрального домена и поддоменов компаний настройте локальный DNS либо hosts и маршрутизацию веб-сервера. Создание базы tenant требует соответствующих прав у локальной учётной записи MySQL.
+
+Подготовка центральной базы и ресурсов:
+
+```sh
+php artisan config:clear
+php artisan migrate
+npm ci
+npm run production
+```
+
+Для отдельной административной части предусмотрены команды `npm run sub-install` и `npm run sub-build` из корня репозитория.
+
+Создание кабинета компании запускает отдельный цикл миграций и заполнения tenant-базы. В текущем [CreateS3Bucket](app/Jobs/Tenancy/CreateS3Bucket.php) вызывается внешний скрипт `/root/s3-curl/s3curl.pl` через `sudo`. Перед созданием tenant нужно адаптировать этот шаг под локальное хранилище. Центральная миграция сама по себе не создаёт готовый кабинет с пользователем.
+
+После подготовки tenant и его зависимостей приложение можно обслуживать локально командой `php artisan serve --host=127.0.0.1 --port=8000`, согласовав порт с `APP_URL` и локальной маршрутизацией. Для очереди `database` отдельно запускается `php artisan queue:work`.
+
+В репозитории также есть [Docker Compose](docker-compose.yml) с PHP 8.2 и MySQL 8. Он требует локальных `WWWUSER`, `WWWGROUP`, `MYSQL_ROOT_PASSWORD` и `DB_PASSWORD`. Redis и S3-сервис в этот Compose не включены; внутри контейнера адрес MySQL — `mysql`.
+
+## Проверки
+
+В [tests/Tenant](tests/Tenant) подготовлена основа для тестов в контексте отдельной компании. Есть проверка создания тестового tenant; проверка получения тарифов пока не завершена.
+
+Тестовый helper `WithTenancy` может пересоздавать тестовую базу. Запускайте тесты в отдельном локальном тестовом окружении с `APP_ENV=testing`, отдельными доступами к MySQL и корректными настройками tenant. Учитывайте, что конфигурация проекта читает `QUEUE_DRIVER` и `MAIL_DRIVER`.
+
+```sh
+php artisan test
+```
+
+При дальнейшем развитии в первую очередь полезны тесты расчётов зарплат и KPI, подписок и разделения данных компаний.
+
+## Зависимости и лицензии
+
+Laravel framework распространяется по [лицензии MIT](https://opensource.org/licenses/MIT). Условия остальных зависимостей указаны в соответствующих пакетах и `composer.lock`.
