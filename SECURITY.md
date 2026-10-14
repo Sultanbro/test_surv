@@ -26,6 +26,4 @@ Do not put secret values into issues, pull requests, or commit messages.
 
 API mock fixtures contain synthetic values. SQL exports and archived source copies are not distributed. External integrations require separately configured credentials.
 
-This is a sanitized snapshot of a legacy project for source review. It does not include operational data or credentials. A clean credential scan is not a full application security audit. Review dependencies and deployment settings before running a public service.
-
 The local Compose stack binds HTTP and MySQL to loopback only and requires non-empty database credentials. Set `DB_PASSWORD` and a separate `MYSQL_ROOT_PASSWORD` before starting it.

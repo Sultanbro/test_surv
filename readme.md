@@ -1,5 +1,3 @@
-> Sanitized source snapshot for code review. Runtime credentials, operational exports, and personal test data are excluded. External integrations require your own configuration. This legacy project needs dependency and deployment review before production use. Existing license and attribution notices remain applicable. See [SECURITY.md](SECURITY.md).
-
 <img src="https://jobtron.org/images/logo.png" height="50">
 
 ## Stack
