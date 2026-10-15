@@ -1,0 +1,10 @@
+name: Work chart checks
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  report-helpers:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker run --rm -v "$PWD:/app" -w /app php:8.2-cli php tests/standalone/work_chart.php

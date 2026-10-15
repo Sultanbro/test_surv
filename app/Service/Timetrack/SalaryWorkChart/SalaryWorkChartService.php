@@ -103,6 +103,7 @@ class SalaryWorkChartService
 
     public function totalSalaryToDay($salaries)
     {
+        $sumSalary = [];
         foreach ($salaries as $elem){
             if(isset($elem['salary'])){
                 $sumSalary[] = $elem['salary'];
@@ -123,6 +124,7 @@ class SalaryWorkChartService
 
     public function countDayWork($charts)
     {
+        $countDayWork = [];
         foreach ($charts as $elem){
             if($elem['day_off'] != true){
                 $countDayWork[] = $elem['day_off'];
@@ -133,6 +135,7 @@ class SalaryWorkChartService
 
     public function countDayOff($charts)
     {
+        $countDayOff = [];
         foreach ($charts as $elem){
             if($elem['day_off'] == true){
                 $countDayOff[] = $elem['day_off'];
